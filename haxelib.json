@@ -1,0 +1,10 @@
+{
+	"name": "hxmake",
+	"classPath": "src",
+	"description": "",
+	"contributors": [
+		"eliasku"
+	],
+	"version": "0.0.1",
+	"dependencies": {}
+}

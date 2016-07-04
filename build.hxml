@@ -1,0 +1,15 @@
+-cp tool
+-cp src
+#-debug
+--each
+
+-main hxmake.tool.RunScript
+-neko run.n
+
+--next
+
+-main hxmake.tool.AliasScript
+-D alias=hxmake
+-D library=hxmake
+-neko hxmake.n
+-cmd nekotools boot hxmake.n

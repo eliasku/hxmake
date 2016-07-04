@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module relativePaths="true" type="HAXE_MODULE" version="4">
+    <component name="HaxeModuleSettingsStorage">
+        <option name="excludeFromCompilation" value="::skipCompilation::" />
+        <option name="flexSdkName" value="::flexSdkName::" />
+        <option name="buildConfig" value="::buildConfig::" />
+        ::projectPath::
+        ::projectTarget::
+    </component>
+    <component name="NewModuleRootManager" inherit-compiler-output="true">
+        <exclude-output/>
+        <content url="file://$MODULE_DIR$/">
+::foreach sourceDirs::
+            <sourceFolder url="file://$MODULE_DIR$/::__current__::" isTestSource="false"/>
+::end::
+::foreach testDirs::
+            <sourceFolder url="file://$MODULE_DIR$/::__current__::" isTestSource="true"/>
+::end::
+            <excludeFolder url="file://$MODULE_DIR$/build"/>
+            <excludeFolder url="file://$MODULE_DIR$/.gradle"/>
+            <excludeFolder url="file://$MODULE_DIR$/bin"/>
+            <excludeFolder url="file://$MODULE_DIR$/export"/>
+        </content>
+        <orderEntry type="sourceFolder" forTests="false"/>
+        <orderEntry type="jdk" jdkName="::haxeSdkName::" jdkType="Haxe toolkit" />
+::foreach moduleDependencies::
+        <orderEntry type="module" module-name="::__current__::" exported="" scope="PROVIDED"/>
+::end::
+::foreach moduleLibraries::
+        <orderEntry type="module-library" exported="" scope="PROVIDED">
+            <library name="::name::">
+                <CLASSES>
+                    <root url="file://::path::" />
+                </CLASSES>
+                <JAVADOC/>
+                <SOURCES/>
+            </library>
+        </orderEntry>
+::end::
+    </component>
+    <component name="ModuleRootManager"/>
+</module>
