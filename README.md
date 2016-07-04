@@ -3,17 +3,26 @@ Build tools for Haxe
 
 ### First install
 1. Install library
+
 `haxelib git hxmake https://github.com/eliasku/hxmake.git`
+
 or clone source code and install as `dev` version
+
 `haxelib dev hxmake path/to/hxmake`
+
 2. Build hxmake and install command-line alias
+
 `haxelib run hxmake _`
+
 Enter system password if required to install alias
 
 ### Usage
 `hxmake` - run hxmake
+
 `hxmake _` - rebuild hxmake tool and reinstall command-line alias
+
 `hxmake all arguments you need` - usage
+
 `hxmake idea haxe` - run `idea` and `haxe` tasks for project
 
 ### Running steps and environment
