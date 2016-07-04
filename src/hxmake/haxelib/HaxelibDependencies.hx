@@ -16,8 +16,9 @@ class HaxelibDependencies extends Task {
 	function collectDependencies(modules:Array<Module>) {
 		var dependencies:Map<String, Array<String>> = new Map();
 		for(mod in modules) {
-			for(lib in mod.config.dependencies.keys()) {
-				var sections:Array<String> = mod.config.dependencies.get(lib).split(";");
+			var moduleDeps = mod.config.getAllDependencies();
+			for(lib in moduleDeps.keys()) {
+				var sections:Array<String> = moduleDeps.get(lib).split(";");
 				var params:String = sections[0];
 				if(params == "haxelib" || params.indexOf("haxelib:") == 0) {
 					var settedArgs = dependencies.get(lib);

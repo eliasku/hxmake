@@ -165,7 +165,8 @@ class IdeaProjectTask extends Task {
 
 	function getModules(module:Module):Array<String> {
 		var modules:Array<String> = [];
-		for (dependencyId in module.config.dependencies.keys()) {
+		var deps = module.config.getAllDependencies();
+		for (dependencyId in deps.keys()) {
 			if (isModule(dependencyId)) {
 				modules.push(dependencyId);
 			}
@@ -175,10 +176,11 @@ class IdeaProjectTask extends Task {
 
 	function getExternalLibraries(module:Module):Array<LibraryInfo> {
 		var libraries:Array<LibraryInfo> = [];
-		for (dependencyId in module.config.dependencies.keys()) {
+		var deps = module.config.getAllDependencies();
+		for (dependencyId in deps.keys()) {
 			var libraryInfo:LibraryInfo = _depCache.get(dependencyId);
 			if(libraryInfo == null) {
-				var dependencyValues:Array<String> = module.config.dependencies.get(dependencyId).split(";");
+				var dependencyValues:Array<String> = deps.get(dependencyId).split(";");
 				var depVer = dependencyValues.shift();
 				libraryInfo = { name: dependencyId };
 				if (!isModule(dependencyId)) {

@@ -63,8 +63,8 @@ class Project {
 			if(module.config.makePath.indexOf("make") < 0) {
 				module.config.makePath.push("make");
 			}
-			if(module.name != "hxmake" && module.config.dependencies.get("hxmake") == null) {
-				module.config.dependencies.set("hxmake", "haxelib;global");
+			if(module.name != "hxmake" && module.config.devDependencies.get("hxmake") == null) {
+				module.config.devDependencies.set("hxmake", "haxelib;global");
 			}
 		}
 
