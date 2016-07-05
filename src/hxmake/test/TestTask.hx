@@ -8,7 +8,10 @@ import haxe.io.Path;
 /*
 TODO:
 - Travis: js / flash / lua (mac / linux)
-- AppVeyor
+
+- AppVeyor:
+    CPP (very big output)
+
 - SauceLabs for browsers
 
 - Node on travis (now use stock node)
@@ -85,17 +88,17 @@ class TestTask extends Task {
         switch(target) {
             case "cpp":
                 if(CL.platform.isLinux) {
-                    aptGet('gcc-multilib');
-                    aptGet('g++-multilib');
+                    installPackage('gcc-multilib');
+                    installPackage('g++-multilib');
                 }
             case "cs":
                 if(Sys.command("mono", ["--version"]) != 0) {
                     if(CL.platform.isLinux) {
-                        aptGet('mono-devel');
-                        aptGet('mono-mcs');
+                        installPackage('mono-devel');
+                        installPackage('mono-mcs');
                     }
                     else if(CL.platform.isMac) {
-                        aptGet('mono');
+                        installPackage('mono');
                     }
                 }
             default:
@@ -107,11 +110,11 @@ class TestTask extends Task {
         switch(target) {
             case "php":
                 if(Sys.command("php", ["--version"]) != 0) {
-                    aptGet("php5");
+                    installPackage("php5");
                 }
             case "python":
                 if(Sys.command("python3", ["--version"]) != 0) {
-                    aptGet("python3");
+                    installPackage("python3");
                 }
             default:
         }
@@ -256,13 +259,13 @@ class TestTask extends Task {
 
     function installLibrary(library:String) {
         if(Sys.command("haxelib", ["path", library]) != 0) {
-            var args:Array<String> = ["install", library, "--always", "--quiet"];
+            var args:Array<String> = ["install", library, "--always"];
             return Sys.command("haxelib", args) == 0;
         }
         return true;
     }
 
-    function aptGet(pckge:String, ?additionalArgs:Array<String>) {
+    function installPackage(pckge:String, ?additionalArgs:Array<String>):Bool {
         var cmd = null;
         var args = [];
 
@@ -273,9 +276,11 @@ class TestTask extends Task {
             case Platform.MAC:
                 cmd = "brew";
                 args = ['install', pckge];
-            case x:
-                Sys.println('Cannot run apt-get on $x');
-                return false;
+            case Platform.WINDOWS:
+                cmd = "cinst";
+                args = [pckge, '-y'];
+            default:
+                throw "Unknown platform";
         }
         if(additionalArgs != null) {
             args = args.concat(additionalArgs);
