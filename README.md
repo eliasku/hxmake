@@ -1,4 +1,6 @@
 # hxmake
+[![Build Status](https://travis-ci.org/eliasku/hxmake.svg?branch=master)](https://travis-ci.org/eliasku/hxmake)
+
 Build tools for Haxe
 
 ### First install

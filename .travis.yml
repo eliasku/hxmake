@@ -1,0 +1,13 @@
+language: haxe
+
+sudo: true
+
+haxe:
+  development
+
+install:
+  - haxelib dev hxmake .
+
+script:
+  - haxelib run hxmake _
+  - hxmake haxe
