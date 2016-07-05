@@ -88,17 +88,17 @@ class TestTask extends Task {
         switch(target) {
             case "cpp":
                 if(CL.platform.isLinux) {
-                    installPackage('gcc-multilib');
-                    installPackage('g++-multilib');
+                    return installPackage('gcc-multilib') &&
+                            installPackage('g++-multilib');
                 }
             case "cs":
                 if(Sys.command("mono", ["--version"]) != 0) {
                     if(CL.platform.isLinux) {
-                        installPackage('mono-devel');
-                        installPackage('mono-mcs');
+                        return installPackage('mono-devel') &&
+                                installPackage('mono-mcs');
                     }
                     else if(CL.platform.isMac) {
-                        installPackage('mono');
+                        return installPackage('mono');
                     }
                 }
             default:
@@ -110,11 +110,41 @@ class TestTask extends Task {
         switch(target) {
             case "php":
                 if(Sys.command("php", ["--version"]) != 0) {
-                    installPackage("php5");
+                    if(CL.platform.isWindows) {
+                        return installPackage("php");
+                    }
+                    else {
+                        return installPackage("php5");
+                    }
                 }
             case "python":
-                if(Sys.command("python3", ["--version"]) != 0) {
-                    installPackage("python3");
+                if(!CL.platform.isWindows) {
+                    if(Sys.command("python3", ["--version"]) != 0) {
+                        return installPackage("python3");
+                    }
+                }
+            case "lua":
+                if(CL.platform.isWindows) {
+                    // TODO:
+                }
+                else {
+                    if(Sys.command("lua", ["-v"]) != 0) {
+                        if(CL.platform.isLinux) {
+                            if(!installPackage("luarocks")) {
+                                return false;
+                            }
+                        }
+                        else if(CL.platform.isMac) {
+                            if(!installPackage("lua")) {
+                                return false;
+                            }
+                        }
+                    }
+
+                    if(Sys.command("luarocks", ["install", "lrexlib-pcre"]) != 0) {
+                        return false;
+                    }
+
                 }
             default:
         }
@@ -143,7 +173,8 @@ class TestTask extends Task {
         }
         args = args.concat([
             "-cp", classPath,
-            "-main", main
+            "-main", main,
+            "-dce", "full"
         ]);
 
         switch(target) {
@@ -223,14 +254,19 @@ class TestTask extends Task {
             case "hl":
                 throw "target " + target + " is not supported yet";
             case "python":
-                cmd = "python3";
+                if(CL.platform.isWindows) {
+                    cmd = "C:\\Python35-x64\\python.exe";
+                }
+                else {
+                    cmd = "python3";
+                }
                 args = [Path.join([outPath, "test.py"])];
             case "php":
                 cmd = "php";
                 args = [Path.join([outPath, "test-php", "index.php"])];
             case "lua":
-                //cmd = "lua";
-                //args = [Path.join([outPath, "test.lua"])];
+                cmd = "lua";
+                args = [Path.join([outPath, "test.lua"])];
             case "cs":
                 var exeFile = Path.join([outPath, "test-cs", "bin", "TestAll.exe"]);
                 if(CL.platform.isWindows) {
