@@ -212,6 +212,7 @@ class TestTask extends Task {
                 var exeFileName = "TestAll";
                 if(CL.platform.isWindows) {
                     cmd = Path.join([outPath, "test-cpp", exeFileName + ".exe"]);
+                    cmd = StringTools.replace(cmd, "/", "\\");
                 }
                 else {
                     cmd = Path.join([".", outPath, "test-cpp", exeFileName]);
@@ -230,7 +231,7 @@ class TestTask extends Task {
             case "cs":
                 var exeFile = Path.join([outPath, "test-cs", "bin", "TestAll.exe"]);
                 if(CL.platform.isWindows) {
-                    cmd = exeFile;
+                    cmd = StringTools.replace(exeFile, "/", "\\");
                 }
                 else {
                     cmd = "mono";
