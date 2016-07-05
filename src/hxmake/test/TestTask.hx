@@ -1,5 +1,6 @@
 package hxmake.test;
 
+import hxmake.utils.Haxelib;
 import hxmake.cli.CL;
 import haxe.io.Path;
 
@@ -17,27 +18,67 @@ class TestTask extends Task {
     }
 
     override public function configure() {
-        var customTargets:Array<String> = null;
+        var customTargets:Array<String> = [];
         for(arg in module.project.args) {
-            if(arg.indexOf("targets=") == 0) {
-                customTargets = arg.substr("targets=".length).split(",");
+            if(arg.indexOf("-test=") == 0) {
+                customTargets.push(arg.substr("-test=".length));
             }
         }
-        if(customTargets != null && customTargets.length > 0) {
+        if(customTargets.length > 0) {
             targets = customTargets;
         }
     }
 
     override public function run() {
         CL.workingDir.push(module.path);
+        runScript();
+        CL.workingDir.pop();
+    }
 
-        for (target in targets) {
-            if(build(target)) {
-                runTarget(target);
-            }
+    function runScript() {
+        if(!prepareTestLib()) {
+            return;
         }
 
-        CL.workingDir.pop();
+        for (target in targets) {
+            Sys.println("TARGET: " + target);
+            if(!prepareEvnLibs(target)) {
+                return;
+            }
+            if(!build(target)) {
+                return;
+            }
+            if(!runTarget(target)) {
+                return;
+            }
+        }
+    }
+
+    function prepareTestLib() {
+        if(Haxelib.checkInstalled(testLib)) {
+           return true;
+        }
+        return Sys.command("haxelib", ["install", testLib]) == 0;
+    }
+
+    function prepareEvnLibs(target:String) {
+        var envLib:String = null;
+        switch(target) {
+            case "cpp":
+                envLib = "hxcpp";
+            case "java":
+                envLib = "hxjava";
+            case "cs":
+                envLib = "hxcs";
+            default:
+        }
+        if(envLib != null) {
+            if(Haxelib.checkInstalled(envLib)) {
+                return true;
+            }
+            return Sys.command("haxelib", ["install", envLib]) == 0;
+        }
+        return true;
     }
 
     function build(target:String) {
@@ -69,8 +110,30 @@ class TestTask extends Task {
                 args = args.concat([
                     "-cpp", Path.join([outPath, "test-cpp"])
                 ]);
-            case "java" | "cs" | "php" | "python" | "lua" | "hl":
-                throw "target " + target + " is not supported yet";
+            case "java":
+                args = args.concat([
+                    "-java", Path.join([outPath, "test-java"])
+                ]);
+            case "cs":
+                args = args.concat([
+                    "-cs", Path.join([outPath, "test-cs"])
+                ]);
+            case "php":
+                args = args.concat([
+                    "-php", Path.join([outPath, "test-php"])
+                ]);
+            case "python":
+                args = args.concat([
+                    "-python", Path.join([outPath, "test.py"])
+                ]);
+            case "lua":
+                args = args.concat([
+                    "-lua", Path.join([outPath, "test.lua"])
+                ]);
+            case "hl":
+                args = args.concat([
+                    "-hl", Path.join([outPath, "test.c"])
+                ]);
             default:
                 throw "Unknown target: " + target;
         }
@@ -93,11 +156,26 @@ class TestTask extends Task {
                 args = [Path.join([outPath, "test.js"])];
             case "cpp":
                 cmd = Path.join([".", outPath, "test-cpp", "TestAll"]);
-            case "java" | "cs" | "php" | "python" | "lua" | "hl":
+            case "hl":
                 throw "target " + target + " is not supported yet";
+            case "python":
+                //cmd = "python";
+                //args = [Path.join([outPath, "test.py"])];
+            case "php":
+                cmd = "php";
+                args = [Path.join([outPath, "test-php", "index.php"])];
+            case "lua":
+                //cmd = "lua";
+                //args = [Path.join([outPath, "test.lua"])];
+            case "cs":
+                cmd = "mono";
+                //args = [Path.join([outPath, "test.lua"])];
+            case "java":
+                cmd = "java";
+                args = ["-jar", Path.join([outPath, "test-java", "TestAll.jar"])];
             default:
                 throw "Unknown target: " + target;
         }
-        return Sys.command(cmd, args);
+        return cmd == null || Sys.command(cmd, args) == 0;
     }
 }
