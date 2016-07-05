@@ -257,14 +257,8 @@ class TestTask extends Task {
     function installLibrary(library:String) {
         if(Sys.command("haxelib", ["path", library]) != 0) {
             var args:Array<String> = ["install", library, "--always"];
-            if(CL.platform.isWindows) {
-                args.push("> log.txt || type log.txt && cmd /C exit 1");
-                args.unshift("haxelib");
-                return Sys.command("cmd", args) == 0;
-            }
-            else {
-                return Sys.command("haxelib", args) == 0;
-            }
+            var result = CL.execute("haxelib", args);
+            return result.exitCode == 0;
         }
         return true;
     }
