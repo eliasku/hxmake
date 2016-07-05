@@ -1,5 +1,6 @@
 # hxmake
 [![Build Status](https://travis-ci.org/eliasku/hxmake.svg?branch=master)](https://travis-ci.org/eliasku/hxmake)
+[![Build status](https://ci.appveyor.com/api/projects/status/lxmpp7d9pfoyd7dq/branch/master?svg=true)](https://ci.appveyor.com/project/eliasku/hxmake/branch/master)
 
 Build tools for Haxe
 
