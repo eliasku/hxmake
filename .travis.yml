@@ -9,5 +9,5 @@ install:
   - haxelib dev hxmake .
 
 script:
-  - sudo haxelib run hxmake _
+  - haxelib run hxmake _
   - hxmake haxe
