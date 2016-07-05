@@ -174,7 +174,7 @@ class TestTask extends Task {
         args = args.concat([
             "-cp", classPath,
             "-main", main,
-            "-dce", "full"
+            "-dce", "std"
         ]);
 
         switch(target) {
