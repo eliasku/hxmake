@@ -1,8 +1,6 @@
 package hxmake.utils;
 
-import flash.system.System;
 import haxe.io.Path;
-import hxmake.cli.Platform;
 import hxmake.cli.CL;
 
 using StringTools;
