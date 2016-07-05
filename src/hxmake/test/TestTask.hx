@@ -1,5 +1,6 @@
 package hxmake.test;
 
+import hxmake.cli.Platform;
 import hxmake.utils.Haxelib;
 import hxmake.cli.CL;
 import haxe.io.Path;
@@ -42,10 +43,17 @@ class TestTask extends Task {
 
         for (target in targets) {
             Sys.println("TARGET: " + target);
+            if(!prepareToolsToCompile(target)) {
+                return;
+            }
             if(!prepareEvnLibs(target)) {
                 return;
             }
             if(!build(target)) {
+                return;
+            }
+
+            if(!prepareToolsToRun(target)) {
                 return;
             }
             if(!runTarget(target)) {
@@ -61,22 +69,52 @@ class TestTask extends Task {
         return Sys.command("haxelib", ["install", testLib]) == 0;
     }
 
-    function prepareEvnLibs(target:String) {
-        var envLib:String = null;
+    function prepareToolsToCompile(target:String) {
         switch(target) {
             case "cpp":
-                envLib = "hxcpp";
-            case "java":
-                envLib = "hxjava";
+                if(CL.platform.isLinux) {
+                    aptGet('gcc-multilib');
+                    aptGet('g++-multilib');
+                }
             case "cs":
-                envLib = "hxcs";
+                if(Sys.command("mono", ["--version"]) != 0) {
+                    if(CL.platform.isLinux) {
+                        aptGet('mono-devel');
+                        aptGet('mono-mcs');
+                    }
+                    else if(CL.platform.isMac) {
+                        aptGet('mono');
+                    }
+                }
             default:
         }
-        if(envLib != null) {
-            if(Haxelib.checkInstalled(envLib)) {
-                return true;
-            }
-            return Sys.command("haxelib", ["install", envLib]) == 0;
+        return true;
+    }
+
+    function prepareToolsToRun(target:String) {
+        switch(target) {
+            case "php":
+                if(Sys.command("php", ["--version"]) != 0) {
+                    aptGet("php5");
+                }
+            case "python":
+                if(Sys.command("python3", ["--version"]) != 0) {
+                    aptGet("python3");
+                }
+            default:
+        }
+        return true;
+    }
+
+    function prepareEvnLibs(target:String) {
+        switch(target) {
+            case "cpp":
+                return installLibrary("hxcpp");
+            case "java":
+                return installLibrary("hxjava");
+            case "cs":
+                return installLibrary("hxcs");
+            default:
         }
         return true;
     }
@@ -94,6 +132,8 @@ class TestTask extends Task {
         ]);
 
         switch(target) {
+            case "interp":
+                args.push("--interp");
             case "neko":
                 args = args.concat([
                     "-neko", Path.join([outPath, "test.n"])
@@ -145,6 +185,8 @@ class TestTask extends Task {
         var cmd:String = null;
         var args:Array<String> = [];
         switch(target) {
+            case "interp":
+                return true;
             case "neko":
                 cmd = "neko";
                 args = [Path.join([outPath, "test.n"])];
@@ -159,8 +201,8 @@ class TestTask extends Task {
             case "hl":
                 throw "target " + target + " is not supported yet";
             case "python":
-                //cmd = "python";
-                //args = [Path.join([outPath, "test.py"])];
+                cmd = "python3";
+                args = [Path.join([outPath, "test.py"])];
             case "php":
                 cmd = "php";
                 args = [Path.join([outPath, "test-php", "index.php"])];
@@ -168,8 +210,14 @@ class TestTask extends Task {
                 //cmd = "lua";
                 //args = [Path.join([outPath, "test.lua"])];
             case "cs":
-                cmd = "mono";
-                //args = [Path.join([outPath, "test.lua"])];
+                var exeFile = Path.join([outPath, "test-cs", "bin", "TestAll.exe"]);
+                if(CL.platform.isWindows) {
+                    cmd = exeFile;
+                }
+                else {
+                    cmd = "mono";
+                    args = [exeFile];
+                }
             case "java":
                 cmd = "java";
                 args = ["-jar", Path.join([outPath, "test-java", "TestAll.jar"])];
@@ -177,5 +225,33 @@ class TestTask extends Task {
                 throw "Unknown target: " + target;
         }
         return cmd == null || Sys.command(cmd, args) == 0;
+    }
+
+    function installLibrary(library:String) {
+        if(Sys.command("haxelib", ["path", library]) != 0) {
+            return Sys.command("haxelib", ["install", library, "--always"]) == 0;
+        }
+        return true;
+    }
+
+    function aptGet(pckge:String, ?additionalArgs:Array<String>) {
+        var cmd = null;
+        var args = [];
+
+        switch(CL.platform) {
+            case Platform.LINUX:
+                cmd = "sudo";
+                args = ["apt-get", "install", "-qq", pckge];
+            case Platform.MAC:
+                cmd = "brew";
+                args = ['install', pckge];
+            case x:
+                Sys.println('Cannot run apt-get on $x');
+                return false;
+        }
+        if(additionalArgs != null) {
+            args = args.concat(additionalArgs);
+        }
+        return Sys.command(cmd, args) == 0;
     }
 }
