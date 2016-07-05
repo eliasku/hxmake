@@ -258,7 +258,7 @@ class TestTask extends Task {
         if(Sys.command("haxelib", ["path", library]) != 0) {
             var args = ["install", library, "--always"];
             if(CL.platform.isWindows) {
-                args.push("> log.txt || type log.txt && cmd /C exit 1");
+                args = args.concat("> log.txt || type log.txt && cmd /C exit 1".split(" "));
             }
             return Sys.command("haxelib", args) == 0;
         }
