@@ -5,6 +5,15 @@ import hxmake.utils.Haxelib;
 import hxmake.cli.CL;
 import haxe.io.Path;
 
+/*
+TODO:
+- Travis: js / flash / lua (mac / linux)
+- AppVeyor
+- SauceLabs for browsers
+
+- Node on travis (now use stock node)
+ */
+
 class TestTask extends Task {
 
     public var main:String = "TestAll";
