@@ -41,34 +41,37 @@ class TestTask extends Task {
 
     override public function run() {
         CL.workingDir.push(module.path);
-        runScript();
+        if(!runScript()) {
+            throw "Test task failed";
+        }
         CL.workingDir.pop();
     }
 
-    function runScript() {
+    function runScript():Bool {
         if(!prepareTestLib()) {
-            return;
+            return false;
         }
 
         for (target in targets) {
             Sys.println("TARGET: " + target);
             if(!prepareToolsToCompile(target)) {
-                return;
+                return false;
             }
             if(!prepareEvnLibs(target)) {
-                return;
+                return false;
             }
             if(!build(target)) {
-                return;
+                return false;
             }
 
             if(!prepareToolsToRun(target)) {
-                return;
+                return false;
             }
             if(!runTarget(target)) {
-                return;
+                return false;
             }
         }
+        return true;
     }
 
     function prepareTestLib() {
@@ -239,6 +242,14 @@ class TestTask extends Task {
             default:
                 throw "Unknown target: " + target;
         }
+
+        if(cmd != null) {
+            Sys.println("EXEC: " + cmd + " " + args.join(" "));
+        }
+        else {
+            Sys.println("SKIP runnning for " + target);
+        }
+
         return cmd == null || Sys.command(cmd, args) == 0;
     }
 

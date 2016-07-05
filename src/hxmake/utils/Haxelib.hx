@@ -38,7 +38,7 @@ class Haxelib {
 	public static function getHaxePath():String {
 		var path = Sys.getEnv(HAXE_PATH_ENV);
 		if (path == null || path == "") {
-//			throw "Please set HAXEPATH environment variable";
+			Sys.println("[WARNING] Please set HAXEPATH environment variable");
 			if (CL.platform.isWindows) {
 				// useful trick from NME tool
 //				var nekoPath = Sys.programPath();
