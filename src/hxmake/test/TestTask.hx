@@ -7,14 +7,20 @@ import haxe.io.Path;
 
 /*
 TODO:
-- Travis: js / flash / lua (mac / linux)
+- Travis:
+    js
+    flash
+    lua (mac / linux)
 
 - AppVeyor:
-    CPP (very big output)
+    cpp (very big output)
+    lua (how to install)
+    php (php command, PATH, check RefreshEnv command)
+    js
+    flash
 
-- SauceLabs for browsers
+- SauceLabs
 
-- Node on travis (now use stock node)
  */
 
 class TestTask extends Task {
