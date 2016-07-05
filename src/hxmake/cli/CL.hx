@@ -9,17 +9,26 @@ class CL {
 	public static var platform(default, null):Platform = resolvePlatform();
 
 	public static function execute(command:String, args:Array<String>, ?workingDirectory:String):ProcessResult {
-		Debug.log("EXECUTE: " + command + " " + args.join(" "));
+		// logging
+		var cmdline = args != null ? [command].concat(args).join(" ") : command;
+		Debug.log("EXECUTE: " + cmdline);
+
 		if (workingDirectory != null) {
 			CL.workingDir.push(workingDirectory);
 		}
 
-		var process = new Process(command, args);
 		var result = new ProcessResult();
-		result.exitCode = process.exitCode();
-		result.stdout = process.stdout.readAll().toString();
-		result.stderr = process.stderr.readAll().toString();
-		process.close();
+
+		try {
+			var process = new Process(command, args);
+			result.exitCode = process.exitCode();
+			result.stdout = process.stdout.readAll().toString();
+			result.stderr = process.stderr.readAll().toString();
+			process.close();
+		}
+		catch(e:Dynamic) {
+			result.exitCode = 0xFFFF;
+		}
 
 		if (workingDirectory != null) {
 			CL.workingDir.pop();
