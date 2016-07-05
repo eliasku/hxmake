@@ -1,5 +1,6 @@
 package hxmake.utils;
 
+import flash.system.System;
 import haxe.io.Path;
 import hxmake.cli.Platform;
 import hxmake.cli.CL;
@@ -41,7 +42,15 @@ class Haxelib {
 		if (path == null || path == "") {
 //			throw "Please set HAXEPATH environment variable";
 			if (CL.platform.isWindows) {
-				path = HAXE_PATH_WINDOWS;
+				// useful trick from NME tool
+				var nekoPath = Sys.programPath();
+				var parts = nekoPath.split("\\");
+				if (parts.length > 1 && parts[parts.length - 1] == "neko") {
+					path = parts.slice(0, parts.length - 1).join("\\") + "\\haxe\\";
+				}
+				else {
+					path = HAXE_PATH_WINDOWS;
+				}
 			}
 			else {
 				path = HAXE_PATH_OSX;
