@@ -41,10 +41,15 @@ class Haxelib {
 //			throw "Please set HAXEPATH environment variable";
 			if (CL.platform.isWindows) {
 				// useful trick from NME tool
-				var nekoPath = Sys.programPath();
+//				var nekoPath = Sys.programPath();
+//				var parts = nekoPath.split("\\");
+//				if (parts.length > 1 && parts[parts.length - 1] == "neko") {
+//					path = parts.slice(0, parts.length - 1).join("\\") + "\\haxe\\";
+//				}
+				var nekoPath = Sys.executablePath();
 				var parts = nekoPath.split("\\");
-				if (parts.length > 1 && parts[parts.length - 1] == "neko") {
-					path = parts.slice(0, parts.length - 1).join("\\") + "\\haxe\\";
+				if (parts.length > 3 && parts[parts.length - 2] == "neko") {
+					path = parts.slice(0, parts.length - 2).join("\\") + "\\haxe\\";
 				}
 				else {
 					path = HAXE_PATH_WINDOWS;
