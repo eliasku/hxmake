@@ -206,7 +206,13 @@ class TestTask extends Task {
                 cmd = "node";
                 args = [Path.join([outPath, "test.js"])];
             case "cpp":
-                cmd = Path.join([".", outPath, "test-cpp", "TestAll"]);
+                var exeFileName = "TestAll";
+                if(CL.platform.isWindows) {
+                    cmd = Path.join([outPath, "test-cpp", exeFileName + ".exe"]);
+                }
+                else {
+                    cmd = Path.join([".", outPath, "test-cpp", exeFileName]);
+                }
             case "hl":
                 throw "target " + target + " is not supported yet";
             case "python":
