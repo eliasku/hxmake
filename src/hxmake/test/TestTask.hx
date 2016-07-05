@@ -256,11 +256,15 @@ class TestTask extends Task {
 
     function installLibrary(library:String) {
         if(Sys.command("haxelib", ["path", library]) != 0) {
-            var args = ["install", library, "--always"];
+            var args:Array<String> = ["install", library, "--always"];
             if(CL.platform.isWindows) {
-                args = args.concat("> log.txt || type log.txt && cmd /C exit 1".split(" "));
+                args.push("> log.txt || type log.txt && cmd /C exit 1");
+                args.unshift("haxelib");
+                return Sys.command("cmd", args) == 0;
             }
-            return Sys.command("haxelib", args) == 0;
+            else {
+                return Sys.command("haxelib", args) == 0;
+            }
         }
         return true;
     }
