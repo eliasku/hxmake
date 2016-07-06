@@ -1,8 +1,13 @@
 # hxmake
-[![Build Status](https://travis-ci.org/eliasku/hxmake.svg?branch=master)](https://travis-ci.org/eliasku/hxmake)
-[![Build status](https://ci.appveyor.com/api/projects/status/lxmpp7d9pfoyd7dq/branch/master?svg=true)](https://ci.appveyor.com/project/eliasku/hxmake/branch/master)
-
 Build tools for Haxe
+
+[![Build Status](https://travis-ci.org/eliasku/hxmake.svg?branch=master)](https://travis-ci.org/eliasku/hxmake)
+[![Build Status](https://ci.appveyor.com/api/projects/status/lxmpp7d9pfoyd7dq/branch/master?svg=true)](https://ci.appveyor.com/project/eliasku/hxmake/branch/master)
+
+[![Lang](https://img.shields.io/badge/language-haxe-orange.svg)](http://haxe.org)
+[![Version](https://img.shields.io/badge/version-v0.0.1-green.svg)](https://github.com/bynuff/hxslam)
+[![Dependencies](https://img.shields.io/badge/dependencies-none-green.svg)](https://github.com/bynuff/hxslam/blob/master/haxelib.json)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ### First install
 1. Install library
