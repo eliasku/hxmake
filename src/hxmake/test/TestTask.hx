@@ -1,5 +1,7 @@
 package hxmake.test;
 
+import hxmake.utils.Haxe;
+import hxmake.utils.Haxelib;
 import hxmake.cli.Platform;
 import hxmake.utils.Haxelib;
 import hxmake.cli.CL;
@@ -57,54 +59,54 @@ class TestTask extends Task {
     }
 
     function runScript():Bool {
-        if(!prepareTestLib()) {
+        if(!Haxelib.install(testLib)) {
             return false;
         }
 
         for (target in targets) {
-            Sys.println("TARGET: " + target);
-            if(!prepareToolsToCompile(target)) {
-                return false;
-            }
-            if(!prepareEvnLibs(target)) {
-                return false;
-            }
-            if(!build(target)) {
-                return false;
-            }
-
-            if(!prepareToolsToRun(target)) {
-                return false;
-            }
-            if(!runTarget(target)) {
+            if(!runTargetScript(target)) {
                 return false;
             }
         }
         return true;
     }
 
-    function prepareTestLib() {
-        if(Haxelib.checkInstalled(testLib)) {
-           return true;
+    function runTargetScript(target:String) {
+        Sys.println("TARGET: " + target);
+        if(!prepareToolsToCompile(target)) {
+            return false;
         }
-        return Sys.command("haxelib", ["install", testLib]) == 0;
+        if(!prepareEvnLibs(target)) {
+            return false;
+        }
+        if(!build(target)) {
+            return false;
+        }
+
+        if(!prepareToolsToRun(target)) {
+            return false;
+        }
+        if(!runTarget(target)) {
+            return false;
+        }
+        return true;
     }
 
     function prepareToolsToCompile(target:String) {
         switch(target) {
             case "cpp":
                 if(CL.platform.isLinux) {
-                    return installPackage('gcc-multilib') &&
-                            installPackage('g++-multilib');
+                    return CiTools.installPackage('gcc-multilib') &&
+                        CiTools.installPackage('g++-multilib');
                 }
             case "cs":
                 if(Sys.command("mono", ["--version"]) != 0) {
                     if(CL.platform.isLinux) {
-                        return installPackage('mono-devel') &&
-                                installPackage('mono-mcs');
+                        return CiTools.installPackage('mono-devel') &&
+                            CiTools.installPackage('mono-mcs');
                     }
                     else if(CL.platform.isMac) {
-                        return installPackage('mono');
+                        return CiTools.installPackage('mono');
                     }
                 }
             default:
@@ -117,16 +119,16 @@ class TestTask extends Task {
             case "php":
                 if(Sys.command("php", ["--version"]) != 0) {
                     if(CL.platform.isWindows) {
-                        return installPackage("php");
+                        return CiTools.installPackage("php");
                     }
                     else {
-                        return installPackage("php5");
+                        return CiTools.installPackage("php5");
                     }
                 }
             case "python":
                 if(!CL.platform.isWindows) {
                     if(Sys.command("python3", ["--version"]) != 0) {
-                        return installPackage("python3");
+                        return CiTools.installPackage("python3");
                     }
                 }
             case "lua":
@@ -136,12 +138,12 @@ class TestTask extends Task {
                 else {
                     if(Sys.command("lua", ["-v"]) != 0) {
                         if(CL.platform.isLinux) {
-                            if(!installPackage("luarocks")) {
+                            if(!CiTools.installPackage("luarocks")) {
                                 return false;
                             }
                         }
                         else if(CL.platform.isMac) {
-                            if(!installPackage("lua")) {
+                            if(!CiTools.installPackage("lua")) {
                                 return false;
                             }
                         }
@@ -158,16 +160,17 @@ class TestTask extends Task {
     }
 
     function prepareEvnLibs(target:String) {
-        switch(target) {
+        var compilerLibrary:String = switch(target) {
             case "cpp":
-                return installLibrary("hxcpp");
+                "hxcpp";
             case "java":
-                return installLibrary("hxjava");
+                "hxjava";
             case "cs":
-                return installLibrary("hxcs");
+                "hxcs";
             default:
+                null;
         }
-        return true;
+        return compilerLibrary != null ? Haxelib.install(compilerLibrary, {always: true}) : true;
     }
 
     function build(target:String) {
@@ -230,7 +233,7 @@ class TestTask extends Task {
                 throw "Unknown target: " + target;
         }
 
-        return Sys.command("haxe", args) == 0;
+        return Haxe.exec(args);
     }
 
     function runTarget(target:String) {
@@ -299,34 +302,7 @@ class TestTask extends Task {
         return cmd == null || Sys.command(cmd, args) == 0;
     }
 
-    function installLibrary(library:String) {
-        if(Sys.command("haxelib", ["path", library]) != 0) {
-            var args:Array<String> = ["install", library, "--always"];
-            return Sys.command("haxelib", args) == 0;
-        }
-        return true;
-    }
 
-    function installPackage(pckge:String, ?additionalArgs:Array<String>):Bool {
-        var cmd = null;
-        var args = [];
 
-        switch(CL.platform) {
-            case Platform.LINUX:
-                cmd = "sudo";
-                args = ["apt-get", "install", "-qq", pckge];
-            case Platform.MAC:
-                cmd = "brew";
-                args = ['install', pckge];
-            case Platform.WINDOWS:
-                cmd = "cinst";
-                args = [pckge, '-y'];
-            default:
-                throw "Unknown platform";
-        }
-        if(additionalArgs != null) {
-            args = args.concat(additionalArgs);
-        }
-        return Sys.command(cmd, args) == 0;
-    }
+
 }

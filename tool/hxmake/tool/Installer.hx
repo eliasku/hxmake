@@ -1,11 +1,10 @@
 package hxmake.tool;
 
-import haxe.io.Path;
-import sys.FileSystem;
-import sys.io.File;
-import hxmake.cli.Platform;
-import hxmake.cli.CL;
+import hxmake.utils.Haxe;
 import hxmake.utils.Haxelib;
+import haxe.io.Path;
+import sys.io.File;
+import hxmake.cli.CL;
 
 using StringTools;
 
@@ -18,8 +17,8 @@ class Installer {
 			alias = library;
 		}
 
-		var haxePath = Haxelib.getHaxePath();
-		var libPath = Haxelib.getLibraryInstallPath(library);
+		var haxePath = Haxe.path();
+		var libPath = Haxelib.libPath(library);
 		if(libPath == null) {
 			Sys.println('\'$library\' is not installed');
 			return false;

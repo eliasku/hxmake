@@ -1,5 +1,6 @@
 package hxmake.idea;
 
+import hxmake.utils.Haxelib;
 import sys.FileSystem;
 import hxmake.macr.CompileTime;
 import hxmake.cli.Debug;
@@ -14,7 +15,7 @@ using StringTools;
 
 private typedef LibraryInfo = {
 	var name:String;
-	@:optional var path:String;
+	@:optional var path:String; // class-path
 }
 
 class IdeaProjectTask extends Task {
@@ -185,7 +186,7 @@ class IdeaProjectTask extends Task {
 				libraryInfo = { name: dependencyId };
 				if (!isModule(dependencyId)) {
 					var isGlobal = dependencyValues.indexOf("global") >= 0;
-					libraryInfo.path = Haxelib.getSourcePath(dependencyId, isGlobal);
+					libraryInfo.path = Haxelib.classPath(dependencyId, isGlobal);
 				}
 				_depCache.set(dependencyId, libraryInfo);
 			}
