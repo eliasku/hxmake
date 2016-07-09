@@ -5,6 +5,10 @@ sudo: true
 haxe:
   development
 
+branches:
+  only:
+    - master
+
 install:
   - haxelib dev hxmake .
 
