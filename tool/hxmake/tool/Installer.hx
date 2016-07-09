@@ -39,7 +39,13 @@ class Installer {
 		try {
 			if (CL.platform.isWindows) {
 				var pn = '$alias.exe';
-				File.copy(Path.join([libPath, pn]), Path.join([haxePath, pn]));
+				var src = Path.join([libPath, pn]);
+				var dst = Path.join([haxePath, pn]);
+				File.copy(src, dst);
+
+				// we need delete hxmake.exe to prevent running from the current folder:
+				// - if hxmake.exe will be runned from current folder, OS will not able to overwrite the file
+				FileSystem.deleteFile(src);
 			}
 			else {
 				var pn = '$alias';
