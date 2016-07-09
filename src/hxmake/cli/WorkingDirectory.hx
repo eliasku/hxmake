@@ -10,6 +10,13 @@ class WorkingDirectory {
 		_stack = [Sys.getCwd()];
 	}
 
+	public function with<T>(path:String, func:Void->T):T {
+		push(path);
+		var result = func();
+		pop();
+		return result;
+	}
+
 	public function push(path:String):String {
 		var prev = current;
 		if (path == null) {

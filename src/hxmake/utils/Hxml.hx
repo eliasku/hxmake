@@ -1,6 +1,10 @@
 package hxmake.utils;
 
+import haxe.io.Path;
+import hxmake.cli.CL;
+
 using StringTools;
+using hxmake.utils.HaxeTargetTools;
 
 class Hxml {
 
@@ -16,6 +20,8 @@ class Hxml {
 
     public var showTimes:Bool = false;
     public var showMacroTimes:Bool = false;
+
+    public var dce:Null<DceMode> = null;
 
     public function new() {}
 
@@ -48,7 +54,7 @@ class Hxml {
         }
 
         if(target != null) {
-            result.push(compileOption(target));
+            result.push(target.compileOption());
             if(output != null) {
                 result.push(output);
             }
@@ -64,42 +70,49 @@ class Hxml {
             result.push(cmd);
         }
 
+        if(dce != null) {
+            result.push("-dce");
+            result.push(
+                switch(dce) {
+                    case No: "no";
+                    case Std: "std";
+                    case Full: "full";
+                }
+            );
+        }
+
         return result;
     }
 
-    public function setOutputGen(output:String) {
-        var postfix:Null<String> =
-            switch(target) {
-                case Interp: null;
-                case Neko: ".n";
-                case Swf: ".swf";
-                case Js: ".js";
-                case Python: ".py";
-                case Lua: ".lua";
-                case Hl: ".c";
-                case Cpp: "-cpp";
-                case Cs: "-cs";
-                case Java: "-java";
-                case Php: "-php";
-            }
-        this.output = postfix != null ? (output + postfix) : null;
+    public function bin():Null<String> {
+        return switch(target) {
+            case Interp:
+                null;
+            case Neko, Swf, Js, Hl, Python, Lua:
+                output;
+            case Cpp:
+                if(CL.platform.isWindows) {
+                    Path.join([output, '$main.exe']).replace("/", "\\");
+                }
+                else {
+                    Path.join([".", output, main]);
+                }
+            case Php:
+                Path.join([output, "index.php"]);
+            case Cs:
+                var exeFile = Path.join([output, 'bin/$main.exe']);
+                if(CL.platform.isWindows) {
+                    exeFile = exeFile.replace("/", "\\");
+                }
+                exeFile;
+            case Java:
+                Path.join([output, '$main.jar']);
+        }
     }
+}
 
-    public static function compileOption(target:HaxeTarget):String {
-        return
-            switch(target) {
-                case Cpp: "-cpp";
-                case Php: "-php";
-                case Js: "-js";
-                case Neko: "-neko";
-                case Swf: "-swf";
-                case Java: "-java";
-                case Cs: "-cs";
-                case Lua: "-lua";
-                case Hl: "-hl";
-                case Python: "-python";
-                case Interp: "--interp";
-            }
-    }
-
+enum DceMode {
+    No;
+    Std;
+    Full;
 }

@@ -1,10 +1,10 @@
 package hxmake.test;
 
 // todo final
-import hxmake.utils.Haxelib;
 import hxmake.cli.Platform;
 import hxmake.cli.CL;
 
+@:final
 class CiTools {
 
     public static function installPackage(pckge:String, ?additionalArgs:Array<String>):Bool {

@@ -1,5 +1,7 @@
 package hxmake.tool;
 
+import sys.FileSystem;
+import hxmake.cli.ProcessResult;
 import hxmake.utils.Haxe;
 import hxmake.utils.Haxelib;
 import haxe.io.Path;
@@ -19,22 +21,20 @@ class Installer {
 
 		var haxePath = Haxe.path();
 		var libPath = Haxelib.libPath(library);
-		if(libPath == null) {
-			Sys.println('\'$library\' is not installed');
+		if(libPath == null || !FileSystem.exists(libPath)) {
+			Sys.println('"$library" is not installed');
 			return false;
 		}
 
-		Sys.println('\'$library\' library path: $libPath');
-
+		Sys.println('Use "$library" from "$libPath"');
 		// COMPILATION
-		var result = CL.execute("haxe", [Path.join([libPath, "build.hxml"])], libPath);
-		if (result.exitCode != 0) {
-			Sys.println("Build failed:\n\n" + result.stderr);
+		if(!CL.workingDir.with(libPath, Haxe.exec.bind(["build.hxml"]))) {
+			Sys.println("HxMake library build failed");
 			return false;
 		}
 
 		// INSTALL
-		Sys.println('We are going to install ${alias.toUpperCase()} command');
+		Sys.println('We`re going to install ${alias.toUpperCase()} command');
 		Sys.println('Please enter password if required...');
 		try {
 			if (CL.platform.isWindows) {
