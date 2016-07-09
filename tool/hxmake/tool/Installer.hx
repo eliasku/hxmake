@@ -33,6 +33,20 @@ class Installer {
 			return false;
 		}
 
+		if(CL.platform.isWindows && FileSystem.exists('$alias.exe')) {
+			if(Path.withoutDirectory(Sys.executablePath()) == "$alias.exe") {
+				Sys.println("Alias should be installed already");
+				Sys.println("If you need to reinstall alias script use:");
+				Sys.println("> haxelib run $library _");
+				return true;
+			}
+		}
+
+		if(Sys.command("nekotools", ["boot", "$library.n"]) == 0) {
+			Sys.println("Failed to create alias-script executable");
+			return false;
+		}
+
 		// INSTALL
 		Sys.println('We`re going to install ${alias.toUpperCase()} command');
 		Sys.println('Please enter password if required...');
@@ -44,9 +58,10 @@ class Installer {
 				Sys.println('Copy hxmake.exe to $haxePath');
 				File.copy(src, dst);
 
+				// TODO:
 				// we need delete hxmake.exe to prevent running from the current folder:
 				// - if hxmake.exe will be runned from current folder, OS will not able to overwrite the file
-				FileSystem.deleteFile(src);
+				// FileSystem.deleteFile(src);
 			}
 			else {
 				var pn = '$alias';
