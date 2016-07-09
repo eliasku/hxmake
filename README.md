@@ -50,3 +50,7 @@ and will run it as usual but with `neko`, so after that you able to re-run your 
 But keep in mind that make.n is generated just for your first hxmake input arguments. For example you could build
 `hxmake test --neko`, and rename `make.n` to `make-tests.n` and when you will run it - it will make the same as
 `hxmake test`
+
+
+# TODO:
+- Core: re-install on windows, cannot overwrite self executable

@@ -15,5 +15,5 @@ build: off
 test_script:
   - haxelib dev hxmake .
   - haxelib run hxmake _
-  - hxmake _
+  - haxelib run hxmake _
   - hxmake haxe
