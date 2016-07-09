@@ -41,6 +41,7 @@ class Installer {
 				var pn = '$alias.exe';
 				var src = Path.join([libPath, pn]);
 				var dst = Path.join([haxePath, pn]);
+				Sys.println('Copy hxmake.exe to $haxePath');
 				File.copy(src, dst);
 
 				// we need delete hxmake.exe to prevent running from the current folder:
