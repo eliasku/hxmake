@@ -42,7 +42,7 @@ class Installer {
 			}
 		}
 
-		if(Sys.command("nekotools", ["boot", "$library.n"]) != 0) {
+		if(Sys.command('nekotools', ['boot', '$library.n']) != 0) {
 			Sys.println("Failed to create alias-script executable");
 			return false;
 		}
