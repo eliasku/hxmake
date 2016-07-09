@@ -3,6 +3,7 @@ package hxmake.cli;
 @:enum abstract Platform(Int) from Int to Int {
 
 	var UNKNOWN = 0;
+
 	var WINDOWS = 1;
 	var MAC = 2;
 	var LINUX = 3;

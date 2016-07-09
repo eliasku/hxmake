@@ -7,7 +7,10 @@ class Task {
 	public var description:String = "";
 	public var enabled:Bool = true;
 	public var module(default, null):Module;
-	public var chain(default, null):Array<Task> = [];
+
+	public var chainBefore(default, null):Array<Task> = [];
+	public var chainAfter(default, null):Array<Task> = [];
+
 	public var parent(default, null):Task;
 
 	var __after:Map<String, String> = new Map();
@@ -17,14 +20,20 @@ class Task {
 
 	function _configure() {
 		configure();
-		for(chained in chain) {
+		for(chained in chainBefore) {
+			chained._configure();
+		}
+		for(chained in chainAfter) {
 			chained._configure();
 		}
 	}
 
 	function _run() {
+		for(chained in chainBefore) {
+			chained._run();
+		}
 		run();
-		for(chained in chain) {
+		for(chained in chainAfter) {
 			chained._run();
 		}
 	}
@@ -54,9 +63,25 @@ class Task {
 	public function run() {}
 
 	public function then<T:Task>(task:T):T {
-		chain.push(task);
+		chainAfter.push(task);
 		task.parent = this;
 		task.module = module;
 		return task;
+	}
+
+	public function prepend<T:Task>(task:T):T {
+		chainBefore.push(task);
+		task.parent = this;
+		task.module = module;
+		return task;
+	}
+
+	function fail(description:String = "") {
+		if(parent != null) {
+			throw 'Sub-task $name of task ${parent.name} failed: \n$description';
+		}
+		else {
+			throw 'Task $name failed: \n$description';
+		}
 	}
 }

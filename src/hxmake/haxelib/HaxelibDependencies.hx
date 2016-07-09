@@ -1,6 +1,7 @@
 package hxmake.haxelib;
 
 import hxmake.utils.Haxelib;
+import hxmake.utils.Haxelib;
 
 using StringTools;
 
@@ -56,24 +57,17 @@ class HaxelibDependencies extends Task {
 				}
 			}
 			if(isHaxelib) {
-				var args:Array<String> = null;
-				if(!Haxelib.checkInstalled(lib)) {
-					if(isGit) {
-						args = ["git", lib, params];
-					}
-					else {
-						args = ["install", lib];
-					}
+				if(Haxelib.checkInstalled(lib, isGlobal)) {
+					Haxelib.update(lib, isGlobal);
 				}
 				else {
-					args = ["update", lib];
+					if(isGit) {
+						Haxelib.git(lib, params, isGlobal);
+					}
+					else {
+						Haxelib.install(lib, {global: isGlobal});
+					}
 				}
-
-				if(isGlobal) {
-					args.unshift("--global");
-				}
-
-				Sys.command("haxelib", args);
 			}
 		}
 	}

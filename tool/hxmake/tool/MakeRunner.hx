@@ -1,41 +1,41 @@
 package hxmake.tool;
 
+import hxmake.utils.HaxeTarget;
+import hxmake.utils.Hxml;
+import hxmake.utils.Haxe;
 import hxmake.utils.Haxelib;
 import haxe.io.Path;
 
 @:final
 class MakeRunner {
 
-	public static function make(path:String, args:Array<String>) {
-		var projectClassPath = Path.join([path, "make"]);
+	// TODO path exists (cwd, make, lib)
+	@:noUsing
+	public static function make(path:String, args:Array<String>):Bool {
+
 		Sys.setCwd(path);
 
-		var hxmakePath = Haxelib.getSourcePath("hxmake", true);
+		var makePath = Path.join([path, "make"]);
+		var libPath = Haxelib.classPath("hxmake", true);
 
-		var hxml = [
-			"-cp", hxmakePath,
-			"-D", "hxmake",
-			"--macro", "hxmake.macr.InitMacro.generateMainClass('" + args.join(",") + "','" + projectClassPath + "')",
-			"-main", "HxMakeMain"
-		];
+		var hxml = new Hxml();
+		hxml.main = "HxMakeMain";
+		hxml.classPath.push(libPath);
+		hxml.defines.push("hxmake");
+		hxml.macros.push('hxmake.macr.InitMacro.generateMainClass("${args.join(",")}","$makePath")');
 
 		if(args.indexOf("--neko") >= 0) {
-			hxml = hxml.concat([
-				"-neko", "make.n",
-				"-cmd", "neko make.n"
-			]);
+			hxml.target = HaxeTarget.Neko;
+			hxml.output = "make.n";
+			hxml.commands.push("neko make.n");
 		}
 		else {
-			hxml.push("--interp");
+			hxml.target = HaxeTarget.Interp;
 		}
 
-		if(args.indexOf("--times") >= 0) {
-			hxml = hxml.concat([
-				"--times",
-				"-D", "macro-times"
-			]);
-		}
+		hxml.showMacroTimes =
+		hxml.showTimes = args.indexOf("--times") >= 0;
 
-		Sys.println("Result code: " + Sys.command("haxe", hxml));
+		return Haxe.compile(hxml);
 	}
 }

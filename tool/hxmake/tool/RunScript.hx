@@ -1,36 +1,48 @@
 package hxmake.tool;
 
 import haxe.Timer;
-import hxmake.cli.CL;
 
 class RunScript {
 
 	public static function main() {
-		var args:Array<String> = Sys.args();
-		popRunCwd(args);
+		var args = popRunCwd(Sys.args());
+		var success = false;
 
-		var startTime:Float = Timer.stamp();
+		measure(function() {
+			success = run(args);
+		}, args.indexOf("--times") < 0);
 
-		if(args.indexOf("_") >= 0) {
-			Installer.run("hxmake");
-		}
-		else {
-			//MakeRunner.make(CL.workingDir.current, args);
-			MakeRunner.make(Sys.getCwd(), args);
-		}
-
-		var totalTime = Std.int(100 * (Timer.stamp() - startTime)) / 100;
-		if(args.indexOf("--times") >= 0) {
-			Sys.println("Total time: " + totalTime + " sec.");
+		if(!success) {
+			Sys.println("hxmake FAILED");
+			Sys.exit(-1);
 		}
 	}
 
-	static function popRunCwd(args:Array<String>) {
-		// TODO: check on WINDOWS / MAC
+	static function run(args:Array<String>):Bool {
+		if(args.indexOf("_") >= 0) {
+			return Installer.run("hxmake");
+		}
+		return MakeRunner.make(Sys.getCwd(), args);
+	}
+
+	static function measure(func:Void->Void, bypass:Bool = false) {
+		if(bypass) {
+			func();
+			return;
+		}
+
+		var startTime = Timer.stamp();
+		func();
+		var totalTime = Std.int(100 * (Timer.stamp() - startTime)) / 100;
+		Sys.println("Total time: " + totalTime + " sec.");
+	}
+
+	static function popRunCwd(args:Array<String>):Array<String> {
+		var result = args.copy();
 		var env = Sys.getEnv("HAXELIB_RUN");
 		if(env != null && env.length > 0 && Std.parseInt(env) != 0) {
-			//CL.workingDir.push(args.pop());
-			Sys.setCwd(args.pop());
+			Sys.setCwd(result.pop());
 		}
+		return result;
 	}
 }

@@ -1,5 +1,6 @@
 package hxmake.haxelib;
 
+import hxmake.utils.Haxelib;
 import hxmake.cli.CL;
 import hxmake.cli.Debug;
 import haxe.Json;
@@ -23,7 +24,7 @@ class HaxelibTask extends Task {
 			}
 	
 			if(ext.library.devInstall) {
-				CL.execute("haxelib", ["dev", module.name, module.path]);
+				Haxelib.dev(module.name, module.path);
 			}
 		}
 	}
