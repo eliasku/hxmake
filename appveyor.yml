@@ -12,6 +12,10 @@ install:
 
 build: off
 
+branches:
+  only:
+    - master
+
 test_script:
   - haxelib dev hxmake .
   - haxelib run hxmake _
