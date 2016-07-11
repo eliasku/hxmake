@@ -19,7 +19,7 @@ class InstallFlashPlayer extends SetupTask {
 
     function checkInstalled():Bool {
         return switch(CL.platform) {
-            case Platform.LINUX: FileSystem.exists("flash/flashplayerdebugger");
+            case Platform.LINUX: FileSystem.exists(Sys.getEnv("HOME") + "/flashplayerdebugger");
             case Platform.MAC: FileSystem.exists("/Applications/Flash Player Debugger.app");
             case Platform.WINDOWS: FileSystem.exists("flash/flashplayer.exe");
             case _: throw "unknown platform";
@@ -30,10 +30,6 @@ class InstallFlashPlayer extends SetupTask {
         super.run();
 
         if(!checkInstalled()) {
-            var fpPath = "flash";
-            if(!FileSystem.exists(fpPath)) {
-                FileSystem.createDirectory(fpPath);
-            }
             switch (CL.platform) {
                 case Platform.LINUX:
                     Sys.command("sudo", ["dpkg", "--add-architecture", "i386"]);
@@ -41,12 +37,9 @@ class InstallFlashPlayer extends SetupTask {
                     for (p in [
                         "libgtk2.0-0:i386", "libxt6:i386", "libnss3:i386", "libcurl3:i386",
                         "xvfb"
-//                        "libcurl3:i386", "libglib2.0-0:i386", "libx11-6:i386", "libxext6:i386",
-//                        "libxt6:i386", "libxcursor1:i386", "libnss3:i386", "libgtk2.0-0:i386"
                     ]) {
                         if(!CiTools.isPackageInstalled(p)) {
                             // do not fail on Error;
-                            //CiTools.installPackage(p);
                             Sys.command("sudo", ["apt-get", "install", "-y", p]);
                         }
                     }
@@ -57,11 +50,7 @@ class InstallFlashPlayer extends SetupTask {
                     if (Sys.command("tar", ["-xf", FileSystem.absolutePath(Path.withoutDirectory(_fpUrl)), "-C", Sys.getEnv("HOME")]) != 0) {
                         throw "failed to extract flash player";
                     }
-                    //Sys.command("sudo", ["chmod", "+x", '$fpPath/flashplayerdebugger']);
-                    Sys.command("ls", ["-la", Sys.getEnv("HOME")]);
-                    Sys.command(Sys.getEnv("HOME") + '/flashplayerdebugger', ["-v"]);
                 case Platform.MAC:
-                    // brew cask failing on travis :(
                     if (Sys.command("brew", ["install", "caskroom/cask/brew-cask"]) != 0) {
                         Sys.println("Failed to install brew cask, maybe already installed");
                     }
@@ -69,6 +58,10 @@ class InstallFlashPlayer extends SetupTask {
                         fail("Failed to install flash-player-debugger");
                     }
                 case Platform.WINDOWS:
+                    var fpPath = "flash";
+                    if(!FileSystem.exists(fpPath)) {
+                        FileSystem.createDirectory(fpPath);
+                    }
                     // Download flash player
                     download(_fpUrl, '$fpPath\\flashplayer.exe');
                 case _:
@@ -97,8 +90,8 @@ class InstallFlashPlayer extends SetupTask {
         _mmCfg = getMmCfg();
     }
 
-// https://www.adobe.com/support/flashplayer/downloads.html
     static function getFpDownload():String {
+        // https://www.adobe.com/support/flashplayer/downloads.html
         return switch(CL.platform) {
             case Platform.LINUX:
                 "http://fpdownload.macromedia.com/pub/flashplayer/updaters/11/flashplayer_11_sa_debug.i386.tar.gz";
@@ -111,13 +104,10 @@ class InstallFlashPlayer extends SetupTask {
         }
     }
 
-    // https://helpx.adobe.com/flash-player/kb/configure-debugger-version-flash-player.html
     static function getMmCfg():String {
+        // https://helpx.adobe.com/flash-player/kb/configure-debugger-version-flash-player.html
         return switch(CL.platform) {
-            case Platform.LINUX:
-                Path.join([Sys.getEnv("HOME"), "mm.cfg"]);
-            case Platform.MAC:
-                //"/Library/Application Support/Macromedia/mm.cfg";
+            case Platform.LINUX, Platform.MAC:
                 Path.join([Sys.getEnv("HOME"), "mm.cfg"]);
             case Platform.WINDOWS:
                 Path.join([Sys.getEnv("HOMEDRIVE") + Sys.getEnv("HOMEPATH"), "mm.cfg"]);
@@ -126,8 +116,9 @@ class InstallFlashPlayer extends SetupTask {
         }
     }
 
-    // http://help.adobe.com/en_US/ActionScript/3.0_ProgrammingAS3/WS5b3ccc516d4fbf351e63e3d118a9b90204-7c95.html
+
     static function getFpTrust():String {
+        // http://help.adobe.com/en_US/ActionScript/3.0_ProgrammingAS3/WS5b3ccc516d4fbf351e63e3d118a9b90204-7c95.html
         return switch (CL.platform) {
             case Platform.LINUX:
                 Path.join([Sys.getEnv("HOME"), ".macromedia/Flash_Player/#Security/FlashPlayerTrust"]);
