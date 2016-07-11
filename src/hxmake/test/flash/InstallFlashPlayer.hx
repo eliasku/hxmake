@@ -1,5 +1,6 @@
 package hxmake.test.flash;
 
+import sys.FileSystem;
 import haxe.Http;
 import sys.io.File;
 import sys.FileSystem;
@@ -33,7 +34,7 @@ class InstallFlashPlayer extends Task {
                     if (Sys.command("wget", [_fpUrl]) != 0) {
                         throw "failed to download flash player";
                     }
-                    if (Sys.command("tar", ["-xf", Path.withoutDirectory(_fpUrl), "-C", fpPath]) != 0) {
+                    if (Sys.command("tar", ["-xf", FileSystem.absolutePath(Path.withoutDirectory(_fpUrl)), "-C", FileSystem.absolutePath(fpPath)]) != 0) {
                         throw "failed to extract flash player";
                     }
                     Sys.command("ls", [fpPath]);
@@ -47,11 +48,11 @@ class InstallFlashPlayer extends Task {
 //                    }
                     var fpDmg = '${Path.withoutDirectory(_fpUrl)}';
                     var dmgName = 'Flash\\ Player';
-                    download(_fpUrl, fpDmg);
-                    if(Sys.command('sudo hdiutil attach $fpDmg -quiet') != 0) {
+                    download(_fpUrl, FileSystem.absolutePath(fpDmg));
+                    if(Sys.command('sudo hdiutil attach ${FileSystem.absolutePath(fpDmg)} -quiet') != 0) {
                         fail('cannot mount $fpDmg');
                     }
-                    if(Sys.command('cp -r /Volumes/Flash\\ Player/Flash\\ Player.app $fpPath/Flash\\ Player\\ Debugger.app') != 0) {
+                    if(Sys.command('cp -r /Volumes/Flash\\ Player/Flash\\ Player.app ${FileSystem.absolutePath(fpPath)}/Flash\\ Player\\ Debugger.app') != 0) {
                         fail("cannot copy");
                     }
                     if(Sys.command('sudo hdiutil detach /Volumes/$dmgName') != 0) {
