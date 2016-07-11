@@ -36,13 +36,17 @@ class InstallFlashPlayer extends SetupTask {
             }
             switch (CL.platform) {
                 case Platform.LINUX:
+                    Sys.command("apt-get", ["update", "-qq"]);
                     for (p in [
-                        "libcurl3:i386", "libglib2.0-0:i386", "libx11-6:i386", "libxext6:i386",
-                        "libxt6:i386", "libxcursor1:i386", "libnss3:i386", "libgtk2.0-0:i386"
+                        "libgtk2.0-0:i386", "libxt6:i386", "libnss3:i386", "libcurl3:i386",
+                        "xvfb"
+//                        "libcurl3:i386", "libglib2.0-0:i386", "libx11-6:i386", "libxext6:i386",
+//                        "libxt6:i386", "libxcursor1:i386", "libnss3:i386", "libgtk2.0-0:i386"
                     ]) {
                         if(!CiTools.isPackageInstalled(p)) {
                             // do not fail on Error;
-                            CiTools.installPackage(p);
+                            //CiTools.installPackage(p);
+                            Sys.command("sudo", ["apt-get", "install", "-y", p]);
                         }
                     }
                     // Download and unzip flash player
@@ -56,25 +60,13 @@ class InstallFlashPlayer extends SetupTask {
                     Sys.command("ls", ["-la", Sys.getEnv("HOME")]);
                     Sys.command(Sys.getEnv("HOME") + '/flashplayerdebugger', ["-v"]);
                 case Platform.MAC:
-                // brew cask failing on travis :(
+                    // brew cask failing on travis :(
                     if (Sys.command("brew", ["install", "caskroom/cask/brew-cask"]) != 0) {
                         Sys.println("Failed to install brew cask, maybe already installed");
                     }
                     if (Sys.command("brew", ["cask", "install", "flash-player-debugger"]) != 0) {
                         fail("Failed to install flash-player-debugger");
                     }
-    //                    var fpDmg = '${Path.withoutDirectory(_fpUrl)}';
-    //                    var dmgName = 'Flash\\ Player';
-    //                    download(_fpUrl, FileSystem.absolutePath(fpDmg));
-    //                    if(Sys.command('sudo hdiutil attach ${FileSystem.absolutePath(fpDmg)} -quiet') != 0) {
-    //                        fail('cannot mount $fpDmg');
-    //                    }
-    //                    if(Sys.command('cp -r /Volumes/Flash\\ Player/Flash\\ Player.app ${FileSystem.absolutePath(fpPath)}/Flash\\ Player\\ Debugger.app') != 0) {
-    //                        fail("cannot copy");
-    //                    }
-    //                    if(Sys.command('sudo hdiutil detach /Volumes/$dmgName') != 0) {
-    //                        fail('cannot unmount /Volumes/$dmgName');
-    //                    }
                 case Platform.WINDOWS:
                     // Download flash player
                     download(_fpUrl, '$fpPath\\flashplayer.exe');
