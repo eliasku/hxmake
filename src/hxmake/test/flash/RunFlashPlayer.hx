@@ -1,6 +1,7 @@
 package hxmake.test.flash;
 
 import sys.FileSystem;
+import sys.FileSystem;
 import sys.io.File;
 import haxe.io.Path;
 import sys.FileSystem;
@@ -23,10 +24,10 @@ class RunFlashPlayer extends RunTask {
 
         switch (CL.platform) {
             case Platform.LINUX:
-                set("xvfb-run", ["flash/flashplayerdebugger", swfPath]);
+                set("xvfb-run", [FileSystem.absolutePath("flash/flashplayerdebugger"), FileSystem.absolutePath(swfPath)]);
                 retryUntilZero = 8;
             case Platform.MAC:
-                set("./flash/Flash Player Debugger.app/Contents/MacOS/Flash Player Debugger", [FileSystem.absolutePath(swfPath)]);
+                set(FileSystem.absolutePath("flash/Flash Player Debugger.app/Contents/MacOS/Flash Player Debugger"), [FileSystem.absolutePath(swfPath)]);
             case Platform.WINDOWS:
                 set("flash\\flashplayer.exe", [FileSystem.absolutePath(swfPath)]);
             case _:
