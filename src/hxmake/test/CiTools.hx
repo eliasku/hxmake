@@ -7,6 +7,21 @@ import hxmake.cli.CL;
 @:final
 class CiTools {
 
+    public static function isPackageInstalled(pckge:String) {
+        return switch(CL.platform) {
+            case Platform.LINUX:
+                Sys.command("dpkg-query", ["-W", "-f='${Status}'", pckge]) == 0;
+            case Platform.MAC:
+                // TODO:
+                false;
+            case Platform.WINDOWS:
+                // TODO:
+                false;
+            default:
+                throw "Unknown platform";
+        }
+
+    }
     public static function installPackage(pckge:String, ?additionalArgs:Array<String>):Bool {
         var cmd = null;
         var args = [];

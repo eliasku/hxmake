@@ -1,10 +1,8 @@
 package hxmake.test.flash;
 
 import sys.FileSystem;
-import sys.FileSystem;
 import sys.io.File;
 import haxe.io.Path;
-import sys.FileSystem;
 import hxmake.cli.Platform;
 import hxmake.cli.CL;
 

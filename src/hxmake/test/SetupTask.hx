@@ -11,6 +11,10 @@ class SetupTask extends Task {
 
     override public function run() {
         for(pack in packages) {
+            if(CiTools.isPackageInstalled(pack)) {
+                Sys.println('$pack is already installed');
+                continue;
+            }
             if(!CiTools.installPackage(pack)) {
                 fail('Failed to install package: ${pack}');
             }
