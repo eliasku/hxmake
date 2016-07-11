@@ -36,7 +36,7 @@ class InstallFlashPlayer extends SetupTask {
             }
             switch (CL.platform) {
                 case Platform.LINUX:
-                    Sys.command("apt-get", ["update", "-qq"]);
+                    Sys.command("sudo", ["apt-get", "update", "-qq"]);
                     for (p in [
                         "libgtk2.0-0:i386", "libxt6:i386", "libnss3:i386", "libcurl3:i386",
                         "xvfb"
