@@ -37,14 +37,14 @@ class Installer {
 			}
 
 			if(CL.platform.isWindows && FileSystem.exists('$alias.exe')) {
-				Sys.println("Alias should be installed already");
-				Sys.println("If you need to reinstall alias script use:");
-				Sys.println("> haxelib run $library _");
+				Sys.println('Alias should be installed already');
+				Sys.println('If you need to reinstall alias script use:');
+				Sys.println('> haxelib run $library _');
 				return true;
 			}
 
 			if(Sys.command('nekotools', ['boot', '$library.n']) != 0) {
-				Sys.println("Failed to create alias-script executable");
+				Sys.println('Failed to create alias-script executable');
 				return false;
 			}
 

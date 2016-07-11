@@ -4,6 +4,9 @@ class RunTask extends Task {
 
     public var command:String;
     public var arguments:Array<String> = [];
+    public var retryUntilZero:Int = 0;
+    public var failNonZero:Bool = true;
+    public var exitCode:Int = 0;
 
     public function new(?command:String, ?arguments:Array<String>) {
         set(command, arguments);
@@ -19,10 +22,26 @@ class RunTask extends Task {
             // nothing to run
             return;
         }
-        Sys.println('> $command ${arguments.join(" ")}');
-        var exitCode = Sys.command(command, arguments);
-        if(exitCode != 0) {
-            fail('$command exit with non-zero code: $exitCode');
+
+        execute();
+
+        if(exitCode != 0 && failNonZero) {
+            failExitCode();
         }
+    }
+
+    function execute() {
+        exitCode = -1;
+        var i = retryUntilZero + 1;
+
+        while(i > 0 && exitCode != 0) {
+            Sys.println('> $command ${arguments.join(" ")}');
+            exitCode = Sys.command(command, arguments);
+            --i;
+        }
+    }
+
+    public function failExitCode() {
+        fail('$command exit with non-zero code: $exitCode');
     }
 }
