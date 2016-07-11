@@ -53,7 +53,7 @@ class InstallFlashPlayer extends SetupTask {
                         throw "failed to extract flash player";
                     }
                     //Sys.command("sudo", ["chmod", "+x", '$fpPath/flashplayerdebugger']);
-                    Sys.command("ls", [Sys.getEnv("HOME")]);
+                    Sys.command("ls", ["-la", Sys.getEnv("HOME")]);
                     Sys.command(Sys.getEnv("HOME") + '/flashplayerdebugger', ["-v"]);
                 case Platform.MAC:
                 // brew cask failing on travis :(
