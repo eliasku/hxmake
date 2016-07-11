@@ -36,7 +36,7 @@ class InstallFlashPlayer extends Task {
                     if (Sys.command("tar", ["-xf", Path.withoutDirectory(_fpUrl), "-C", fpPath]) != 0) {
                         throw "failed to extract flash player";
                     }
-                    Sys.command("ls", ["fpPath"]);
+                    Sys.command("ls", [fpPath]);
                 case Platform.MAC:
                 // brew cask failing on travis :(
 //                    if (Sys.command("brew", ["install", "caskroom/cask/brew-cask"]) != 0) {
@@ -45,17 +45,17 @@ class InstallFlashPlayer extends Task {
 //                    if (Sys.command("brew", ["cask", "install", "flash-player-debugger", '--appdir=$fpPath']) != 0) {
 //                        throw "failed to install flash-player-debugger";
 //                    }
-                    var fpDmg = '$fpPath/${Path.withoutDirectory(_fpUrl)}';
+                    var fpDmg = '${Path.withoutDirectory(_fpUrl)}';
                     var dmgName = 'Flash\\ Player';
                     download(_fpUrl, fpDmg);
                     if(Sys.command('sudo hdiutil attach $fpDmg -quiet') != 0) {
-                        fail("can't mount $fpDmg");
+                        fail('cannot mount $fpDmg');
                     }
                     if(Sys.command('cp -r /Volumes/Flash\\ Player/Flash\\ Player.app $fpPath/Flash\\ Player\\ Debugger.app') != 0) {
-                        fail("can't copy");
+                        fail("cannot copy");
                     }
                     if(Sys.command('sudo hdiutil detach /Volumes/$dmgName') != 0) {
-                        fail("can't unmount /Volumes/$dmgName");
+                        fail('cannot unmount /Volumes/$dmgName');
                     }
                 case Platform.WINDOWS:
                     // Download flash player
