@@ -3,41 +3,44 @@ package hxmake.test.flash;
 import sys.FileSystem;
 import haxe.Http;
 import sys.io.File;
-import sys.FileSystem;
 import haxe.io.Path;
 import hxmake.cli.Platform;
 import hxmake.cli.CL;
 
-class InstallFlashPlayer extends Task {
+class InstallFlashPlayer extends SetupTask {
 
     var _fpUrl:String;
     var _fpTrust:String;
     var _mmCfg:String;
 
-    public function new() {}
+    public function new() {
+        super();
+    }
 
     override public function run() {
+        super.run();
         var fpPath = "flash";
-        var fpExeName = switch(CL.platform) {
-            case Platform.LINUX: "flashplayerdebugger";
-            case Platform.MAC: "Flash Player Debugger.app";
-            case Platform.WINDOWS: "flashplayer.exe";
-            case _: throw "unknown platform";
-        }
-        if(!FileSystem.exists(Path.join([fpPath, fpExeName]))) {
+//        var fpExeName = switch(CL.platform) {
+//            case Platform.LINUX: "flashplayerdebugger";
+//            case Platform.MAC: "Flash Player Debugger.app";
+//            case Platform.WINDOWS: "flashplayer.exe";
+//            case _: throw "unknown platform";
+//        }
+        //if(!FileSystem.exists(Path.join([fpPath, fpExeName]))) {
             if(!FileSystem.exists(fpPath)) {
                 FileSystem.createDirectory(fpPath);
             }
             switch (CL.platform) {
                 case Platform.LINUX:
                     // Download and unzip flash player
-                    if (Sys.command("wget", [_fpUrl]) != 0) {
+                    if (Sys.command("wget", ["-nv", _fpUrl]) != 0) {
                         throw "failed to download flash player";
                     }
                     if (Sys.command("tar", ["-xf", FileSystem.absolutePath(Path.withoutDirectory(_fpUrl)), "-C", FileSystem.absolutePath(fpPath)]) != 0) {
                         throw "failed to extract flash player";
                     }
                     Sys.command("ls", [fpPath]);
+                    Sys.command('$fpPath/flashplayerdebugger', ["-v"]);
                 case Platform.MAC:
                 // brew cask failing on travis :(
                     if (Sys.command("brew", ["install", "caskroom/cask/brew-cask"]) != 0) {
@@ -64,7 +67,7 @@ class InstallFlashPlayer extends Task {
                 case _:
                     throw "unsupported system";
             }
-        }
+        //}
 
         File.saveContent(_mmCfg, "ErrorReportingEnable=1\nTraceOutputFileEnable=1");
 
@@ -85,13 +88,20 @@ class InstallFlashPlayer extends Task {
         _fpUrl = getFpDownload();
         _fpTrust = getFpTrust();
         _mmCfg = getMmCfg();
+
+        if(CL.platform.isLinux) {
+            packages = packages.concat([
+                "libcurl3:i386", "libglib2.0-0:i386", "libx11-6:i386", "libxext6:i386",
+                "libxt6:i386", "libxcursor1:i386", "libnss3:i386", "libgtk2.0-0:i386"
+            ]);
+        }
     }
 
 // https://www.adobe.com/support/flashplayer/downloads.html
     static function getFpDownload():String {
         return switch(CL.platform) {
             case Platform.LINUX:
-                "https://fpdownload.macromedia.com/pub/flashplayer/updaters/11/flashplayer_11_sa_debug.i386.tar.gz";
+                "http://fpdownload.macromedia.com/pub/flashplayer/updaters/11/flashplayer_11_sa_debug.i386.tar.gz";
             case Platform.MAC:
                 "http://fpdownload.macromedia.com/pub/flashplayer/updaters/21/flashplayer_21_sa_debug.dmg";
             case Platform.WINDOWS:
