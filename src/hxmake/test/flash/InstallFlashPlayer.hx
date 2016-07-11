@@ -49,12 +49,12 @@ class InstallFlashPlayer extends SetupTask {
                     if (Sys.command("wget", ["-nv", _fpUrl]) != 0) {
                         throw "failed to download flash player";
                     }
-                    if (Sys.command("tar", ["-xf", FileSystem.absolutePath(Path.withoutDirectory(_fpUrl)), "-C", FileSystem.absolutePath(fpPath)]) != 0) {
+                    if (Sys.command("tar", ["-xf", FileSystem.absolutePath(Path.withoutDirectory(_fpUrl)), "-C", Sys.getEnv("HOME")]) != 0) {
                         throw "failed to extract flash player";
                     }
-                    Sys.command("sudo", ["chmod", "+x", '$fpPath/flashplayerdebugger']);
-                    Sys.command("ls", [fpPath]);
-                    Sys.command('./$fpPath/flashplayerdebugger', ["-v"]);
+                    //Sys.command("sudo", ["chmod", "+x", '$fpPath/flashplayerdebugger']);
+                    Sys.command("ls", [Sys.getEnv("HOME")]);
+                    Sys.command(Sys.getEnv("HOME") + '/flashplayerdebugger', ["-v"]);
                 case Platform.MAC:
                 // brew cask failing on travis :(
                     if (Sys.command("brew", ["install", "caskroom/cask/brew-cask"]) != 0) {
