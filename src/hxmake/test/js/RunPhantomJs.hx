@@ -14,7 +14,7 @@ class RunPhantomJs extends RunTask {
         this.jsPath = jsPath;
     }
 
-    override public function configure() {
+    override public function run() {
         var jsDir = Path.directory(jsPath);
         var htmlPath = Path.join([jsDir, "phantomjs.html"]);
         var html = genFile(CompileTime.readFile("../resources/phantomjs/phantomjs.html"), {
@@ -30,6 +30,8 @@ class RunPhantomJs extends RunTask {
 
         command = "phantomjs";
         arguments = [runnerPath];
+
+        super.run();
     }
 
     static function genFile(tpl:String, context:Dynamic) {
