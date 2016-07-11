@@ -1,5 +1,7 @@
 package hxmake.test;
 
+import hxmake.test.js.InstallPhantomJs;
+import hxmake.test.js.RunPhantomJs;
 import hxmake.test.flash.RunFlashPlayer;
 import hxmake.test.flash.InstallFlashPlayer;
 import hxmake.utils.HaxeTarget;
@@ -77,6 +79,7 @@ class TestTask extends Task {
             compileTask.hxml.output = compileTask.hxml.target.buildOutput(Path.join([outputDir, outputName]));
             switch(compileTask.hxml.target) {
                 case Swf: compileTask.hxml.defines.push("native_trace");
+                case Js: compileTask.hxml.defines.push("travis");
                 default:
             }
             compileTask.prepend(compileTask.createSetupTask());
@@ -106,6 +109,8 @@ class TestTask extends Task {
         switch(target) {
             case "flash", "swf", "as3":
                 result = new InstallFlashPlayer();
+            case "js":
+                result = new InstallPhantomJs();
             case "php":
                 if(Sys.command("php", ["--version"]) != 0) {
                     setup.packages.push(CL.platform.isWindows ? "php" : "php5");
@@ -149,12 +154,11 @@ class TestTask extends Task {
             case Swf:
                 runTask = new RunFlashPlayer(bin);
             case Js:
-                // TODO: branch;
                 if(target == "node") {
                     runTask.set("node", [bin]);
                 }
                 else {
-                    // TODO:
+                    runTask = new RunPhantomJs(bin);
                 }
             case Cpp:
                 runTask.set(bin);
