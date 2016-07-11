@@ -17,21 +17,34 @@ class InstallFlashPlayer extends SetupTask {
         super();
     }
 
+    function checkInstalled():Bool {
+        return switch(CL.platform) {
+            case Platform.LINUX: FileSystem.exists("flash/flashplayerdebugger");
+            case Platform.MAC: FileSystem.exists("/Applications/Flash Player Debugger.app");
+            case Platform.WINDOWS: FileSystem.exists("flash/flashplayer.exe");
+            case _: throw "unknown platform";
+        }
+    }
+
     override public function run() {
         super.run();
-        var fpPath = "flash";
-//        var fpExeName = switch(CL.platform) {
-//            case Platform.LINUX: "flashplayerdebugger";
-//            case Platform.MAC: "Flash Player Debugger.app";
-//            case Platform.WINDOWS: "flashplayer.exe";
-//            case _: throw "unknown platform";
-//        }
-        //if(!FileSystem.exists(Path.join([fpPath, fpExeName]))) {
+
+        if(!checkInstalled()) {
+            var fpPath = "flash";
             if(!FileSystem.exists(fpPath)) {
                 FileSystem.createDirectory(fpPath);
             }
             switch (CL.platform) {
                 case Platform.LINUX:
+                    for (p in [
+                        "libcurl3:i386", "libglib2.0-0:i386", "libx11-6:i386", "libxext6:i386",
+                        "libxt6:i386", "libxcursor1:i386", "libnss3:i386", "libgtk2.0-0:i386"
+                    ]) {
+                        if(!CiTools.isPackageInstalled(p)) {
+                            // do not fail on Error;
+                            CiTools.installPackage(p);
+                        }
+                    }
                     // Download and unzip flash player
                     if (Sys.command("wget", ["-nv", _fpUrl]) != 0) {
                         throw "failed to download flash player";
@@ -49,25 +62,25 @@ class InstallFlashPlayer extends SetupTask {
                     if (Sys.command("brew", ["cask", "install", "flash-player-debugger"]) != 0) {
                         fail("Failed to install flash-player-debugger");
                     }
-//                    var fpDmg = '${Path.withoutDirectory(_fpUrl)}';
-//                    var dmgName = 'Flash\\ Player';
-//                    download(_fpUrl, FileSystem.absolutePath(fpDmg));
-//                    if(Sys.command('sudo hdiutil attach ${FileSystem.absolutePath(fpDmg)} -quiet') != 0) {
-//                        fail('cannot mount $fpDmg');
-//                    }
-//                    if(Sys.command('cp -r /Volumes/Flash\\ Player/Flash\\ Player.app ${FileSystem.absolutePath(fpPath)}/Flash\\ Player\\ Debugger.app') != 0) {
-//                        fail("cannot copy");
-//                    }
-//                    if(Sys.command('sudo hdiutil detach /Volumes/$dmgName') != 0) {
-//                        fail('cannot unmount /Volumes/$dmgName');
-//                    }
+    //                    var fpDmg = '${Path.withoutDirectory(_fpUrl)}';
+    //                    var dmgName = 'Flash\\ Player';
+    //                    download(_fpUrl, FileSystem.absolutePath(fpDmg));
+    //                    if(Sys.command('sudo hdiutil attach ${FileSystem.absolutePath(fpDmg)} -quiet') != 0) {
+    //                        fail('cannot mount $fpDmg');
+    //                    }
+    //                    if(Sys.command('cp -r /Volumes/Flash\\ Player/Flash\\ Player.app ${FileSystem.absolutePath(fpPath)}/Flash\\ Player\\ Debugger.app') != 0) {
+    //                        fail("cannot copy");
+    //                    }
+    //                    if(Sys.command('sudo hdiutil detach /Volumes/$dmgName') != 0) {
+    //                        fail('cannot unmount /Volumes/$dmgName');
+    //                    }
                 case Platform.WINDOWS:
                     // Download flash player
                     download(_fpUrl, '$fpPath\\flashplayer.exe');
                 case _:
                     throw "unsupported system";
             }
-        //}
+        }
 
         File.saveContent(_mmCfg, "ErrorReportingEnable=1\nTraceOutputFileEnable=1");
 
@@ -88,13 +101,6 @@ class InstallFlashPlayer extends SetupTask {
         _fpUrl = getFpDownload();
         _fpTrust = getFpTrust();
         _mmCfg = getMmCfg();
-
-        if(CL.platform.isLinux) {
-            packages = packages.concat([
-                "libcurl3:i386", "libglib2.0-0:i386", "libx11-6:i386", "libxext6:i386",
-                "libxt6:i386", "libxcursor1:i386", "libnss3:i386", "libgtk2.0-0:i386"
-            ]);
-        }
     }
 
 // https://www.adobe.com/support/flashplayer/downloads.html
