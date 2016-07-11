@@ -18,6 +18,9 @@ class Task {
 	var __finalized:Map<String, String> = new Map();
 	var __depends:Map<String, String> = new Map();
 
+	var _doFirst:Array<Task->Void> = [];
+	var _doLast:Array<Task->Void> = [];
+
 	function _configure() {
 		configure();
 		for(chained in chainBefore) {
@@ -32,7 +35,13 @@ class Task {
 		for(chained in chainBefore) {
 			chained._run();
 		}
+		for(cb in _doFirst) {
+			cb(this);
+		}
 		run();
+		for(cb in _doLast) {
+			cb(this);
+		}
 		for(chained in chainAfter) {
 			chained._run();
 		}
@@ -83,5 +92,15 @@ class Task {
 		else {
 			throw 'Task $name failed: \n$description';
 		}
+	}
+
+	public function doFirst(func:Task->Void):Task {
+		_doFirst.push(func);
+		return this;
+	}
+
+	public function doLast(func:Task->Void):Task {
+		_doLast.push(func);
+		return this;
 	}
 }

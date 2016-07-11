@@ -1,5 +1,7 @@
 package hxmake.test;
 
+import hxmake.test.flash.RunFlashPlayer;
+import hxmake.test.flash.InstallFlashPlayer;
 import hxmake.utils.HaxeTarget;
 import hxmake.cli.CL;
 import haxe.io.Path;
@@ -73,6 +75,10 @@ class TestTask extends Task {
             compileTask.hxml.main = main;
             compileTask.hxml.target = target.parseHaxeTarget();
             compileTask.hxml.output = compileTask.hxml.target.buildOutput(Path.join([outputDir, outputName]));
+            switch(compileTask.hxml.target) {
+                case Swf: compileTask.hxml.defines.push("native_trace");
+                default:
+            }
             compileTask.prepend(compileTask.createSetupTask());
             result.push(compileTask);
         }
@@ -93,10 +99,13 @@ class TestTask extends Task {
     }
 
     @:pure
-    function setupRun(target:String):SetupTask {
+    function setupRun(target:String):Task {
         var setup = new SetupTask();
-        setup.name = 'setup-run-test-$target';
+        var result:Task = setup;
+
         switch(target) {
+            case "flash", "swf", "as3":
+                result = new InstallFlashPlayer();
             case "php":
                 if(Sys.command("php", ["--version"]) != 0) {
                     setup.packages.push(CL.platform.isWindows ? "php" : "php5");
@@ -125,21 +134,20 @@ class TestTask extends Task {
                 }
             default:
         }
-        return setup;
+        result.name = 'setup-run-test-$target';
+        return result;
     }
 
     @:pure
     public function runTask(target:String, haxeTarget:HaxeTarget, bin:String):RunTask {
         var runTask:RunTask = new RunTask();
-        runTask.name = 'run-test-$target';
         switch(haxeTarget) {
             case Interp:
                 // already runned
             case Neko:
                 runTask.set("neko", [bin]);
             case Swf:
-                // TODO:
-                runTask.set("open", [bin]);
+                runTask = new RunFlashPlayer(bin);
             case Js:
                 // TODO: branch;
                 if(target == "node") {
@@ -172,6 +180,7 @@ class TestTask extends Task {
             case Hl:
                 fail('Target $target is not supported yet');
         }
+        runTask.name = 'run-test-$target';
         return runTask;
     }
 
