@@ -53,7 +53,7 @@ class InstallFlashPlayer extends SetupTask {
                         throw "failed to extract flash player";
                     }
                     Sys.command("ls", [fpPath]);
-                    Sys.command('$fpPath/flashplayerdebugger', ["-v"]);
+                    Sys.command('./$fpPath/flashplayerdebugger', ["-v"]);
                 case Platform.MAC:
                 // brew cask failing on travis :(
                     if (Sys.command("brew", ["install", "caskroom/cask/brew-cask"]) != 0) {
