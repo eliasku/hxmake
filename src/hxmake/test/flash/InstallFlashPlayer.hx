@@ -16,33 +16,36 @@ class InstallFlashPlayer extends Task {
     public function new() {}
 
     override public function run() {
+        var fpPath = "flash";
         var fpExeName = switch(CL.platform) {
             case Platform.LINUX: "flashplayerdebugger";
             case Platform.MAC: "Flash Player Debugger.app";
             case Platform.WINDOWS: "flashplayer.exe";
             case _: throw "unknown platform";
         }
-        if(!FileSystem.exists(Path.join(["flash", fpExeName]))) {
+        if(!FileSystem.exists(Path.join([fpPath, fpExeName]))) {
+            if(!FileSystem.exists(fpPath)) {
+                FileSystem.createDirectory(fpPath);
+            }
             switch (CL.platform) {
                 case Platform.LINUX:
-
                     // Download and unzip flash player
                     if (Sys.command("wget", [_fpUrl]) != 0) {
                         throw "failed to download flash player";
                     }
-                    if (Sys.command("tar", ["-xf", Path.withoutDirectory(_fpUrl), "-C", "flash"]) != 0) {
+                    if (Sys.command("tar", ["-xf", Path.withoutDirectory(_fpUrl), "-C", fpPath]) != 0) {
                         throw "failed to extract flash player";
                     }
                 case Platform.MAC:
                     if (Sys.command("brew", ["install", "caskroom/cask/brew-cask"]) != 0) {
                         throw "failed to brew install caskroom/cask/brew-cask";
                     }
-                    if (Sys.command("brew", ["cask", "install", "flash-player-debugger", "--appdir=flash"]) != 0) {
+                    if (Sys.command("brew", ["cask", "install", "flash-player-debugger", '--appdir=$fpPath']) != 0) {
                         throw "failed to install flash-player-debugger";
                     }
                 case Platform.WINDOWS:
                     // Download flash player
-                    download(_fpUrl, "flash\\flashplayer.exe");
+                    download(_fpUrl, '$fpPath\\flashplayer.exe');
                 case _:
                     throw "unsupported system";
             }
