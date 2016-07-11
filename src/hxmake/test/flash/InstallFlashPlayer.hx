@@ -52,6 +52,7 @@ class InstallFlashPlayer extends SetupTask {
                     if (Sys.command("tar", ["-xf", FileSystem.absolutePath(Path.withoutDirectory(_fpUrl)), "-C", FileSystem.absolutePath(fpPath)]) != 0) {
                         throw "failed to extract flash player";
                     }
+                    Sys.command("sudo", ["chmod", "+x", '$fpPath/flashplayerdebugger']);
                     Sys.command("ls", [fpPath]);
                     Sys.command('./$fpPath/flashplayerdebugger', ["-v"]);
                 case Platform.MAC:
