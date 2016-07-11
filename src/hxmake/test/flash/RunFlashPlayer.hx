@@ -27,7 +27,7 @@ class RunFlashPlayer extends RunTask {
                 set("xvfb-run", [FileSystem.absolutePath("flash/flashplayerdebugger"), FileSystem.absolutePath(swfPath)]);
                 retryUntilZero = 8;
             case Platform.MAC:
-                set(FileSystem.absolutePath("flash/Flash Player Debugger.app/Contents/MacOS/Flash Player Debugger"), [FileSystem.absolutePath(swfPath)]);
+                set("/Applications/Flash Player Debugger.app/Contents/MacOS/Flash Player Debugger", [FileSystem.absolutePath(swfPath)]);
             case Platform.WINDOWS:
                 set("flash\\flashplayer.exe", [FileSystem.absolutePath(swfPath)]);
             case _:

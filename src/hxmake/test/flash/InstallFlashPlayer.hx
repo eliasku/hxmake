@@ -40,24 +40,24 @@ class InstallFlashPlayer extends Task {
                     Sys.command("ls", [fpPath]);
                 case Platform.MAC:
                 // brew cask failing on travis :(
-//                    if (Sys.command("brew", ["install", "caskroom/cask/brew-cask"]) != 0) {
-//                        throw "failed to brew install caskroom/cask/brew-cask";
+                    if (Sys.command("brew", ["install", "caskroom/cask/brew-cask"]) != 0) {
+                        Sys.println("Failed to install brew cask, maybe already installed");
+                    }
+                    if (Sys.command("brew", ["cask", "install", "flash-player-debugger"]) != 0) {
+                        fail("Failed to install flash-player-debugger");
+                    }
+//                    var fpDmg = '${Path.withoutDirectory(_fpUrl)}';
+//                    var dmgName = 'Flash\\ Player';
+//                    download(_fpUrl, FileSystem.absolutePath(fpDmg));
+//                    if(Sys.command('sudo hdiutil attach ${FileSystem.absolutePath(fpDmg)} -quiet') != 0) {
+//                        fail('cannot mount $fpDmg');
 //                    }
-//                    if (Sys.command("brew", ["cask", "install", "flash-player-debugger", '--appdir=$fpPath']) != 0) {
-//                        throw "failed to install flash-player-debugger";
+//                    if(Sys.command('cp -r /Volumes/Flash\\ Player/Flash\\ Player.app ${FileSystem.absolutePath(fpPath)}/Flash\\ Player\\ Debugger.app') != 0) {
+//                        fail("cannot copy");
 //                    }
-                    var fpDmg = '${Path.withoutDirectory(_fpUrl)}';
-                    var dmgName = 'Flash\\ Player';
-                    download(_fpUrl, FileSystem.absolutePath(fpDmg));
-                    if(Sys.command('sudo hdiutil attach ${FileSystem.absolutePath(fpDmg)} -quiet') != 0) {
-                        fail('cannot mount $fpDmg');
-                    }
-                    if(Sys.command('cp -r /Volumes/Flash\\ Player/Flash\\ Player.app ${FileSystem.absolutePath(fpPath)}/Flash\\ Player\\ Debugger.app') != 0) {
-                        fail("cannot copy");
-                    }
-                    if(Sys.command('sudo hdiutil detach /Volumes/$dmgName') != 0) {
-                        fail('cannot unmount /Volumes/$dmgName');
-                    }
+//                    if(Sys.command('sudo hdiutil detach /Volumes/$dmgName') != 0) {
+//                        fail('cannot unmount /Volumes/$dmgName');
+//                    }
                 case Platform.WINDOWS:
                     // Download flash player
                     download(_fpUrl, '$fpPath\\flashplayer.exe');
