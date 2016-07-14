@@ -26,7 +26,7 @@ page.onResourceError = function(resourceError) {
 };
 
 page.onClosing = function(closingPage) {
-    phantom.exit(!hasError ? 0 : -1);
+    phantom.exit(hasError ? -2 : 0);
 };
 
 page.open('::html::', function(status) {
