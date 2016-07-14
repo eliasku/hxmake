@@ -1,4 +1,5 @@
 var page = require('webpage').create();
+s
 var hasError = false;
 
 page.onConsoleMessage = function(msg) {
@@ -15,27 +16,20 @@ page.onError = function(msg, trace) {
         });
     }
     console.error(msgStack.join('\n'));
-    phantom.exit(-1);
 };
 
 page.onResourceError = function(resourceError) {
     hasError = true;
     console.error('Unable to load resource (#' + resourceError.id + 'URL:' + resourceError.url + ')');
     console.error('Error code: ' + resourceError.errorCode + '. Description: ' + resourceError.errorString);
-    phantom.exit(-1);
 };
-
-page.onClosing = function(closingPage) {
-    setTimeout(complete, 1000);
-};
-
-function complete() {
-    phantom.exit(hasError ? -2 : 0);
-}
 
 page.open('::html::', function(status) {
     var success = status === 'success' && !hasError;
-    if(!success) {
-        phantom.exit(-1);
+    if(success) {
+        phantom.exit(0);
+    }
+    else {
+        phantom.exit(1);
     }
 });
