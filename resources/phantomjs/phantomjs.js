@@ -26,8 +26,12 @@ page.onResourceError = function(resourceError) {
 };
 
 page.onClosing = function(closingPage) {
-    phantom.exit(hasError ? -2 : 0);
+    setTimeout(complete, 1000);
 };
+
+function complete() {
+    phantom.exit(hasError ? -2 : 0);
+}
 
 page.open('::html::', function(status) {
     var success = status === 'success' && !hasError;
