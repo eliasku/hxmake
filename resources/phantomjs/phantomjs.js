@@ -1,5 +1,4 @@
 var page = require('webpage').create();
-s
 var hasError = false;
 
 page.onConsoleMessage = function(msg) {
