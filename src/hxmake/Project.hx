@@ -141,6 +141,7 @@ class Project {
 
 		var totalTime = Std.int(100 * (Timer.stamp() - startTime)) / 100;
 		Sys.println("Make time: " + totalTime + " sec.");
+		Sys.exit(0);
 	}
 
 	function buildTree() {
