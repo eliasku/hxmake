@@ -1,5 +1,7 @@
 package hxmake.test.js;
 
+import haxe.Timer;
+import sys.io.Process;
 import hxmake.macr.CompileTime;
 import sys.io.File;
 import haxe.io.Path;
@@ -23,15 +25,26 @@ class RunPhantomJs extends RunTask {
         File.saveContent(htmlPath, html);
 
         var runnerPath = Path.join([jsDir, "phantomjs.js"]);
-        var runnerJs = genFile(CompileTime.readFile("../resources/phantomjs/phantomjs.js"), {
-            html: htmlPath
-        });
+        var runnerJs = CompileTime.readFile("../resources/phantomjs/phantomjs.js");
         File.saveContent(runnerPath, runnerJs);
 
         command = "phantomjs";
         arguments = [runnerPath];
 
-        super.run();
+        var process = new Process("nekotools", ["server", "-p", "2000", "-h", "localhost", "-d", jsDir]);
+        try {
+            Timer.delay(function() {
+                execute();
+                if(exitCode != 0) {
+                    fail();
+                }
+                process.close();
+            }, 1000);
+        }
+        catch(e:Dynamic) {
+            process.close();
+            throw e;
+        }
     }
 
     static function genFile(tpl:String, context:Dynamic) {
