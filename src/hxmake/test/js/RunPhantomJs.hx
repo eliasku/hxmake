@@ -33,13 +33,12 @@ class RunPhantomJs extends RunTask {
 
         var process = new Process("nekotools", ["server", "-p", "2000", "-h", "localhost", "-d", jsDir]);
         try {
-            Timer.delay(function() {
-                execute();
-                if(exitCode != 0) {
-                    fail();
-                }
-                process.close();
-            }, 1000);
+            Sys.sleep(0.5);
+            execute();
+            if(exitCode != 0) {
+                fail();
+            }
+            process.close();
         }
         catch(e:Dynamic) {
             process.close();
