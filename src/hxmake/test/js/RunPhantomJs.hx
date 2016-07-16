@@ -38,10 +38,12 @@ class RunPhantomJs extends RunTask {
             if(exitCode != 0) {
                 fail();
             }
-            process.close();
+            //process.close();
+            process.kill();
         }
         catch(e:Dynamic) {
-            process.close();
+            //process.close();
+            process.kill();
             throw e;
         }
     }
