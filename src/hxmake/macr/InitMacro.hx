@@ -5,21 +5,17 @@ import haxe.macro.Expr;
 import haxe.macro.Context;
 
 class InitMacro {
-	public static function generateMainClass(argsValue:String, initialMakeDir:String) {
+	public static function generateMainClass(initialMakeDir:String, isCompiler:Bool, args:Array<String>) {
 		Compiler.addClassPath(initialMakeDir);
 		Compiler.include("", true, null, [initialMakeDir]);
 
 		var pos = Context.currentPos();
-		var args = [];
-		if(argsValue != null) {
-			args = argsValue.split(",");
-		}
 		var fields:Array<Field> = Context.getBuildFields();
 		var mainFun:Function = {
 			args: [],
 			ret: null,
 			expr: macro {
-				var prj = new hxmake.Project($v{args});
+				var prj = new hxmake.Project($v{args}, $v{isCompiler});
 				prj.run();
 			}
 		};

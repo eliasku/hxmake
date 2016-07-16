@@ -1,6 +1,5 @@
 package hxmake.test.js;
 
-import haxe.Timer;
 import sys.io.Process;
 import hxmake.macr.CompileTime;
 import sys.io.File;
@@ -38,11 +37,9 @@ class RunPhantomJs extends RunTask {
             if(exitCode != 0) {
                 fail();
             }
-            //process.close();
             process.kill();
         }
         catch(e:Dynamic) {
-            //process.close();
             process.kill();
             throw e;
         }

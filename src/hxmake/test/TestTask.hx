@@ -50,7 +50,7 @@ class TestTask extends Task {
         var customTargets:Array<String> = [];
         for(arg in module.project.args) {
             if(arg.indexOf(OPTION_OVERRIDE_TEST_TARGET) == 0) {
-                customTargets.push(arg.substr(OPTION_OVERRIDE_TEST_TARGET.length));
+                customTargets = customTargets.concat(arg.substr(OPTION_OVERRIDE_TEST_TARGET.length).split(","));
             }
         }
         return customTargets.length > 0 ? customTargets : targets;

@@ -37,9 +37,12 @@ class Project {
 	public var modules(default, null):Array<Module> = [];
 	public var roots(default, null):Array<Module> = [];
 
-	function new(argList:Array<String>) {
+	function new(buildInArguments:Array<String>, isCompiler:Bool) {
 		modules = _MODULES != null ? _MODULES : [];
-		args = argList;
+		args = buildInArguments;
+		if(!isCompiler) {
+			args = args.concat(Sys.args());
+		}
 	}
 
 	function run() {

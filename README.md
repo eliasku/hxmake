@@ -48,14 +48,19 @@ Is under development
 
 ### Cache your make program cases
 You able to add `--neko` to arguments, in this case hxmake will generate make.n in your current working directory,
-and will run it as usual but with `neko`, so after that you able to re-run your make with same arguments:
+and will run it as usual but with `neko`. This program will include all your built-in arguments,
+but you able to run it with additional arguments. You need to recompile your make if you modify your make-scripts or
+change your project in multi-module perspective.
 
-`neko make.n`
+Regular make program:
+`hxmake --neko` - just build your make program
+`neko make.n test --override-test-target=js` - for example, run your make program with additional arguments
 
-But keep in mind that make.n is generated just for your first hxmake input arguments. For example you could build
-`hxmake test --neko`, and rename `make.n` to `make-tests.n` and when you will run it - it will make the same as
-`hxmake test`
-
+Specified make program:
+`hxmake --neko test --override-test-target=js` - build make program which will always run `test` task for `js` target
+`neko make.n  --override-test-target=flash` - and run your `test` task, but for `js` and `flash` target
 
 # TODO:
+- Support plugins infrastructure
+- Add Daemon mode with Haxe compiler server (for recompiling make scripts faster)
 - Core: re-install on windows, cannot overwrite self executable
