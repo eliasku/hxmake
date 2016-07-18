@@ -1,11 +1,11 @@
 package hxmake.idea;
 
+import hxmake.idea.IdeaProjectTask.IdeaLibraryInfo;
 import hxmake.utils.Haxelib;
 import sys.FileSystem;
 import hxmake.macr.CompileTime;
 import hxmake.cli.Debug;
 import hxmake.cli.CL;
-import hxmake.utils.Haxelib;
 import hxmake.cli.FileUtil;
 import sys.io.File;
 import haxe.io.Path;
@@ -13,9 +13,14 @@ import haxe.Template;
 
 using StringTools;
 
-private typedef LibraryInfo = {
-	var name:String;
-	@:optional var path:String; // class-path
+class IdeaLibraryInfo {
+	public var name:String;
+	public var classPath:Array<String>;
+
+	public function new(name:String, classPath:Array<String>) {
+		this.name = name;
+		this.classPath = classPath;
+	}
 }
 
 class IdeaProjectTask extends Task {
@@ -28,7 +33,7 @@ class IdeaProjectTask extends Task {
 
 	var _modules:Array<Module>;
 	var _rootModule:Module;
-	var _depCache:Map<String, LibraryInfo> = new Map();
+	var _depCache:Map<String, IdeaLibraryInfo> = new Map();
 
 	public function new() {}
 
@@ -53,12 +58,17 @@ class IdeaProjectTask extends Task {
 		var modules = getModules(module);
 		var libraries = getExternalLibraries(module);
 
+		var testPath = module.config.testPath.concat(module.config.makePath);
+		if(FileSystem.exists(Path.join([module.path, "makeplugin"]))) {
+			testPath.push("makeplugin");
+		}
+
 		var context = {
 			moduleName: module.name,
 			moduleDependencies: modules,
 			moduleLibraries: libraries,
 			sourceDirs: module.config.classPath,
-			testDirs: module.config.testPath.concat(module.config.makePath),
+			testDirs: testPath,
 			flexSdkName: _ideaConfig.getFlexSdkName(),
 			haxeSdkName: _ideaConfig.getHaxeSdkName(),
 			buildConfig: 1,
@@ -175,23 +185,29 @@ class IdeaProjectTask extends Task {
 		return modules;
 	}
 
-	function getExternalLibraries(module:Module):Array<LibraryInfo> {
-		var libraries:Array<LibraryInfo> = [];
+	function getExternalLibraries(module:Module):Array<IdeaLibraryInfo> {
+		var libraries:Array<IdeaLibraryInfo> = [];
 		var deps = module.config.getAllDependencies();
 		for (dependencyId in deps.keys()) {
-			var libraryInfo:LibraryInfo = _depCache.get(dependencyId);
+			var libraryInfo:IdeaLibraryInfo = _depCache.get(dependencyId);
 			if(libraryInfo == null) {
 				var dependencyValues:Array<String> = deps.get(dependencyId).split(";");
 				var depVer = dependencyValues.shift();
-				libraryInfo = { name: dependencyId };
+				libraryInfo = new IdeaLibraryInfo(dependencyId, []);
 				if (!isModule(dependencyId)) {
 					var isGlobal = dependencyValues.indexOf("global") >= 0;
-					libraryInfo.path = Haxelib.classPath(dependencyId, isGlobal);
+					var cp = Haxelib.classPath(dependencyId, isGlobal);
+					libraryInfo.classPath.push(Haxelib.classPath(dependencyId, isGlobal));
+
+					var makePluginPath = Path.join([Haxelib.libPath(dependencyId, isGlobal), "makeplugin"]);
+					if(FileSystem.exists(makePluginPath)) {
+						libraryInfo.classPath.push(makePluginPath);
+					}
 				}
 				_depCache.set(dependencyId, libraryInfo);
 			}
 			// is NOT Module dependency
-			if(libraryInfo.path != null) {
+			if(libraryInfo.classPath.length > 0) {
 				libraries.push(libraryInfo);
 			}
 		}
@@ -217,6 +233,8 @@ class IdeaProjectTask extends Task {
 	}
 
 	static function getIdeaInstallPath() {
+		var candidates = [];
+
 		if(CL.platform.isMac) {
 			var applicationsDirs = ["/Applications", Path.join([CL.getUserHome(), "Applications"])];
 			for(applicationsDir in applicationsDirs) {
@@ -224,7 +242,7 @@ class IdeaProjectTask extends Task {
 					var list = FileSystem.readDirectory(applicationsDir);
 					for(appDir in list) {
 						if(appDir.indexOf("IntelliJ IDEA") >= 0) {
-							return Path.join([applicationsDir, appDir]);
+							candidates.push(Path.join([applicationsDir, appDir]));
 						}
 					}
 				}
@@ -242,11 +260,18 @@ class IdeaProjectTask extends Task {
 					var list = FileSystem.readDirectory(applicationsDir);
 					for(appDir in list) {
 						if(appDir.indexOf("IntelliJ IDEA") >= 0) {
-							return Path.join([applicationsDir, appDir]);
+							candidates.push(Path.join([applicationsDir, appDir]));
 						}
 					}
 				}
 			}
+		}
+
+		if(candidates.length > 0) {
+			candidates.sort(function (a:String, b:String) {
+				return -Reflect.compare(a, b);
+			});
+			return candidates[0];
 		}
 		return null;
 	}

@@ -1,5 +1,6 @@
 package hxmake.macr;
 
+import hxmake.utils.Haxelib;
 import haxe.macro.Expr.Access;
 import hxmake.cli.Debug;
 import sys.FileSystem;
@@ -41,6 +42,8 @@ class ModuleMacro {
 			childrenExprs.push(macro hxmake.Project.connect($v{modulePath}, $v{childModulePath}));
 		}
 
+		var makeLibraries = processMakeLibraries(":lib", cls.meta);
+
 		if(!cls.meta.has(":root")) {
 			var parentMakeDir = FileSystem.absolutePath(Path.join([modulePath, "..", "make"]));
 			if(FileSystem.exists(parentMakeDir) && FileSystem.isDirectory(parentMakeDir)) {
@@ -67,6 +70,67 @@ class ModuleMacro {
 		transformConstructor(fields);
 
 		return fields;
+	}
+
+	static function processMakeLibraries(libraryMeta:String, metaAccess:MetaAccess):Map<String, String> {
+		var result:Map<String, String> = new Map();
+		var metaList:Array<MetadataEntry> = metaAccess.extract(libraryMeta);
+		for(meta in metaList) {
+			if(meta.params.length > 0) {
+				var libName = exprGetStringConst(meta.params[0]);
+				var libPath = exprGetStringConst(meta.params[1]);
+				if(libName == null) {
+					throw '@$libraryMeta first argument need to be String literal';
+				}
+				if(includeMakeLibrary(libName, libPath)) {
+					result.set(libName, libPath);
+				}
+			}
+			else {
+				throw '@$libraryMeta requires at least one argument';
+			}
+		}
+		return result;
+	}
+
+	static var _makeLibraries:Array<String> = [];
+
+	static function includeMakeLibrary(name:String, path:String):Bool {
+		if(_makeLibraries.indexOf(name) >= 0) {
+			return true;
+		}
+
+		// TODO: relative path, git, accurate haxelib
+		var lp = Haxelib.libPath(name, true);
+		if(lp == null) {
+			Haxelib.install(name);
+			lp = Haxelib.libPath(name, true);
+		}
+		if(lp == null) {
+			return false;
+		}
+		var cp = Path.join([lp, "makeplugin"]);
+		if(FileSystem.exists(cp)) {
+			Sys.println('Make Plugin: $name @ $cp');
+			Compiler.addClassPath(cp);
+		}
+
+		_makeLibraries.push(name);
+		return true;
+	}
+
+	static function exprGetStringConst(expr:Expr):Null<String> {
+		if(expr == null) {
+			return null;
+		}
+		return switch(expr.expr) {
+			case EConst(x):
+				switch(x) {
+					case CString(y): y;
+					case _: null;
+				}
+			case _: null;
+		}
 	}
 
 	static function transformConstructor(fields:Array<Field>) {

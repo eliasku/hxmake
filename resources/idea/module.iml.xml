@@ -30,7 +30,9 @@
         <orderEntry type="module-library" exported="" scope="PROVIDED">
             <library name="::name::">
                 <CLASSES>
-                    <root url="file://::path::" />
+                    ::foreach classPath::
+                    <root url="file://::__current__::" />
+                    ::end::
                 </CLASSES>
                 <JAVADOC/>
                 <SOURCES/>
