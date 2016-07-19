@@ -1,7 +1,6 @@
 package hxmake.haxelib;
 
 import hxmake.utils.Haxelib;
-import hxmake.utils.Haxelib;
 
 using StringTools;
 

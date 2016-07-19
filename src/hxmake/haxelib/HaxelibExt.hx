@@ -2,14 +2,11 @@ package hxmake.haxelib;
 
 class HaxelibExt {
 
-	public var library:HaxeLibraryDeclaration;
+	// for generating haxelib.json
+	public var config:LibraryConfig = new LibraryConfig();
 
-	public function new() {}
-}
-
-class HaxeLibraryDeclaration {
-	public var generateJson:Bool = true;
-	public var devInstall:Bool = true;
+	public var updateJson:Bool = false;
+	public var installDev:Bool = false;
 
 	public function new() {}
 }

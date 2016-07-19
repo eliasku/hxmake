@@ -1,4 +1,3 @@
-import hxmake.haxelib.HaxelibExt;
 import hxmake.haxelib.HaxelibPlugin;
 import hxmake.idea.IdeaPlugin;
 
@@ -7,17 +6,16 @@ using hxmake.haxelib.HaxelibPlugin;
 class HxMake extends hxmake.Module {
 	function new() {
 		config.classPath = ["src", "tool"];
-		config.authors = ["eliasku"];
 
 		apply(IdeaPlugin);
 		apply(HaxelibPlugin);
 
-		// option #1
-//		update("haxelib", function(ext:HaxelibExt) {
-//			ext.library = new HaxeLibraryDeclaration();
-//		});
-
-		// option #2
-		library();
+		var cfg = library().config;
+		cfg.version = "0.0.1";
+		cfg.description = "Task automation for Haxe multi-module projects";
+		cfg.url = "https://github.com/eliasku/hxmake";
+		cfg.tags = ["haxe", "make", "build", "haxelib", "tools", "neko", "project", "module", "cross"];
+		cfg.contributors = ["eliasku"];
+		cfg.license = "MIT";
 	}
 }

@@ -1,10 +1,20 @@
 {
 	"name": "hxmake",
+	"license": "https://github.com/eliasku/hxmake",
+	"tags": [
+		"haxe",
+		"make",
+		"build",
+		"haxelib",
+		"tools",
+		"neko",
+		"project",
+		"module"
+	],
 	"classPath": "src",
-	"description": "",
+	"description": "Task automation for Haxe multi-module projects",
 	"contributors": [
 		"eliasku"
 	],
-	"version": "0.0.1",
-	"dependencies": {}
+	"version": "0.0.1"
 }

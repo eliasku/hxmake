@@ -1,7 +1,5 @@
 package hxmake.haxelib;
 
-import hxmake.haxelib.HaxelibExt.HaxeLibraryDeclaration;
-
 class HaxelibPlugin extends Plugin {
 
 	public var ext(default, null):HaxelibExt;
@@ -16,10 +14,30 @@ class HaxelibPlugin extends Plugin {
 		}
 	}
 
-	public static function library(module:Module):HaxeLibraryDeclaration {
+	public static function library(module:Module):HaxelibExt {
 		module.update("haxelib", function(data:HaxelibExt) {
-			data.library = new HaxeLibraryDeclaration();
+
+			data.updateJson = true;
+			data.installDev = true;
+
+			data.config.name = module.name;
+
+			if(module.config.classPath.length > 0) {
+				data.config.classPath = module.config.classPath[0];
+			}
+
+			for(k in module.config.dependencies.keys()) {
+				var sections:Array<String> = module.config.dependencies.get(k).split(";");
+				var params = sections.shift();
+				if(params == "haxelib") {
+					params = "";
+				}
+				else if(params.indexOf("haxelib:") == 0) {
+					params = params.substring("haxelib:".length);
+				}
+				data.config.dependencies.set(k, params);
+			}
 		});
-		return module.get("haxelib", HaxelibExt).library;
+		return module.get("haxelib", HaxelibExt);
 	}
 }
