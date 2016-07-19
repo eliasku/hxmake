@@ -1,5 +1,6 @@
 package hxmake.test.js;
 
+import hxmake.cli.CL;
 import sys.io.Process;
 import hxmake.macr.CompileTime;
 import sys.io.File;
@@ -37,11 +38,20 @@ class RunPhantomJs extends RunTask {
             if(exitCode != 0) {
                 fail();
             }
-            process.kill();
+            closeServer(process);
         }
         catch(e:Dynamic) {
-            process.kill();
+            closeServer(process);
             throw e;
+        }
+    }
+
+    static function closeServer(process:Process) {
+        if(CL.platform.isWindows) {
+            process.kill();
+        }
+        else {
+            process.close();
         }
     }
 
