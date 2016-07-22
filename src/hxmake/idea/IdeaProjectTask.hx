@@ -161,8 +161,10 @@ class IdeaProjectTask extends Task {
 						NAME: name,
 						FILE_TO_RUN: Path.join([module.path, run.file])
 					};
-					Debug.log('Run Configuration: $name');
-					File.saveContent(Path.join([rcPath, '$name.xml']), _xmlRunConfig.execute(context));
+					var runConfigurationPath = Path.join([rcPath, '$name.xml']);
+					var runConfigurationContent = _xmlRunConfig.execute(context);
+					Debug.log('Run Configuration: $runConfigurationPath');
+					File.saveContent(runConfigurationPath, runConfigurationContent);
 				}
 			}
 		}

@@ -14,7 +14,7 @@ class HaxelibPlugin extends Plugin {
 		}
 	}
 
-	public static function library(module:Module):HaxelibExt {
+	public static function library(module:Module, ?configurator:HaxelibExt->Void):HaxelibExt {
 		module.update("haxelib", function(data:HaxelibExt) {
 
 			data.updateJson = true;
@@ -36,6 +36,10 @@ class HaxelibPlugin extends Plugin {
 					params = params.substring("haxelib:".length);
 				}
 				data.config.dependencies.set(k, params);
+			}
+
+			if(configurator != null) {
+				configurator(data);
 			}
 		});
 		return module.get("haxelib", HaxelibExt);

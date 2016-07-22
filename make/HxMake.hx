@@ -1,3 +1,4 @@
+import hxmake.haxelib.HaxelibExt;
 import hxmake.haxelib.HaxelibPlugin;
 import hxmake.idea.IdeaPlugin;
 
@@ -10,12 +11,13 @@ class HxMake extends hxmake.Module {
 		apply(IdeaPlugin);
 		apply(HaxelibPlugin);
 
-		var cfg = library().config;
-		cfg.version = "0.0.1";
-		cfg.description = "Task automation for Haxe multi-module projects";
-		cfg.url = "https://github.com/eliasku/hxmake";
-		cfg.tags = ["haxe", "make", "build", "haxelib", "tools", "neko", "project", "module", "cross"];
-		cfg.contributors = ["eliasku"];
-		cfg.license = "MIT";
+		library(function(ext:HaxelibExt) {
+			ext.config.version = "0.0.1";
+			ext.config.description = "Task automation for Haxe multi-module projects";
+			ext.config.url = "https://github.com/eliasku/hxmake";
+			ext.config.tags = ["haxe", "make", "build", "haxelib", "tools", "neko", "project", "module", "cross"];
+			ext.config.contributors = ["eliasku"];
+			ext.config.license = "MIT";
+		});
 	}
 }

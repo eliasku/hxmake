@@ -21,5 +21,6 @@ class IdeaData {
 		var r = new IdeaRunData();
 		r.file = file;
 		r.type = "haxe";
+		run.push(r);
 	}
 }
