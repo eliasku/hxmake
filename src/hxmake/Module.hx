@@ -56,7 +56,7 @@ class Module {
 		return data;
 	}
 
-	public function get<T>(name:String, cls:Class<T>):T {
+	public function get<T>(name:String, cls:Class<T>):Null<T> {
 		return Std.instance(_data.get(name), cls);
 	}
 

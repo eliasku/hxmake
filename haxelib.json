@@ -9,7 +9,8 @@
 		"tools",
 		"neko",
 		"project",
-		"module"
+		"module",
+		"cross"
 	],
 	"classPath": "src",
 	"description": "Task automation for Haxe multi-module projects",

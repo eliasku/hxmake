@@ -9,6 +9,8 @@ class HaxelibPlugin extends Plugin {
 	override function apply(module:Module) {
 		ext = module.set("haxelib", new HaxelibExt());
 		module.task("haxelib", new HaxelibTask()).dependsOn("haxelibDependencies");
+		module.task("package-haxelib", new HaxelibPackageTask()).dependsOn("haxelib");
+		module.task("submit-haxelib", new HaxelibSubmitTask()).dependsOn("package-haxelib");
 		if(module.parent == null) {
 			module.task("haxelibDependencies", new HaxelibDependencies());
 		}

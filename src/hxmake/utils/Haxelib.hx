@@ -1,5 +1,6 @@
 package hxmake.utils;
 
+import sys.FileSystem;
 import haxe.io.Path;
 import sys.FileSystem;
 import haxe.io.Input;
@@ -96,11 +97,12 @@ class Haxelib {
         return opts;
     }
 
-    static function withVersion(library:String, ?version:String):String {
-        if (version != null && version.length > 0) {
-            return library + ":" + version;
+    public static function submit(zipPath:String):Bool {
+        if(!FileSystem.exists(zipPath)) {
+            Sys.println('$zipPath not found');
+            return false;
         }
-        return library;
+        return exec(["submit", zipPath]);
     }
 
     public static function exec(args:Array<String>, ?additionalArguments:Array<String>):Bool {
@@ -109,6 +111,13 @@ class Haxelib {
         }
         Sys.println('> $ALIAS ${args.join(" ")}');
         return Sys.command(ALIAS, args) == 0;
+    }
+
+    static function withVersion(library:String, ?version:String):String {
+        if (version != null && version.length > 0) {
+            return library + ":" + version;
+        }
+        return library;
     }
 
     static function readLines(input:Input):Array<String> {
