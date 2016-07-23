@@ -31,7 +31,7 @@ class LibraryConfig {
         }
 
         if(url != null) {
-            data.license = url;
+            data.url = url;
         }
 
         if(tags.length > 0) {

@@ -1,6 +1,6 @@
 {
 	"name": "hxmake",
-	"license": "https://github.com/eliasku/hxmake",
+	"license": "MIT",
 	"tags": [
 		"haxe",
 		"make",
@@ -17,5 +17,6 @@
 	"contributors": [
 		"eliasku"
 	],
-	"version": "0.0.1"
+	"version": "0.0.1",
+	"url": "https://github.com/eliasku/hxmake"
 }
