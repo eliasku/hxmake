@@ -18,6 +18,7 @@ class HxMake extends hxmake.Module {
 			ext.config.tags = ["haxe", "make", "build", "haxelib", "tools", "neko", "project", "module", "cross"];
 			ext.config.contributors = ["eliasku"];
 			ext.config.license = "MIT";
+			ext.config.releasenote = "Initial release";
 
 			ext.pack.includes = ["src", "resources", "tool", "build.hxml", "haxelib.json", "run.n", "README.md"];
 		});

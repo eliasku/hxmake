@@ -11,6 +11,17 @@ class HaxelibSubmitTask extends Task {
 
     override public function run() {
         var ext:HaxelibExt = module.get("haxelib", HaxelibExt);
+
+        if(ext.config.license == null || ext.config.license.length == 0) {
+            Sys.println('Haxelib: missing license value');
+            return;
+        }
+
+        if(ext.config.releasenote == null || ext.config.releasenote.length == 0) {
+            Sys.println('Haxelib: missing releasenote value');
+            return;
+        }
+
         CL.workingDir.with(module.path, function() {
             Haxelib.submit(module.name + ".zip");
         });

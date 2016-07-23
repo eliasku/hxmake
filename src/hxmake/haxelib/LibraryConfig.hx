@@ -6,6 +6,7 @@ class LibraryConfig {
     public var name:String;
     public var description:String = "";
     public var version:String = "0.0.1";
+    public var releasenote:String;
     public var contributors:Array<String> = [];
     public var license:String;
     public var url:String;
@@ -36,6 +37,10 @@ class LibraryConfig {
 
         if(tags.length > 0) {
             data.tags = tags;
+        }
+
+        if(releasenote != null) {
+            data.releasenote = releasenote;
         }
 
         if(classPath != null) {
