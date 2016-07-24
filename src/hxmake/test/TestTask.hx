@@ -15,6 +15,7 @@ class TestTask extends Task {
 
     inline static var OPTION_OVERRIDE_TEST_TARGET:String = "--override-test-target=";
 
+    public var debug:Bool = false;
     public var targets:Array<String> = [];
     public var libraries:Array<String> = [];
     public var testLibrary:String = "utest";
@@ -82,6 +83,7 @@ class TestTask extends Task {
                 case Js: compileTask.hxml.defines.push("travis");
                 default:
             }
+            compileTask.hxml.debug = debug;
             compileTask.prepend(compileTask.createSetupTask());
             result.push(compileTask);
         }

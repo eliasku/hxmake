@@ -18,6 +18,7 @@ class Hxml {
     public var target:Null<HaxeTarget> = null;
     public var output:Null<String> = null;
 
+    public var debug:Bool = false;
     public var showTimes:Bool = false;
     public var showMacroTimes:Bool = false;
 
@@ -51,6 +52,14 @@ class Hxml {
         if(showMacroTimes) {
             result.push("-D");
             result.push("macro-times");
+        }
+
+        if(debug) {
+            result.push("-debug");
+            switch(target) {
+                case Swf: result = result.concat(["-D", "fdb"]);
+                case _:
+            }
         }
 
         if(target != null) {
