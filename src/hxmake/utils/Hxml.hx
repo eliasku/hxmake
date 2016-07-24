@@ -100,22 +100,34 @@ class Hxml {
             case Neko, Swf, Js, Hl, Python, Lua:
                 output;
             case Cpp:
+                var executableName = main;
+                if(debug) {
+                    executableName += "-debug";
+                }
                 if(CL.platform.isWindows) {
-                    Path.join([output, '$main.exe']).replace("/", "\\");
+                    Path.join([output, '$executableName.exe']).replace("/", "\\");
                 }
                 else {
-                    Path.join([".", output, main]);
+                    Path.join([".", output, executableName]);
                 }
             case Php:
                 Path.join([output, "index.php"]);
             case Cs:
-                var exeFile = Path.join([output, 'bin/$main.exe']);
+                var executableName = main;
+                if(debug) {
+                    executableName += "-Debug";
+                }
+                var exeFile = Path.join([output, 'bin/$executableName.exe']);
                 if(CL.platform.isWindows) {
                     exeFile = exeFile.replace("/", "\\");
                 }
                 exeFile;
             case Java:
-                Path.join([output, '$main.jar']);
+                var executableName = main;
+                if(debug) {
+                    executableName += "-Debug";
+                }
+                Path.join([output, '$executableName.jar']);
         }
     }
 }
