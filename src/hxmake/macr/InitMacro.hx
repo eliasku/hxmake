@@ -6,6 +6,7 @@ import haxe.macro.Context;
 
 class InitMacro {
 	public static function generateMainClass(initialMakeDir:String, isCompiler:Bool, args:Array<String>) {
+		PluginInclude.scan(initialMakeDir);
 		Compiler.addClassPath(initialMakeDir);
 		Compiler.include("", true, null, [initialMakeDir]);
 

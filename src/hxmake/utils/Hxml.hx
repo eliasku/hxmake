@@ -15,12 +15,16 @@ class Hxml {
     public var macros:Array<String> = [];
     public var commands:Array<String> = [];
 
+    public var flags:Array<String> = [];
+    public var flagArguments:Array<String> = [];
+
     public var target:Null<HaxeTarget> = null;
     public var output:Null<String> = null;
 
     public var debug:Bool = false;
     public var showTimes:Bool = false;
     public var showMacroTimes:Bool = false;
+    public var noTraces:Bool = false;
 
     public var dce:Null<DceMode> = null;
 
@@ -54,11 +58,23 @@ class Hxml {
             result.push("macro-times");
         }
 
+        if(noTraces) {
+            result.push("--no-traces");
+        }
+
         if(debug) {
             result.push("-debug");
             switch(target) {
                 case Swf: result = result.concat(["-D", "fdb"]);
+                case Cpp: result = result.concat(["-D", "HXCPP_DEBUG_LINK"]);
                 case _:
+            }
+        }
+
+        for(i in 0...flags.length) {
+            result.push(flags[i]);
+            if(flagArguments[i] != null) {
+                result.push(flagArguments[i]);
             }
         }
 
@@ -83,9 +99,9 @@ class Hxml {
             result.push("-dce");
             result.push(
                 switch(dce) {
-                    case No: "no";
-                    case Std: "std";
-                    case Full: "full";
+                    case DceNo: "no";
+                    case DceStd: "std";
+                    case DceFull: "full";
                 }
             );
         }
@@ -100,10 +116,30 @@ class Hxml {
             case Neko, Swf, Js, Hl, Python, Lua:
                 output;
             case Cpp:
-                var executableName = main;
+                var executableName = getClassName(main);
+
+                var isStaticLink = defines.indexOf("static_link") >= 0;
+                var isAndroid = defines.indexOf("android") >= 0;
+
+                if(isAndroid) {
+                    executableName = "lib" + executableName;
+                }
+
                 if(debug) {
                     executableName += "-debug";
                 }
+
+                if(defines.indexOf("HXCPP_ARMV7") >= 0) {
+                    executableName += "-v7";
+                }
+                else if(defines.indexOf("HXCPP_X86") >= 0) {
+                    executableName += "-x86";
+                }
+
+                if(isAndroid) {
+                    executableName += isStaticLink ? ".a" : ".so";
+                }
+
                 if(CL.platform.isWindows) {
                     Path.join([output, '$executableName.exe']).replace("/", "\\");
                 }
@@ -130,10 +166,21 @@ class Hxml {
                 Path.join([output, '$executableName.jar']);
         }
     }
+
+    public function flag(options:String, ?argument:String) {
+        flags.push(options);
+        flagArguments.push(argument);
+    }
+
+    @:pure
+    static function getClassName(path:String):String {
+        var p = path.split(".");
+        return p[p.length - 1];
+    }
 }
 
 enum DceMode {
-    No;
-    Std;
-    Full;
+    DceNo;
+    DceStd;
+    DceFull;
 }

@@ -37,16 +37,18 @@ class ModuleMacro {
 				continue;
 			}
 
+			PluginInclude.scan(cp);
 			Compiler.addClassPath(cp);
 			Compiler.include("", true, null, [cp]);
 			childrenExprs.push(macro hxmake.Project.connect($v{modulePath}, $v{childModulePath}));
 		}
 
-		var makeLibraries = processMakeLibraries(":lib", cls.meta);
+		processMakeLibraries(":lib", cls.meta);
 
 		if(!cls.meta.has(":root")) {
 			var parentMakeDir = FileSystem.absolutePath(Path.join([modulePath, "..", "make"]));
 			if(FileSystem.exists(parentMakeDir) && FileSystem.isDirectory(parentMakeDir)) {
+				PluginInclude.scan(parentMakeDir);
 				Compiler.addClassPath(parentMakeDir);
 				Compiler.include("", true, null, [parentMakeDir]);
 			}
@@ -72,8 +74,7 @@ class ModuleMacro {
 		return fields;
 	}
 
-	static function processMakeLibraries(libraryMeta:String, metaAccess:MetaAccess):Map<String, String> {
-		var result:Map<String, String> = new Map();
+	static function processMakeLibraries(libraryMeta:String, metaAccess:MetaAccess) {
 		var metaList:Array<MetadataEntry> = metaAccess.extract(libraryMeta);
 		for(meta in metaList) {
 			if(meta.params.length > 0) {
@@ -82,41 +83,12 @@ class ModuleMacro {
 				if(libName == null) {
 					throw '@$libraryMeta first argument need to be String literal';
 				}
-				if(includeMakeLibrary(libName, libPath)) {
-					result.set(libName, libPath);
-				}
+				PluginInclude.include(libName, libPath);
 			}
 			else {
 				throw '@$libraryMeta requires at least one argument';
 			}
 		}
-		return result;
-	}
-
-	static var _makeLibraries:Array<String> = [];
-
-	static function includeMakeLibrary(name:String, path:String):Bool {
-		if(_makeLibraries.indexOf(name) >= 0) {
-			return true;
-		}
-
-		// TODO: relative path, git, accurate haxelib
-		var lp = Haxelib.libPath(name, true);
-		if(lp == null) {
-			Haxelib.install(name);
-			lp = Haxelib.libPath(name, true);
-		}
-		if(lp == null) {
-			return false;
-		}
-		var cp = Path.join([lp, "makeplugin"]);
-		if(FileSystem.exists(cp)) {
-			Sys.println('Make Plugin: $name @ $cp');
-			Compiler.addClassPath(cp);
-		}
-
-		_makeLibraries.push(name);
-		return true;
 	}
 
 	static function exprGetStringConst(expr:Expr):Null<String> {

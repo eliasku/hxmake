@@ -1,5 +1,6 @@
 package hxmake.haxelib;
 
+import hxmake.cli.FileUtil;
 import hxmake.cli.CL;
 import haxe.zip.Writer;
 import sys.io.File;
@@ -25,54 +26,13 @@ class HaxelibPackageTask extends Task {
     }
 
     function packageFiles(ext:HaxelibExt) {
-        var files = getFilesRecursiveFromArray(ext.pack.includes, ext.pack.filters);
+        var files = FileUtil.getFilesRecursiveFromArray(ext.pack.includes, ext.pack.filters);
         var zipEntries = getZipEntries(files);
 
         var zip = File.write(module.name + ".zip", true);
         var writer:Writer = new Writer(zip);
         writer.write(zipEntries);
         zip.close();
-    }
-
-    public static function getFilesRecursiveFromArray(pathList:Array<String>, filters:Array<EReg>, ?out:Array<String>):Array<String> {
-        if(out == null) {
-            out = [];
-        }
-
-        for(path in pathList) {
-            getFilesRecursive(path, filters, out);
-        }
-
-        return out;
-    }
-
-    public static function getFilesRecursive(path:String, filters:Array<EReg>, ?out:Array<String>):Array<String> {
-        if(out == null) {
-            out = [];
-        }
-
-        if(!FileSystem.exists(path)) {
-            return out;
-        }
-
-        for(filter in filters) {
-            if(filter.match(path)) {
-                return out;
-            }
-        }
-
-        if(!FileSystem.isDirectory(path)) {
-            out.push(path);
-            return out;
-        }
-
-        var files = FileSystem.readDirectory(path);
-        for(file in files) {
-            var absPath = Path.join([path, file]);
-            getFilesRecursive(absPath, filters, out);
-        }
-
-        return out;
     }
 
     public static function getZipEntries(files:Array<String>):List<Entry> {

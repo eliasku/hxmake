@@ -19,7 +19,7 @@ class MakeRunner {
 
 		var makePath = Path.join([path, "make"]);
 		var libPath = Haxelib.classPath("hxmake", true);
-		var isCompiler = builtInArguments.indexOf("--neko") < 0;
+		var isCompiler = builtInArguments.indexOf("--haxe") >= 0;
 
 		var hxml = new Hxml();
 		hxml.main = "HxMakeMain";
