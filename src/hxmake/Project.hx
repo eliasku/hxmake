@@ -50,6 +50,7 @@ class Project {
 
 		for(module in modules) {
 			module.project = this;
+			module.isMain = module.path == Path.directory(Sys.getCwd());
 		}
 
 		buildTree();

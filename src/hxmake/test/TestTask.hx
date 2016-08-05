@@ -74,7 +74,7 @@ class TestTask extends Task {
             compileTask.targetName = target;
             compileTask.hxml.libraries = libraries.concat([testLibrary]);
             compileTask.hxml.classPath.push(classPath);
-            compileTask.hxml.dce = DceMode.Std;
+            compileTask.hxml.dce = DceMode.DceStd;
             compileTask.hxml.main = main;
             compileTask.hxml.target = target.parseHaxeTarget();
             compileTask.hxml.output = compileTask.hxml.target.buildOutput(Path.join([outputDir, outputName]));

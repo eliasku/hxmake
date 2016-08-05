@@ -16,6 +16,9 @@ class Module {
 	public var name(default, null):String;
 	public var path(default, null):String;
 	public var config(get, never):ModuleConfig;
+	
+	public var isMain(default, null):Bool = false;
+	public var isActive(get, never):Bool;
 
 	var _subModules:Array<Module>;
 	var _data:Map<String, Dynamic> = ["config" => new ModuleConfig()];
@@ -100,5 +103,9 @@ class Module {
 		}
 		closure(data);
 		return this;
+	}
+
+	function get_isActive():Bool {
+		return isMain || (parent != null && parent.isActive);
 	}
 }
