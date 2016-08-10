@@ -30,6 +30,7 @@ class InstallFlashPlayer extends SetupTask {
         super.run();
 
         if(!checkInstalled()) {
+            Sys.println("FLASH PLAYER NOT FOUND");
             switch (CL.platform) {
                 case Platform.LINUX:
                     Sys.command("sudo", ["dpkg", "--add-architecture", "i386"]);
@@ -51,10 +52,10 @@ class InstallFlashPlayer extends SetupTask {
                         throw "failed to extract flash player";
                     }
                 case Platform.MAC:
-                    if (Sys.command("brew", ["install", "caskroom/cask/brew-cask"]) != 0) {
+                    if (Sys.command("brew", ["tap", "caskroom/cask"]) != 0) {
                         Sys.println("Failed to install brew cask, maybe already installed");
                     }
-                    if (Sys.command("brew", ["cask", "install", "flash-player-debugger"]) != 0) {
+                    if (Sys.command("brew", ["cask", "install", "flash-player-debugger", "--force"]) != 0) {
                         fail("Failed to install flash-player-debugger");
                     }
                 case Platform.WINDOWS:
