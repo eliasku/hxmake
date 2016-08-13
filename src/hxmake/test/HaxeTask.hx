@@ -27,11 +27,7 @@ class HaxeTask extends Task {
                 if(CL.platform.isLinux) {
                     pct.packages = pct.packages.concat(['gcc-multilib', 'g++-multilib']);
                 }
-                #if (HXCPP_API_LEVEL < 330)
                 pct.libraries.push("hxcpp");
-                #else
-                pct.librariesFromGit.push("hxcpp;https://github.com/HaxeFoundation/hxcpp.git");
-                #end
             case Cs:
                 if(Sys.command("mono", ["--version"]) != 0) {
                     if(CL.platform.isLinux) {
