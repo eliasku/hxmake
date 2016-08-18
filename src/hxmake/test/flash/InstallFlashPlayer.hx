@@ -57,9 +57,13 @@ class InstallFlashPlayer extends SetupTask {
                         Sys.command("brew", ["uninstall", "--force", "brew-cask"]);
                         Sys.command("brew", ["untap", "phinze/cask"]);
                         Sys.command("brew", ["untap", "caskroom/cask"]);
-                        if (Sys.command("brew", ["tap", "caskroom/cask"]) != 0) {
-                            Sys.println("Failed to install brew cask, maybe already installed");
-                        }
+                        // update brew and cask
+                        Sys.command("brew", ["update"]);
+                        Sys.command("brew", ["cleanup"]);
+                        Sys.command("brew", ["cask", "cleanup"]);
+//                        if (Sys.command("brew", ["tap", "caskroom/cask"]) != 0) {
+//                            Sys.println("Failed to install brew cask, maybe already installed");
+//                        }
                         if (Sys.command("brew", ["cask", "install", "flash-player-debugger", "--force"]) != 0) {
                             fail("Failed to install flash-player-debugger");
                         }
