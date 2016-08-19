@@ -1,5 +1,7 @@
 package hxmake;
 
+using hxmake.utils.TaskTools;
+
 class Task {
 
 	public var pack:Array<String>;
@@ -22,29 +24,40 @@ class Task {
 	var _doLast:Array<Task->Void> = [];
 
 	function _configure() {
+		this.logStep("Configuration BEGIN");
 		configure();
+		this.logStep("Sub-tasks configuration (BEFORE)");
 		for(chained in chainBefore) {
 			chained._configure();
 		}
+		this.logStep("Sub-tasks configuration (AFTER)");
 		for(chained in chainAfter) {
 			chained._configure();
 		}
+		this.logStep("Configuration END");
 	}
 
 	function _run() {
+		this.logStep("Run BEGIN");
+		this.logStep("Run BEFORE tasks");
+
 		for(chained in chainBefore) {
 			chained._run();
 		}
 		for(cb in _doFirst) {
 			cb(this);
 		}
+		this.logStep("Running");
 		run();
+
+		this.logStep("Run AFTER tasks");
 		for(cb in _doLast) {
 			cb(this);
 		}
 		for(chained in chainAfter) {
 			chained._run();
 		}
+		this.logStep("Run END");
 	}
 
 	public function runAfter(task:String):Task {
