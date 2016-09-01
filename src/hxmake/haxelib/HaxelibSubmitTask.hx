@@ -22,8 +22,6 @@ class HaxelibSubmitTask extends Task {
             return;
         }
 
-        CL.workingDir.with(module.path, function() {
-            Haxelib.submit(module.name + ".zip");
-        });
+        Haxelib.submit(module.name + ".zip");
     }
 }

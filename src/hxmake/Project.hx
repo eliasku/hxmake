@@ -1,5 +1,6 @@
 package hxmake;
 
+import hxmake.cli.CL;
 import haxe.io.Path;
 import haxe.Timer;
 
@@ -97,6 +98,7 @@ class Project {
 		var taskBeforeAfter:Map<String, String> = new Map();
 		for(module in modules) {
 			var tasks:Map<String, Task> = module._tasks;
+			CL.workingDir.push(module.path);
 			for(tid in tasks.keys()) {
 				if(activeTasks.indexOf(tid) >= 0) {
 					var t = tasks.get(tid);
@@ -114,6 +116,7 @@ class Project {
 					}
 				}
 			}
+			CL.workingDir.pop();
 		}
 
 		taskList.sort(function(a:TaskInst, b:TaskInst) {
@@ -135,7 +138,9 @@ class Project {
 
 		for(ot in taskList) {
 			if(ot.task.enabled) {
+				CL.workingDir.push(ot.task.module.path);
 				ot.task._run();
+				CL.workingDir.pop();
 			}
 		}
 

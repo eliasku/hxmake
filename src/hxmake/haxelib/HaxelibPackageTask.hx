@@ -19,9 +19,7 @@ class HaxelibPackageTask extends Task {
         var ext:Null<HaxelibExt> = module.get("haxelib", HaxelibExt);
 
         if(ext != null) {
-            CL.workingDir.with(module.path, function() {
-                packageFiles(ext);
-            });
+            packageFiles(ext);
         }
     }
 
