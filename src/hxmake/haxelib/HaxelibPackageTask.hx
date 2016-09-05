@@ -1,13 +1,12 @@
 package hxmake.haxelib;
 
-import hxmake.cli.FileUtil;
-import hxmake.cli.CL;
-import haxe.zip.Writer;
-import sys.io.File;
 import haxe.io.Bytes;
-import haxe.zip.Entry;
 import haxe.io.Path;
+import haxe.zip.Entry;
+import haxe.zip.Writer;
+import hxmake.cli.FileUtil;
 import sys.FileSystem;
+import sys.io.File;
 
 class HaxelibPackageTask extends Task {
 
