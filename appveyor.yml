@@ -14,7 +14,7 @@ build: off
 
 branches:
   only:
-    - master
+    - develop
 
 test_script:
   - haxelib dev hxmake .

@@ -7,7 +7,7 @@ haxe:
 
 branches:
   only:
-    - master
+    - develop
 
 install:
   - haxelib dev hxmake .
