@@ -1,5 +1,6 @@
 package hxmake;
 
+import StringTools;
 import hxmake.cli.CL;
 import haxe.io.Path;
 import haxe.Timer;
@@ -46,12 +47,16 @@ class Project {
 		}
 	}
 
+	static function pathEquals(path1:String, path2:String):Bool {
+		return StringTools.replace(path1, "\\", "/") == StringTools.replace(path2, "\\", "/");
+	}
+
 	function run() {
 		var startTime = Timer.stamp();
 
 		for(module in modules) {
 			module.project = this;
-			module.isMain = module.path == Path.directory(Sys.getCwd());
+			module.isMain = pathEquals(module.path, Path.directory(Sys.getCwd()));
 		}
 
 		buildTree();
