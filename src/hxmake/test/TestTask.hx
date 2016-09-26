@@ -31,6 +31,9 @@ class TestTask extends Task {
     public function new() {}
 
     override public function configure() {
+        if(!module.isActive) {
+            return;
+        }
         targets = overrideTargets();
         _compileTasks = compileTasks();
         _runTasks = runTasks();
