@@ -2,12 +2,21 @@ language: haxe
 
 sudo: true
 
+os:
+  - linux
+  - osx
+
 haxe:
-  development
+  - "3.2.1"
+  - development
 
 branches:
   only:
     - develop
+
+matrix:
+  allow_failures:
+    - haxe: development
 
 install:
   - haxelib dev hxmake .
