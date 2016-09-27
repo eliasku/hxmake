@@ -17,7 +17,7 @@ class HaxelibPackageTask extends Task {
     override public function run() {
         var ext:Null<HaxelibExt> = module.get("haxelib", HaxelibExt);
 
-        if(ext != null) {
+        if(ext != null && module.isActive) {
             packageFiles(ext);
         }
     }
