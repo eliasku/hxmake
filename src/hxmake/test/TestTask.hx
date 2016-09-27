@@ -87,6 +87,9 @@ class TestTask extends Task {
                 case Cs: compileTask.hxml.defines.push("unsafe"); //XXX
                 default:
             }
+            if(target == "node" || target == "nodejs") {
+                compileTask.hxml.libraries.push("hxnodejs");
+            }
             compileTask.hxml.debug = debug;
             compileTask.prepend(compileTask.createSetupTask());
             result.push(compileTask);

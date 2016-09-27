@@ -21,7 +21,6 @@ class SetupTask extends Task {
             }
         }
         for(git in librariesFromGit) {
-
             var args = git.split(";");
             if(!Haxelib.checkInstalled(args[0])) {
                 if(!Haxelib.git(args[0], args[1])) {

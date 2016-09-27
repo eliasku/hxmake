@@ -42,6 +42,11 @@ class HaxeTask extends Task {
                 pct.libraries.push("hxjava");
             default:
         }
+
+        if(targetName == "node" || targetName == "nodejs") {
+            pct.libraries.push("hxnodejs");
+        }
+
         return pct;
     }
 }
