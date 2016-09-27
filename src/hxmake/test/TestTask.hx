@@ -180,7 +180,12 @@ class TestTask extends Task {
                 runTask.set("lua", [bin]);
             case Cs:
                 if(!CL.platform.isWindows) {
-                    runTask.set("mono", [bin]);
+                    if(debug) {
+                        runTask.set("mono", ["--debug", bin]);
+                    }
+                    else {
+                        runTask.set("mono", [bin]);
+                    }
                 }
                 else {
                     runTask.set(bin);
