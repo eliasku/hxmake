@@ -25,8 +25,8 @@ class HaxelibPackageTask extends Task {
     function packageFiles(ext:HaxelibExt) {
         var files = FileUtil.getFilesRecursiveFromArray(ext.pack.includes, ext.pack.filters);
         var zipEntries = getZipEntries(files);
-
-        var zip = File.write(module.name + ".zip", true);
+        var zipName = module.name + ".zip";
+        var zip = File.write(zipName, true);
         var writer:Writer = new Writer(zip);
         writer.write(zipEntries);
         zip.close();

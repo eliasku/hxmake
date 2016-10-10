@@ -22,6 +22,7 @@ class HaxelibSubmitTask extends Task {
             return;
         }
 
-        Haxelib.submit(module.name + ".zip");
+        var zipName = module.name + ".zip";
+        Haxelib.submit(zipName);
     }
 }
