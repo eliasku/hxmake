@@ -1,5 +1,6 @@
 package hxmake.haxelib;
 
+import hxlog.Log;
 import hxmake.utils.Haxelib;
 
 using StringTools;
@@ -26,7 +27,7 @@ class HaxelibDependencies extends Task {
 						dependencies.set(lib, sections);
 					}
 					else if(settedArgs[0] != params) {
-						Sys.println("WARNING: " + mod.name + " has conflict dependency");
+						Log.warning(mod.name + " has conflict dependency");
 					}
 				}
 			}

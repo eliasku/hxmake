@@ -7,6 +7,9 @@ using hxmake.haxelib.HaxelibPlugin;
 class HxMake extends hxmake.Module {
 	function new() {
 		config.classPath = ["src", "tool"];
+		config.dependencies = [
+			"hxlog" => "haxelib"
+		];
 
 		apply(IdeaPlugin);
 		apply(HaxelibPlugin);

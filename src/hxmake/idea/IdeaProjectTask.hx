@@ -1,10 +1,10 @@
 package hxmake.idea;
 
+import hxlog.Log;
 import hxmake.idea.IdeaProjectTask.IdeaLibraryInfo;
 import hxmake.utils.Haxelib;
 import sys.FileSystem;
 import hxmake.macr.CompileTime;
-import hxmake.cli.Debug;
 import hxmake.cli.CL;
 import hxmake.cli.FileUtil;
 import sys.io.File;
@@ -99,13 +99,13 @@ class IdeaProjectTask extends Task {
 		}
 
 		var iml = _iml.execute(context);
-		Sys.println("Writing " + module.name + ".iml");
+		Log.info("Writing " + module.name + ".iml");
 		FileUtil.deleteFiles(module.path, "*.iml");
 		File.saveContent(Path.join([module.path, '${module.name}.iml']), iml);
 	}
 
 	function createProject(path:String) {
-		Sys.println("SETUP IDEA PROJECT...");
+		Log.info("SETUP IDEA PROJECT...");
 
 		var context = {
 			modules: []
@@ -145,7 +145,7 @@ class IdeaProjectTask extends Task {
 	}
 
 	function createRun(path:String) {
-		Sys.println("SETUP IDEA RUN CONFIGURATIONS...");
+		Log.info("SETUP IDEA RUN CONFIGURATIONS...");
 		var rcPath = Path.join([path, ".idea", "runConfigurations"]);
 
 		if (!FileSystem.exists(rcPath)) {
@@ -163,7 +163,7 @@ class IdeaProjectTask extends Task {
 					};
 					var runConfigurationPath = Path.join([rcPath, '$name.xml']);
 					var runConfigurationContent = _xmlRunConfig.execute(context);
-					Debug.log('Run Configuration: $runConfigurationPath');
+					Log.trace('Run Configuration: $runConfigurationPath');
 					File.saveContent(runConfigurationPath, runConfigurationContent);
 				}
 			}
@@ -230,7 +230,7 @@ class IdeaProjectTask extends Task {
 			}
 		}
 		else {
-			Sys.println("IDEA executable is not found");
+			Log.info("IDEA executable is not found");
 		}
 	}
 

@@ -1,7 +1,7 @@
 package hxmake.haxelib;
 
+import hxlog.Log;
 import hxmake.utils.Haxelib;
-import hxmake.cli.CL;
 
 class HaxelibSubmitTask extends Task {
 
@@ -13,12 +13,12 @@ class HaxelibSubmitTask extends Task {
         var ext:HaxelibExt = module.get("haxelib", HaxelibExt);
 
         if(ext.config.license == null || ext.config.license.length == 0) {
-            Sys.println('Haxelib: missing license value');
+            Log.info('Haxelib: missing license value');
             return;
         }
 
         if(ext.config.releasenote == null || ext.config.releasenote.length == 0) {
-            Sys.println('Haxelib: missing releasenote value');
+            Log.info('Haxelib: missing releasenote value');
             return;
         }
 

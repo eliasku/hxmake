@@ -1,5 +1,6 @@
 package hxmake.test;
 
+import hxlog.Log;
 import hxmake.utils.Haxelib;
 
 class SetupTask extends Task {
@@ -13,7 +14,7 @@ class SetupTask extends Task {
     override public function run() {
         for(pack in packages) {
             if(CiTools.isPackageInstalled(pack)) {
-                Sys.println('$pack is already installed');
+                Log.info('$pack is already installed');
                 continue;
             }
             if(!CiTools.installPackage(pack)) {

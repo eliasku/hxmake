@@ -23,6 +23,7 @@ class MakeRunner {
 
 		var hxml = new Hxml();
 		hxml.main = "HxMakeMain";
+		hxml.libraries = ["hxlog"];
 		hxml.classPath.push(libPath);
 		hxml.defines.push("hxmake");
 

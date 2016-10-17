@@ -1,5 +1,6 @@
 package hxmake.utils;
 
+import hxlog.Log;
 import hxmake.cli.CL;
 import hxmake.cli.Platform;
 
@@ -13,7 +14,7 @@ class Haxe {
     }
 
     public static function exec(args:Array<String>):Bool {
-        Sys.println('> $ALIAS ${args.join(" ")}');
+        Log.info('> $ALIAS ${args.join(" ")}');
         return Sys.command(ALIAS, args) == 0;
     }
 
@@ -30,7 +31,7 @@ class Haxe {
         if (path != null && path.length > 0) {
             return path;
         }
-        Sys.println("[WARNING] Please set HAXEPATH environment variable");
+        Log.warning("Please set HAXEPATH environment variable");
         switch(CL.platform) {
 
             case Platform.MAC, Platform.LINUX:

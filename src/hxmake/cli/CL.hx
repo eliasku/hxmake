@@ -1,5 +1,6 @@
 package hxmake.cli;
 
+import hxlog.Log;
 import sys.FileSystem;
 import sys.io.Process;
 
@@ -11,7 +12,7 @@ class CL {
 	public static function execute(command:String, args:Array<String>, ?workingDirectory:String):ProcessResult {
 		// logging
 		var cmdline = args != null ? [command].concat(args).join(" ") : command;
-		Debug.log("EXECUTE: " + cmdline);
+		Log.trace("EXECUTE: " + cmdline);
 
 		if (workingDirectory != null) {
 			CL.workingDir.push(workingDirectory);

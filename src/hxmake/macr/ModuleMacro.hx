@@ -1,8 +1,7 @@
 package hxmake.macr;
 
-import hxmake.utils.Haxelib;
+import hxlog.Log;
 import haxe.macro.Expr.Access;
-import hxmake.cli.Debug;
 import sys.FileSystem;
 import haxe.macro.Compiler;
 import haxe.io.Path;
@@ -27,13 +26,13 @@ class ModuleMacro {
 		for(include in includes) {
 			var childModulePath = FileSystem.absolutePath(Path.join([modulePath, include]));
 			if(!FileSystem.exists(childModulePath)) {
-				Debug.log('[WARNING] Path is not found for include "$include"');
+				Log.warning('Path is not found for include "$include"');
 				continue;
 			}
 
 			var cp = Path.join([childModulePath, "make"]);
 			if(!FileSystem.exists(cp)) {
-				Debug.log('[WARNING] Make directory is not found for module "$include"');
+				Log.warning('Make directory is not found for module "$include"');
 				continue;
 			}
 

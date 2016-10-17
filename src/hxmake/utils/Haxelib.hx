@@ -1,5 +1,6 @@
 package hxmake.utils;
 
+import hxlog.Log;
 import sys.FileSystem;
 import haxe.io.Path;
 import sys.FileSystem;
@@ -99,7 +100,7 @@ class Haxelib {
 
     public static function submit(zipPath:String):Bool {
         if(!FileSystem.exists(zipPath)) {
-            Sys.println('$zipPath not found');
+            Log.info('$zipPath not found');
             return false;
         }
         return exec(["submit", zipPath]);
@@ -109,7 +110,7 @@ class Haxelib {
         if(additionalArguments != null) {
             args = args.concat(additionalArguments);
         }
-        Sys.println('> $ALIAS ${args.join(" ")}');
+        Log.info('> $ALIAS ${args.join(" ")}');
         return Sys.command(ALIAS, args) == 0;
     }
 

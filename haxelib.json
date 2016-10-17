@@ -19,5 +19,8 @@
 	],
 	"releasenote": "Initial release",
 	"version": "0.0.1",
-	"url": "https://github.com/eliasku/hxmake"
+	"url": "https://github.com/eliasku/hxmake",
+	"dependencies": {
+		"hxlog": ""
+	}
 }

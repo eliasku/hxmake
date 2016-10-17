@@ -1,5 +1,6 @@
 package hxmake.macr;
 
+import hxlog.Log;
 import haxe.macro.Compiler;
 import hxmake.utils.Haxelib;
 import haxe.Json;
@@ -40,7 +41,7 @@ class PluginInclude {
         }
         var cp = Path.join([lp, "makeplugin"]);
         if(FileSystem.exists(cp)) {
-            Sys.println('Make Plugin: $name @ $cp');
+            Log.info('Make Plugin: $name @ $cp');
             Compiler.addClassPath(cp);
         }
 

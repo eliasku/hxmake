@@ -1,5 +1,7 @@
 package hxmake.utils;
 
+import hxlog.Log;
+
 class TaskTools {
 
 	//public static var verbose:Bool = true;
@@ -23,7 +25,7 @@ class TaskTools {
 		}
 		var moduleName = task.module != null ? task.module.name : null;
 		moduleName = moduleName != null ? moduleName : ":";
-		Sys.println('$indent~ $moduleName [$path] $message');
+		Log.info('$indent~ $moduleName [$path] $message');
 	}
 #else
 	@:pure

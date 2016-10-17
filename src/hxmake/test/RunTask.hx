@@ -1,5 +1,6 @@
 package hxmake.test;
 
+import hxlog.Log;
 class RunTask extends Task {
 
     public var command:String;
@@ -35,7 +36,7 @@ class RunTask extends Task {
         var i = retryUntilZero + 1;
 
         while(i > 0 && exitCode != 0) {
-            Sys.println('> $command ${arguments.join(" ")}');
+            Log.info('> $command ${arguments.join(" ")}');
             exitCode = Sys.command(command, arguments);
             --i;
         }

@@ -1,10 +1,10 @@
 package hxmake.haxelib;
 
-import hxmake.utils.Haxelib;
-import hxmake.cli.Debug;
 import haxe.Json;
-import sys.io.File;
 import haxe.io.Path;
+import hxlog.Log;
+import hxmake.utils.Haxelib;
+import sys.io.File;
 
 using StringTools;
 
@@ -17,11 +17,11 @@ class HaxelibTask extends Task {
 	override public function run() {
 		var ext:HaxelibExt = module.get("haxelib", HaxelibExt);
 
-		if(ext.updateJson) {
+		if (ext.updateJson) {
 			saveHaxelibJson(ext.config);
 		}
 
-		if(ext.installDev) {
+		if (ext.installDev) {
 			Haxelib.dev(ext.config.name, module.path);
 		}
 	}
@@ -29,7 +29,7 @@ class HaxelibTask extends Task {
 	function saveHaxelibJson(config:LibraryConfig) {
 		var json:Dynamic = Json.stringify(config.toDynamic(), null, '\t');
 		var path:String = Path.join([module.path, "haxelib.json"]);
-		Debug.log('Writing $path ...');
+		Log.info('Writing $path ...');
 		File.saveContent(path, json);
 	}
 }

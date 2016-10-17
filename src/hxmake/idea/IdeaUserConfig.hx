@@ -1,11 +1,11 @@
 package hxmake.idea;
 
-import hxmake.cli.Debug;
-import hxmake.cli.CL;
-import sys.io.File;
-import haxe.xml.Fast;
-import sys.FileSystem;
 import haxe.io.Path;
+import haxe.xml.Fast;
+import hxlog.Log;
+import hxmake.cli.CL;
+import sys.FileSystem;
+import sys.io.File;
 
 class IdeaUserConfig {
 
@@ -62,32 +62,32 @@ class IdeaUserConfig {
 			folderName = "IntelliJIdea";
 		}
 
-		Debug.log('Search IntelliJ IDEA Preferences in: $userHome');
+		Log.trace('Search IntelliJ IDEA Preferences in: $userHome');
 
 		var v = IDEA_VERSION_END;
 		var sv = ["", ".1"];
 		var pv = ["", "20"];
 		var svi = 0;
 		while (v >= IDEA_VERSION_START) {
-		  for(svi in 0...sv.length) {
-		  for(pvi in 0...pv.length) {
-			var path = Path.join([userHome, folderName + pv[pvi] + v + sv[svi]]);
-			if (!CL.platform.isMac) {
-				path = Path.join([path, "config"]);
-			}
-			if (FileSystem.exists(path) && FileSystem.isDirectory(path)) {
-				Debug.log("Found IntelliJ Idea config folder: " + path);
-				var innerPath = Path.join([path, "options", "jdk.table.xml"]);
-				// check if it contains valid options
-				if (FileSystem.exists(innerPath) && !FileSystem.isDirectory(innerPath)) {
-					return path;
+			for (svi in 0...sv.length) {
+				for (pvi in 0...pv.length) {
+					var path = Path.join([userHome, folderName + pv[pvi] + v + sv[svi]]);
+					if (!CL.platform.isMac) {
+						path = Path.join([path, "config"]);
+					}
+					if (FileSystem.exists(path) && FileSystem.isDirectory(path)) {
+						Log.trace("Found IntelliJ Idea config folder: " + path);
+						var innerPath = Path.join([path, "options", "jdk.table.xml"]);
+						// check if it contains valid options
+						if (FileSystem.exists(innerPath) && !FileSystem.isDirectory(innerPath)) {
+							return path;
+						}
+					}
 				}
-			}
-			}
 			}
 			--v;
 		}
-		Debug.log("IntelliJ Idea configuration is not found");
+		Log.trace("IntelliJ Idea configuration is not found");
 		return null;
 	}
 }

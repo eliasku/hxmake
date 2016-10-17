@@ -1,5 +1,6 @@
 package hxmake.haxelib;
 
+import hxlog.Log;
 import haxe.io.Bytes;
 import haxe.io.Path;
 import haxe.zip.Entry;
@@ -52,7 +53,7 @@ class HaxelibPackageTask extends Task {
                 extraFields: new List()
             }
 
-            Sys.println("Added " + entry.fileName);
+            Log.info("Added " + entry.fileName);
             entries.add(entry);
         }
 

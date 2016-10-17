@@ -1,5 +1,6 @@
 package hxmake.tool;
 
+import hxlog.Log;
 import sys.FileSystem;
 import hxmake.cli.ProcessResult;
 import hxmake.utils.Haxe;
@@ -22,41 +23,41 @@ class Installer {
 		var haxePath = Haxe.path();
 		var libPath = Haxelib.libPath(library);
 		if(libPath == null || !FileSystem.exists(libPath)) {
-			Sys.println('"$library" is not installed');
+			Log.info('"$library" is not installed');
 			return false;
 		}
 
-		Sys.println('Use "$library" from "$libPath"');
+		Log.info('Use "$library" from "$libPath"');
 
 		return CL.workingDir.with(libPath, function() {
 
 			// COMPILATION
 			if(!Haxe.exec(["build.hxml"])) {
-				Sys.println("HxMake library build failed");
+				Log.info("HxMake library build failed");
 				return false;
 			}
 
 			if(CL.platform.isWindows && FileSystem.exists('$alias.exe')) {
-				Sys.println('Alias should be installed already');
-				Sys.println('If you need to reinstall alias script use:');
-				Sys.println('> haxelib run $library _');
+				Log.info('Alias should be installed already');
+				Log.info('If you need to reinstall alias script use:');
+				Log.info('> haxelib run $library _');
 				return true;
 			}
 
 			if(Sys.command('nekotools', ['boot', '$library.n']) != 0) {
-				Sys.println('Failed to create alias-script executable');
+				Log.error('Failed to create alias-script executable');
 				return false;
 			}
 
 			// INSTALL
-			Sys.println('We`re going to install ${alias.toUpperCase()} command');
-			Sys.println('Please enter password if required...');
+			Log.info('We`re going to install ${alias.toUpperCase()} command');
+			Log.info('Please enter password if required...');
 			try {
 				if (CL.platform.isWindows) {
 					var pn = '$alias.exe';
 					var src = Path.join([libPath, pn]);
 					var dst = Path.join([haxePath, pn]);
-					Sys.println('Copy hxmake.exe to $haxePath');
+					Log.info('Copy hxmake.exe to $haxePath');
 					File.copy(src, dst);
 
 					// TODO:
@@ -72,8 +73,8 @@ class Installer {
 				}
 			}
 			catch (e:Dynamic) {
-				Sys.println(e);
-				Sys.println("Error while installing system command-line");
+				Log.error(e);
+				Log.error("Error while installing system command-line");
 				return false;
 			}
 
