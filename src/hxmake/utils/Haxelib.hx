@@ -1,5 +1,6 @@
 package hxmake.utils;
 
+import hxmake.cli.CL;
 import hxlog.Log;
 import sys.FileSystem;
 import haxe.io.Path;
@@ -90,17 +91,23 @@ class Haxelib {
             args.unshift("--global");
         }
         var opts:Array<String> = null;
-        var proc = new Process(ALIAS, ["path", library].concat(args));
-        if(proc.exitCode() == 0) {
-            opts = readLines(proc.stdout);
+//        var proc = new Process(ALIAS, ["path", library].concat(args));
+//        opts = readLines(proc.stdout);
+//        opts = opts.concat(readLines(proc.stderr));
+//        if(proc.exitCode() != 0) {
+//            opts = null;
+//        }
+        //proc.close();
+        var result = CL.execute(ALIAS, ["path", library].concat(args));
+        if(result.exitCode == 0) {
+            opts = result.stdout.split("\n");
         }
-        proc.close();
         return opts;
     }
 
     public static function submit(zipPath:String):Bool {
         if(!FileSystem.exists(zipPath)) {
-            Log.info('$zipPath not found');
+            Log.error('$zipPath not found');
             return false;
         }
         return exec(["submit", zipPath]);
@@ -110,8 +117,7 @@ class Haxelib {
         if(additionalArguments != null) {
             args = args.concat(additionalArguments);
         }
-        Log.info('> $ALIAS ${args.join(" ")}');
-        return Sys.command(ALIAS, args) == 0;
+        return CL.command(ALIAS, args) == 0;
     }
 
     static function withVersion(library:String, ?version:String):String {

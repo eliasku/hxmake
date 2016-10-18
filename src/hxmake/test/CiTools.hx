@@ -10,7 +10,7 @@ class CiTools {
     public static function isPackageInstalled(pckge:String) {
         return switch(CL.platform) {
             case Platform.LINUX:
-                Sys.command("dpkg-query", ["-W", "-f='${Status}'", pckge]) == 0;
+                CL.command("dpkg-query", ["-W", "-f='${Status}'", pckge]) == 0;
             case Platform.MAC:
                 // TODO:
                 false;
@@ -42,6 +42,6 @@ class CiTools {
         if(additionalArgs != null) {
             args = args.concat(additionalArgs);
         }
-        return Sys.command(cmd, args) == 0;
+        return CL.command(cmd, args) == 0;
     }
 }

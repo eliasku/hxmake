@@ -34,38 +34,38 @@ class InstallFlashPlayer extends SetupTask {
             Log.info("FLASH PLAYER NOT FOUND");
             switch (CL.platform) {
                 case Platform.LINUX:
-                    Sys.command("sudo", ["dpkg", "--add-architecture", "i386"]);
-                    Sys.command("sudo", ["apt-get", "update", "-qq"]);
+                    CL.command("sudo", ["dpkg", "--add-architecture", "i386"]);
+                    CL.command("sudo", ["apt-get", "update", "-qq"]);
                     for (p in [
                         "libgtk2.0-0:i386", "libxt6:i386", "libnss3:i386", "libcurl3:i386",
                         "xvfb"
                     ]) {
                         if(!CiTools.isPackageInstalled(p)) {
                             // do not fail on Error;
-                            Sys.command("sudo", ["apt-get", "install", "-y", p]);
+                            CL.command("sudo", ["apt-get", "install", "-y", p]);
                         }
                     }
                     // Download and unzip flash player
-                    if (Sys.command("wget", ["-nv", _fpUrl]) != 0) {
+                    if (CL.command("wget", ["-nv", _fpUrl]) != 0) {
                         throw "failed to download flash player";
                     }
-                    if (Sys.command("tar", ["-xf", FileSystem.absolutePath(Path.withoutDirectory(_fpUrl)), "-C", Sys.getEnv("HOME")]) != 0) {
+                    if (CL.command("tar", ["-xf", FileSystem.absolutePath(Path.withoutDirectory(_fpUrl)), "-C", Sys.getEnv("HOME")]) != 0) {
                         throw "failed to extract flash player";
                     }
                 case Platform.MAC:
-                    if (Sys.command("brew", ["cask", "install", "flash-player-debugger", "--force"]) != 0) {
+                    if (CL.command("brew", ["cask", "install", "flash-player-debugger", "--force"]) != 0) {
                         // uninstall cask
-                        Sys.command("brew", ["uninstall", "--force", "brew-cask"]);
-                        Sys.command("brew", ["untap", "phinze/cask"]);
-                        Sys.command("brew", ["untap", "caskroom/cask"]);
+                        CL.command("brew", ["uninstall", "--force", "brew-cask"]);
+                        CL.command("brew", ["untap", "phinze/cask"]);
+                        CL.command("brew", ["untap", "caskroom/cask"]);
                         // update brew and cask
-                        Sys.command("brew", ["update"]);
-                        Sys.command("brew", ["cleanup"]);
-                        Sys.command("brew", ["cask", "cleanup"]);
+                        CL.command("brew", ["update"]);
+                        CL.command("brew", ["cleanup"]);
+                        CL.command("brew", ["cask", "cleanup"]);
 //                        if (Sys.command("brew", ["tap", "caskroom/cask"]) != 0) {
 //                            Log.error("Failed to install brew cask, maybe already installed");
 //                        }
-                        if (Sys.command("brew", ["cask", "install", "flash-player-debugger", "--force"]) != 0) {
+                        if (CL.command("brew", ["cask", "install", "flash-player-debugger", "--force"]) != 0) {
                             fail("Failed to install flash-player-debugger");
                         }
                     }

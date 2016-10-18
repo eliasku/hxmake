@@ -14,8 +14,7 @@ class Haxe {
     }
 
     public static function exec(args:Array<String>):Bool {
-        Log.info('> $ALIAS ${args.join(" ")}');
-        return Sys.command(ALIAS, args) == 0;
+        return CL.command(ALIAS, args) == 0;
     }
 
     static inline var HAXE_PATH_ENV:String = "HAXEPATH";

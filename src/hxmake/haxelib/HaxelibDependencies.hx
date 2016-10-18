@@ -16,17 +16,17 @@ class HaxelibDependencies extends Task {
 
 	function collectDependencies(modules:Array<Module>) {
 		var dependencies:Map<String, Array<String>> = new Map();
-		for(mod in modules) {
+		for (mod in modules) {
 			var moduleDeps = mod.config.getAllDependencies();
-			for(lib in moduleDeps.keys()) {
+			for (lib in moduleDeps.keys()) {
 				var sections:Array<String> = moduleDeps.get(lib).split(";");
 				var params:String = sections[0];
-				if(params == "haxelib" || params.indexOf("haxelib:") == 0) {
+				if (params == "haxelib" || params.indexOf("haxelib:") == 0) {
 					var settedArgs = dependencies.get(lib);
-					if(settedArgs == null) {
+					if (settedArgs == null) {
 						dependencies.set(lib, sections);
 					}
-					else if(settedArgs[0] != params) {
+					else if (settedArgs[0] != params) {
 						Log.warning(mod.name + " has conflict dependency");
 					}
 				}
@@ -36,32 +36,33 @@ class HaxelibDependencies extends Task {
 	}
 
 	function installDependencies(dependencies:Map<String, Array<String>>) {
-		for(lib in dependencies.keys()) {
+		Log.trace("1");
+		for (lib in dependencies.keys()) {
 			var sections:Array<String> = dependencies.get(lib);
 			var ver = sections.shift();
 			var isHaxelib:Bool = false;
 			var isGit:Bool = false;
 			var isGlobal:Bool = false;
 			var params:String = null;
-			if(ver == "haxelib") {
+			if (ver == "haxelib") {
 				isHaxelib = true;
 			}
-			else if(ver.indexOf("haxelib:") == 0) {
+			else if (ver.indexOf("haxelib:") == 0) {
 				isHaxelib = true;
 				params = ver.substring("haxelib:".length);
-				if(params.endsWith(".git")) {
+				if (params.endsWith(".git")) {
 					isGit = true;
 				}
-				if(sections.indexOf("global") >= 0) {
+				if (sections.indexOf("global") >= 0) {
 					isGlobal = true;
 				}
 			}
-			if(isHaxelib) {
-				if(Haxelib.checkInstalled(lib, isGlobal)) {
+			if (isHaxelib) {
+				if (Haxelib.checkInstalled(lib, isGlobal)) {
 					Haxelib.update(lib, isGlobal);
 				}
 				else {
-					if(isGit) {
+					if (isGit) {
 						Haxelib.git(lib, params, isGlobal);
 					}
 					else {

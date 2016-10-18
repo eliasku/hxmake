@@ -29,7 +29,7 @@ class HaxeTask extends Task {
                 }
                 pct.libraries.push("hxcpp");
             case Cs:
-                if(Sys.command("mono", ["--version"]) != 0) {
+                if(CL.command("mono", ["--version"]) != 0) {
                     if(CL.platform.isLinux) {
                         pct.packages = pct.packages.concat(['mono-devel', 'mono-mcs']);
                     }

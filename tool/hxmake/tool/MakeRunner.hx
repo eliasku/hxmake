@@ -1,5 +1,7 @@
 package hxmake.tool;
 
+import hxlog.Log;
+import hxmake.cli.CL;
 import hxmake.utils.HaxeTarget;
 import hxmake.utils.Hxml;
 import hxmake.utils.Haxe;
@@ -33,7 +35,6 @@ class MakeRunner {
 		else {
 			hxml.target = HaxeTarget.Neko;
 			hxml.output = "make.n";
-			hxml.commands.push("neko make.n");
 		}
 
 		hxml.macros.push('$INIT_MACRO_METHOD("$makePath",$isCompiler,[${toLiteralsArrayString(builtInArguments)}])');
@@ -41,7 +42,12 @@ class MakeRunner {
 		hxml.showMacroTimes =
 		hxml.showTimes = builtInArguments.indexOf("--times") >= 0;
 
-		return Haxe.compile(hxml);
+		var result = Haxe.compile(hxml);
+		if(!result || isCompiler) {
+			return result;
+		}
+
+		return CL.command("neko", ["make.n"]) == 0;
 	}
 
 	static function toLiteralsArrayString(values:Array<String>):String {

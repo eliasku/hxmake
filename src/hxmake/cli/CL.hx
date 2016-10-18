@@ -1,41 +1,46 @@
 package hxmake.cli;
 
+import sys.io.Process;
 import hxlog.Log;
 import sys.FileSystem;
-import sys.io.Process;
 
 class CL {
 
 	public static var workingDir(default, null):WorkingDirectory = new WorkingDirectory();
 	public static var platform(default, null):Platform = resolvePlatform();
 
-	public static function execute(command:String, args:Array<String>, ?workingDirectory:String):ProcessResult {
-		// logging
-		var cmdline = args != null ? [command].concat(args).join(" ") : command;
-		Log.trace("EXECUTE: " + cmdline);
-
-		if (workingDirectory != null) {
-			CL.workingDir.push(workingDirectory);
-		}
+	public static function execute(cmd:String, args:Array<String>):ProcessResult {
+		var argsline = args != null ? args.join(" ") : "";
+		Log.trace('<proc> $cmd $argsline');
 
 		var result = new ProcessResult();
 
 		try {
-			var process = new Process(command, args);
-			result.exitCode = process.exitCode();
+			var process = new Process(cmd, args);
 			result.stdout = process.stdout.readAll().toString();
 			result.stderr = process.stderr.readAll().toString();
+			result.exitCode = process.exitCode();
 			process.close();
 		}
 		catch(e:Dynamic) {
 			result.exitCode = 0xFFFF;
 		}
 
-		if (workingDirectory != null) {
-			CL.workingDir.pop();
-		}
+//		Log.trace(result.stdout);
+//		Log.trace(result.stderr);
+//		Log.trace(result.exitCode);
 
 		return result;
+	}
+
+	public static function command(cmd:String, ?args:Array<String>):Int {
+		var argline = args != null ? args.join(" ") : "";
+		Log.trace('> $cmd $argline');
+		var exitCode = Sys.command(cmd, args);
+		if (exitCode != 0) {
+			Log.trace('> $cmd exited: $exitCode');
+		}
+		return exitCode;
 	}
 
 	static function resolvePlatform():Platform {
