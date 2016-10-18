@@ -17,6 +17,7 @@ branches:
     - develop
 
 test_script:
+  - haxelib install hxlog
   - haxelib dev hxmake .
   - haxelib run hxmake _
   - hxmake _

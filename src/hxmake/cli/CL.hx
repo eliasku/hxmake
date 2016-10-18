@@ -1,8 +1,8 @@
 package hxmake.cli;
 
-import sys.io.Process;
 import hxlog.Log;
 import sys.FileSystem;
+import sys.io.Process;
 
 class CL {
 
@@ -22,7 +22,7 @@ class CL {
 			result.exitCode = process.exitCode();
 			process.close();
 		}
-		catch(e:Dynamic) {
+		catch (e:Dynamic) {
 			result.exitCode = 0xFFFF;
 		}
 

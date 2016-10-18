@@ -12,6 +12,10 @@ class HaxelibSubmitTask extends Task {
     override public function run() {
         var ext:HaxelibExt = module.get("haxelib", HaxelibExt);
 
+        if(ext == null || !module.isActive) {
+            return;
+        }
+
         if(ext.config.license == null || ext.config.license.length == 0) {
             Log.info('Haxelib: missing license value');
             return;
