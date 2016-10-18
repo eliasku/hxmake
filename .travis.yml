@@ -1,6 +1,7 @@
 language: haxe
 
-sudo: true
+sudo: required
+dist: trusty
 
 os:
   - linux
