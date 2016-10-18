@@ -1,6 +1,7 @@
 .idea/
 **/*.iml
 
+/make.n
 /hxmake
 /hxmake.n
-hxmake.zip
+/hxmake.zip

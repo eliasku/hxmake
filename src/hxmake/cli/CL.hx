@@ -26,9 +26,9 @@ class CL {
 			result.exitCode = 0xFFFF;
 		}
 
-//		Log.trace(result.stdout);
-//		Log.trace(result.stderr);
-//		Log.trace(result.exitCode);
+		Log.trace('stdout: ${result.stdout}');
+		Log.trace('stderr: ${result.stderr}');
+		Log.trace('code: ${result.exitCode}');
 
 		return result;
 	}
