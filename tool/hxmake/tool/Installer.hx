@@ -19,6 +19,10 @@ class Installer {
 			alias = library;
 		}
 
+		if(!Haxelib.checkInstalled("hxlog")) {
+			Haxelib.git("hxlog", "https://github.com/eliasku/hxlog.git");
+		}
+
 		var haxePath = Haxe.path();
 		var libPath = Haxelib.libPath(library);
 		if (libPath == null || !FileSystem.exists(libPath)) {
