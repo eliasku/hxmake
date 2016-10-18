@@ -100,7 +100,7 @@ class Haxelib {
         //proc.close();
         var result = CL.execute(ALIAS, ["path", library].concat(args));
         if(result.exitCode == 0) {
-            opts = result.stdout.split("\n");
+            opts = StringTools.replace(result.stdout, "\r", "").split("\n");
         }
         return opts;
     }

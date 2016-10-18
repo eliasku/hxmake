@@ -25,8 +25,14 @@ class Installer {
 
 		var haxePath = Haxe.path();
 		var libPath = Haxelib.libPath(library);
-		if (libPath == null || !FileSystem.exists(libPath)) {
+		Log.trace("Lib path: " + libPath);
+		if (libPath == null) {
 			Log.info('"$library" is not installed');
+			return false;
+		}
+
+		if(!FileSystem.exists(libPath)) {
+			Log.info('"$library" not found at $libPath');
 			return false;
 		}
 
