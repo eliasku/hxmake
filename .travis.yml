@@ -19,10 +19,7 @@ matrix:
     - haxe: development
 
 install:
-  - haxelib install hxlog
-  - haxelib path hxlog
   - haxelib dev hxmake .
-  - haxelib path hxmake
 
 script:
   - haxelib run hxmake _

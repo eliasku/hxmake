@@ -19,20 +19,17 @@ class Installer {
 			alias = library;
 		}
 
-		if(!Haxelib.checkInstalled("hxlog")) {
-			Haxelib.git("hxlog", "https://github.com/eliasku/hxlog.git");
-		}
+		// dependencies
+		Haxelib.install("hxlog");
 
-		var haxePath = Haxe.path();
 		var libPath = Haxelib.libPath(library);
-		Log.trace("Lib path: " + libPath);
 		if (libPath == null) {
-			Log.info('"$library" is not installed');
+			Log.error('"$library" is not installed');
 			return false;
 		}
 
-		if(!FileSystem.exists(libPath)) {
-			Log.info('"$library" not found at $libPath');
+		if (!FileSystem.exists(libPath)) {
+			Log.error('"$library" not found at $libPath');
 			return false;
 		}
 
@@ -63,6 +60,7 @@ class Installer {
 			Log.info('Please enter password if required...');
 			try {
 				if (CL.platform.isWindows) {
+					var haxePath = Haxe.path();
 					var pn = '$alias.exe';
 					var src = Path.join([libPath, pn]);
 					var dst = Path.join([haxePath, pn]);
