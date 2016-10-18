@@ -20,6 +20,7 @@ matrix:
 
 install:
   - haxelib install hxlog
+  - haxelib path hxlog
   - haxelib dev hxmake .
 
 script:
