@@ -5,7 +5,7 @@ dist: trusty
 
 os:
   - linux
-  - osx
+#  - osx
 
 haxe:
   - "3.2.1"
