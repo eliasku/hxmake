@@ -36,7 +36,6 @@ class HaxelibDependencies extends Task {
 	}
 
 	function installDependencies(dependencies:Map<String, Array<String>>) {
-		Log.trace("1");
 		for (lib in dependencies.keys()) {
 			var sections:Array<String> = dependencies.get(lib);
 			var ver = sections.shift();

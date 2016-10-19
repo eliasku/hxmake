@@ -72,23 +72,28 @@ class TestTask extends Task {
 	function compileTasks() {
 		var result:Array<HaxeTask> = [];
 		for (target in targets) {
+			var targetFilePostfix = "";
+			var isNodeJs = (target == "node" || target == "nodejs");
 			var compileTask = new HaxeTask();
 			compileTask.name = "compile-test-" + target;
 			compileTask.targetName = target;
 			compileTask.hxml.libraries = libraries.concat([testLibrary]);
+			if (isNodeJs) {
+				compileTask.hxml.libraries.push("hxnodejs");
+				targetFilePostfix = ".node";
+			}
 			compileTask.hxml.classPath.push(classPath);
 			compileTask.hxml.dce = DceMode.DceStd;
 			compileTask.hxml.main = main;
 			compileTask.hxml.target = target.parseHaxeTarget();
-			compileTask.hxml.output = compileTask.hxml.target.buildOutput(Path.join([outputDir, outputName]));
+			compileTask.hxml.output = compileTask.hxml.target.buildOutput(
+				Path.join([outputDir, outputName + targetFilePostfix])
+			);
 			switch(compileTask.hxml.target) {
 				case Swf: compileTask.hxml.defines.push("native_trace");
 				case Js: compileTask.hxml.defines.push("travis");
 				case Cs: compileTask.hxml.defines.push("unsafe"); //XXX
 				default:
-			}
-			if (target == "node" || target == "nodejs") {
-				compileTask.hxml.libraries.push("hxnodejs");
 			}
 			compileTask.hxml.debug = debug;
 			compileTask.prepend(compileTask.createSetupTask());

@@ -17,8 +17,8 @@
 	"contributors": [
 		"eliasku"
 	],
-	"releasenote": "Initial release",
-	"version": "0.0.3",
+	"releasenote": "fixes, changelog",
+	"version": "0.1.0",
 	"url": "https://github.com/eliasku/hxmake",
 	"dependencies": {
 		"hxlog": ""
