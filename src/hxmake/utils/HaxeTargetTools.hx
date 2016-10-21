@@ -52,7 +52,7 @@ class HaxeTargetTools {
                 case Js: ".js";
                 case Python: ".py";
                 case Lua: ".lua";
-                case Hl: ".c";
+                case Hl: ".hl";
                 case Cpp: "-cpp";
                 case Cs: "-cs";
                 case Java: "-java";

@@ -1,5 +1,7 @@
 package hxmake.test;
 
+import hxlog.Log;
+import StringTools;
 import haxe.io.Path;
 import hxmake.cli.CL;
 import hxmake.test.flash.InstallFlashPlayer;
@@ -89,6 +91,10 @@ class TestTask extends Task {
 			compileTask.hxml.output = compileTask.hxml.target.buildOutput(
 				Path.join([outputDir, outputName + targetFilePostfix])
 			);
+			// TODO: rethink building output name
+			if(target == "c") {
+				compileTask.hxml.output = StringTools.replace(compileTask.hxml.output, ".hl", ".c");
+			}
 			switch(compileTask.hxml.target) {
 				case Swf: compileTask.hxml.defines.push("native_trace");
 				case Js: compileTask.hxml.defines.push("travis");
@@ -201,7 +207,13 @@ class TestTask extends Task {
 			case Java:
 				runTask.set("java", ["-jar", bin]);
 			case Hl:
-				fail('Target $target is not supported yet');
+				Log.warning("Running HashLink target is in progress...");
+				if(target == "hl") {
+					runTask.set("hl", [bin]);
+				}
+				else if(target == "c") {
+					// todo:
+				}
 		}
 		runTask.name = 'run-test-$target';
 		return runTask;
