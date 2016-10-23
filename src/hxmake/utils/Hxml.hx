@@ -10,7 +10,8 @@ class Hxml {
 
     public var libraries:Array<String> = [];
     public var classPath:Array<String> = [];
-    public var main:String;
+
+    public var main:Null<String>;
     public var defines:Array<String> = [];
     public var macros:Array<String> = [];
     public var commands:Array<String> = [];
@@ -25,6 +26,12 @@ class Hxml {
     public var showTimes:Bool = false;
     public var showMacroTimes:Bool = false;
     public var noTraces:Bool = false;
+
+    // adds --no-output
+    public var noOutput:Bool = false;
+
+    // generate -xml $value
+    public var xml:Null<String> = null;
 
     public var dce:Null<DceMode> = null;
 
@@ -41,12 +48,25 @@ class Hxml {
             result.push(cp);
         }
 
-        result.push("-main");
-        result.push(main);
+        if(main != null) {
+            result.push("-main");
+            result.push(main);
+        }
 
         for(def in defines) {
             result.push("-D");
             result.push(def);
+        }
+
+        if(dce != null) {
+            result.push("-dce");
+            result.push(
+                switch(dce) {
+                    case DceNo: "no";
+                    case DceStd: "std";
+                    case DceFull: "full";
+                }
+            );
         }
 
         if(showTimes) {
@@ -60,6 +80,10 @@ class Hxml {
 
         if(noTraces) {
             result.push("--no-traces");
+        }
+
+        if(noOutput) {
+            result.push("--no-output");
         }
 
         if(debug) {
@@ -78,6 +102,11 @@ class Hxml {
             }
         }
 
+        if(xml != null) {
+            result.push("-xml");
+            result.push(xml);
+        }
+
         if(target != null) {
             result.push(target.compileOption());
             if(output != null) {
@@ -93,17 +122,6 @@ class Hxml {
         for(cmd in commands) {
             result.push("-cmd");
             result.push(cmd);
-        }
-
-        if(dce != null) {
-            result.push("-dce");
-            result.push(
-                switch(dce) {
-                    case DceNo: "no";
-                    case DceStd: "std";
-                    case DceFull: "full";
-                }
-            );
         }
 
         return result;
