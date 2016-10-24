@@ -199,9 +199,9 @@ class IdeaProjectTask extends Task {
 				if (!isModule(dependencyId)) {
 					var isGlobal = dependencyValues.indexOf("global") >= 0;
 					var cp = Haxelib.classPath(dependencyId, isGlobal);
-					libraryInfo.classPath.push(Haxelib.classPath(dependencyId, isGlobal));
+					libraryInfo.classPath.push(cp);
 
-					var makePluginPath = Path.join([Haxelib.libPath(dependencyId, isGlobal), "makeplugin"]);
+					var makePluginPath = Path.join([Haxelib.resolveRootPathFromClassPath(cp), "makeplugin"]);
 					if(FileSystem.exists(makePluginPath)) {
 						libraryInfo.classPath.push(makePluginPath);
 					}

@@ -61,15 +61,18 @@ class Haxelib {
     // TODO: add class path support (make search from haxelib repo path)
     // TODO: support for version
     public static function libPath(library:String, forceGlobal:Bool = false):String {
-        var cp = classPath(library, forceGlobal);
-        if(cp == null) {
+        return resolveRootPathFromClassPath(classPath(library, forceGlobal));
+    }
+
+    public static function resolveRootPathFromClassPath(path:String):String {
+        if(path == null) {
             return null;
         }
         // FIXME: temproary workaround
-        if(Path.removeTrailingSlashes(cp).endsWith("src")) {
-            return Path.normalize(Path.join([cp, ".."]));
+        if(Path.removeTrailingSlashes(path).endsWith("src")) {
+            return Path.normalize(Path.join([path, ".."]));
         }
-        return cp;
+        return path;
     }
 
     public static function classPath(library:String, forceGlobal:Bool = false):String {
