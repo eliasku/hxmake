@@ -65,8 +65,8 @@ class IdeaUserConfig {
 		Log.trace('Search IntelliJ IDEA Preferences in: $userHome');
 
 		var v = IDEA_VERSION_END;
-		var sv = ["", ".1"];
-		var pv = ["", "20"];
+		var sv = [".3", ".2", ".1", ""];
+		var pv = ["20", ""];
 		var svi = 0;
 		while (v >= IDEA_VERSION_START) {
 			for (svi in 0...sv.length) {
