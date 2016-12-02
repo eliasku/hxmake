@@ -1,11 +1,10 @@
 package hxmake;
 
 import haxe.Timer;
-import haxe.io.Path;
 import hxlog.Log;
-import hxmake.cli.CL;
 import hxmake.cli.LogConfig;
-import hxmake.cli.FileUtil;
+import hxmake.core.ModuleGraph;
+import hxmake.core.TaskGraph;
 
 /***
 
@@ -32,206 +31,47 @@ import hxmake.cli.FileUtil;
 
 **/
 
-@:access(hxmake.Module)
-@:access(hxmake.Task)
-@:access(hxmake.Plugin)
 class Project {
 
-	public var args(default, null):Array<String> = [];
-	public var modules(default, null):Array<Module> = [];
-	public var roots(default, null):Array<Module> = [];
+	public var args(default, null):Array<String>;
+	public var modules(get, never):Array<Module>;
 
-	function new(buildInArguments:Array<String>, isCompiler:Bool) {
+	var _taskGraph:TaskGraph;
+	var _moduleGraph:ModuleGraph;
+
+	function new(buildArguments:Array<String>, isCompiler:Bool) {
 		LogConfig.initialize();
-		modules = _MODULES != null ? _MODULES : [];
-		args = buildInArguments;
-		if (!isCompiler) {
-			args = args.concat(Sys.args());
+
+		if (isCompiler) {
+			Log.trace("[MakeProject] Compiler mode");
 		}
+
+		args = isCompiler ? buildArguments : buildArguments.concat(Sys.args());
+		_moduleGraph = @:privateAccess new ModuleGraph();
+		_taskGraph = @:privateAccess new TaskGraph(args, _moduleGraph.modules);
 	}
 
 	function run() {
 		var startTime = Timer.stamp();
 
-		for (module in modules) {
-			module.project = this;
-			module.isMain = FileUtil.pathEquals(module.path, Path.directory(Sys.getCwd()));
-		}
+		_moduleGraph.prepare(this);
+		_moduleGraph.resolveHierarchy();
+		_moduleGraph.printHierarchies();
+		_moduleGraph.initialize();
 
-		buildTree();
-		findRoots();
-		for (root in roots) {
-			drawGraph(root);
-		}
+		_taskGraph.build();
+		_taskGraph.printTasks();
+		_taskGraph.run();
 
-		for (module in modules) {
-			module.__initialize();
-
-			// apply default initialization
-			// TODO: move to internal plugin
-			if (module.config.makePath.indexOf("make") < 0) {
-				module.config.makePath.push("make");
-			}
-			if (module.name != "hxmake" && module.config.devDependencies.get("hxmake") == null) {
-				module.config.devDependencies.set("hxmake", "haxelib;global");
-			}
-		}
-
-		var activeTasks:Array<String> = args.copy();
-		var process:Bool = true;
-		while (process) {
-			process = false;
-			for (module in modules) {
-				var tasks:Map<String, Task> = module._tasks;
-				for (tid in tasks.keys()) {
-					var ct = tasks.get(tid);
-					if (activeTasks.indexOf(tid) >= 0) {
-						for (depTask in ct.__depends) {
-							if (activeTasks.indexOf(depTask) < 0) {
-								process = true;
-								activeTasks.push(depTask);
-							}
-						}
-					}
-				}
-			}
-		}
-
-		var taskList:Array<TaskInst> = [];
-		var taskBeforeAfter:Map<String, String> = new Map();
-		for (module in modules) {
-			var tasks:Map<String, Task> = module._tasks;
-			CL.workingDir.push(module.path);
-			for (tid in tasks.keys()) {
-				if (activeTasks.indexOf(tid) >= 0) {
-					var t = tasks.get(tid);
-					t._configure();
-					taskList.push({
-						name: tid,
-						task: t
-					});
-					for (taskAfter in t.__before) {
-						taskBeforeAfter.set(tid, taskAfter);
-					}
-
-					for (taskBefore in t.__after) {
-						taskBeforeAfter.set(taskBefore, tid);
-					}
-				}
-			}
-			CL.workingDir.pop();
-		}
-
-		taskList.sort(function(a:TaskInst, b:TaskInst) {
-			var after = taskBeforeAfter.get(b.name);
-			var prevAfter:String;
-			while (after != null) {
-				if (a.name == after) {
-					return 1;
-				}
-				after = taskBeforeAfter.get(after);
-			}
-			return 0;
-		});
-
-		Log.info("Task dependency order: ");
-		for (ot in taskList) {
-			Log.info("\t" + ot.task.module.name + "." + ot.name);
-		}
-
-		for (ot in taskList) {
-			if (ot.task.enabled) {
-				CL.workingDir.push(ot.task.module.path);
-				ot.task._run();
-				CL.workingDir.pop();
-			}
-		}
-
-		for (module in modules) {
-			module.finish();
-		}
+		_moduleGraph.finish();
 
 		var totalTime = Std.int(100 * (Timer.stamp() - startTime)) / 100;
 		Log.info("Make time: " + totalTime + " sec.");
 		Sys.exit(0);
 	}
 
-	function buildTree() {
-		var connections:Map<String, Array<String>> = _MODULES_CONNECTIONS;
-		if (connections == null) {
-			return;
-		}
-
-		for (parentPath in connections.keys()) {
-			for (parent in modules) {
-				if (parent.path == parentPath) {
-					for (childPath in connections.get(parentPath)) {
-						for (child in modules) {
-							if (child.path == childPath) {
-								parent.addSubModule(child);
-							}
-						}
-					}
-				}
-			}
-		}
+	inline function get_modules():Array<Module> {
+		return _moduleGraph.modules;
 	}
 
-	function findRoots() {
-		for (module in modules) {
-			if (module.parent == null) {
-				roots.push(module);
-			}
-		}
-	}
-
-	function drawGraph(module:Module, pref:String = "", main:Bool = false) {
-		var runDir = Path.directory(Sys.getCwd());
-		var isRoot = module.parent == null;
-		var left = isRoot ? "*-" : "--";
-		var icon = "     ";
-		if (main || runDir == module.path) {
-			icon = main ? "[+]  " : "[^]  ";
-			main = true;
-		}
-
-		Log.info(icon + pref + left + " " + module.name + " @ " + module.path);
-		var i = 0;
-		for (child in module.children) {
-			var sym = ++i == module.children.length ? "`" : "|";
-			var indent = isRoot ? "" : "   ";
-			drawGraph(child, pref + indent + sym, main);
-		}
-	}
-
-	static var _MODULES:Array<Module>;
-	static var _MODULES_CONNECTIONS:Map<String, Array<String>>;
-
-	static function __registerModule(module:Module) {
-		if (_MODULES == null) {
-			_MODULES = [];
-		}
-		_MODULES.push(module);
-	}
-
-	public static function connect(parentModulePath:String, childModulePath:String) {
-		if (parentModulePath == null || parentModulePath.length == 0) {
-			return;
-		}
-
-		if (_MODULES_CONNECTIONS == null) {
-			_MODULES_CONNECTIONS = new Map();
-		}
-		var children:Array<String> = _MODULES_CONNECTIONS.get(parentModulePath);
-		if (children == null) {
-			children = [];
-			_MODULES_CONNECTIONS.set(parentModulePath, children);
-		}
-		children.push(childModulePath);
-	}
-}
-
-private typedef TaskInst = {
-	var task:Task;
-	var name:String;
 }

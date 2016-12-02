@@ -1,36 +1,18 @@
 package hxmake.idea;
 
+import hxmake.utils.CachedHaxelib;
+import haxe.io.Path;
 import hxlog.Log;
-import hxmake.idea.IdeaProjectTask.IdeaLibraryInfo;
+import hxmake.cli.FileUtil;
 import hxmake.utils.Haxelib;
 import sys.FileSystem;
-import hxmake.macr.CompileTime;
-import hxmake.cli.CL;
-import hxmake.cli.FileUtil;
 import sys.io.File;
-import haxe.io.Path;
-import haxe.Template;
 
 using StringTools;
 
-class IdeaLibraryInfo {
-	public var name:String;
-	public var classPath:Array<String>;
-
-	public function new(name:String, classPath:Array<String>) {
-		this.name = name;
-		this.classPath = classPath;
-	}
-}
-
 class IdeaProjectTask extends Task {
 
-	var _iml:Template;
-	var _xmlModules:Template;
-	var _xmlHaxe:Template;
-	var _xmlRunConfig:Template;
-	var _ideaConfig:IdeaUserConfig;
-
+	var _idea:IdeaContext;
 	var _modules:Array<Module>;
 	var _rootModule:Module;
 	var _depCache:Map<String, IdeaLibraryInfo> = new Map();
@@ -38,12 +20,7 @@ class IdeaProjectTask extends Task {
 	public function new() {}
 
 	override public function run() {
-		_iml = new Template(CompileTime.readFile("../resources/idea/module.iml.xml"));
-		_xmlModules = new Template(CompileTime.readFile("../resources/idea/modules.xml"));
-		_xmlHaxe = new Template(CompileTime.readFile("../resources/idea/haxe.xml"));
-		_xmlRunConfig = new Template(CompileTime.readFile("../resources/idea/runConfiguration.xml"));
-		_ideaConfig = new IdeaUserConfig();
-
+		_idea = new IdeaContext();
 		_modules = module.allModules;
 		_rootModule = module;
 		for (mod in _modules) {
@@ -51,7 +28,7 @@ class IdeaProjectTask extends Task {
 		}
 		createProject(_rootModule.path);
 		createRun(_rootModule.path);
-		openIdeaProject(_rootModule.path);
+		_idea.openProject(_rootModule.path);
 	}
 
 	function createModule(module:Module) {
@@ -59,7 +36,7 @@ class IdeaProjectTask extends Task {
 		var libraries = getExternalLibraries(module);
 
 		var testPath = module.config.testPath.concat(module.config.makePath);
-		if(FileSystem.exists(Path.join([module.path, "makeplugin"]))) {
+		if (FileUtil.dirExists(Path.join([module.path, "makeplugin"]))) {
 			testPath.push("makeplugin");
 		}
 
@@ -69,8 +46,8 @@ class IdeaProjectTask extends Task {
 			moduleLibraries: libraries,
 			sourceDirs: module.config.classPath,
 			testDirs: testPath,
-			flexSdkName: _ideaConfig.getFlexSdkName(),
-			haxeSdkName: _ideaConfig.getHaxeSdkName(),
+			flexSdkName: _idea.getFlexSdkName(),
+			haxeSdkName: _idea.getHaxeSdkName(),
 			buildConfig: 1,
 			projectPath: "",
 			projectTarget: "",
@@ -98,7 +75,7 @@ class IdeaProjectTask extends Task {
 			}
 		}
 
-		var iml = _iml.execute(context);
+		var iml = _idea.iml.execute(context);
 		Log.info("Writing " + module.name + ".iml");
 		FileUtil.deleteFiles(module.path, "*.iml");
 		File.saveContent(Path.join([module.path, '${module.name}.iml']), iml);
@@ -132,7 +109,7 @@ class IdeaProjectTask extends Task {
 
 		var haxeXmlPath = Path.join([dotIdeaPath, "haxe.xml"]);
 		if (!FileSystem.exists(haxeXmlPath)) {
-			File.saveContent(haxeXmlPath, _xmlHaxe.execute(context));
+			File.saveContent(haxeXmlPath, _idea.xmlHaxe.execute(context));
 		}
 
 		var workspaceXmlPath = Path.join([dotIdeaPath, "workspace.xml"]);
@@ -141,7 +118,7 @@ class IdeaProjectTask extends Task {
 		}
 
 		var modulesXmlPath = Path.join([dotIdeaPath, "modules.xml"]);
-		File.saveContent(modulesXmlPath, _xmlModules.execute(context));
+		File.saveContent(modulesXmlPath, _idea.xmlModules.execute(context));
 	}
 
 	function createRun(path:String) {
@@ -162,7 +139,7 @@ class IdeaProjectTask extends Task {
 						FILE_TO_RUN: Path.join([module.path, run.file])
 					};
 					var runConfigurationPath = Path.join([rcPath, '$name.xml']);
-					var runConfigurationContent = _xmlRunConfig.execute(context);
+					var runConfigurationContent = _idea.xmlRunConfig.execute(context);
 					Log.trace('Run Configuration: $runConfigurationPath');
 					File.saveContent(runConfigurationPath, runConfigurationContent);
 				}
@@ -192,89 +169,27 @@ class IdeaProjectTask extends Task {
 		var deps = module.config.getAllDependencies();
 		for (dependencyId in deps.keys()) {
 			var libraryInfo:IdeaLibraryInfo = _depCache.get(dependencyId);
-			if(libraryInfo == null) {
+			if (libraryInfo == null) {
 				var dependencyValues:Array<String> = deps.get(dependencyId).split(";");
 				var depVer = dependencyValues.shift();
 				libraryInfo = new IdeaLibraryInfo(dependencyId, []);
 				if (!isModule(dependencyId)) {
 					var isGlobal = dependencyValues.indexOf("global") >= 0;
-					var cp = Haxelib.classPath(dependencyId, isGlobal);
+					var cp = CachedHaxelib.classPath(dependencyId, isGlobal);
 					libraryInfo.classPath.push(cp);
 
 					var makePluginPath = Path.join([Haxelib.resolveRootPathFromClassPath(cp), "makeplugin"]);
-					if(FileSystem.exists(makePluginPath)) {
+					if (FileSystem.exists(makePluginPath)) {
 						libraryInfo.classPath.push(makePluginPath);
 					}
 				}
 				_depCache.set(dependencyId, libraryInfo);
 			}
 			// is NOT Module dependency
-			if(libraryInfo.classPath.length > 0) {
+			if (libraryInfo.classPath.length > 0) {
 				libraries.push(libraryInfo);
 			}
 		}
 		return libraries;
-	}
-
-	static function openIdeaProject(path:String) {
-		var ideaPath = getIdeaInstallPath();
-		if(ideaPath != null) {
-			if(CL.platform.isMac) {
-				CL.execute("open", ["-a", Path.join([ideaPath, "Contents/MacOS/idea"]), "--args", path]);
-			}
-			else if(CL.platform.isWindows) {
-				CL.execute("start", ["/b", Path.join([ideaPath, "bin/idea.exe"]), path]);
-			}
-			else if(CL.platform.isLinux) {
-				// TODO:
-			}
-		}
-		else {
-			Log.info("IDEA executable is not found");
-		}
-	}
-
-	static function getIdeaInstallPath() {
-		var candidates = [];
-
-		if(CL.platform.isMac) {
-			var applicationsDirs = ["/Applications", Path.join([CL.getUserHome(), "Applications"])];
-			for(applicationsDir in applicationsDirs) {
-				if(FileSystem.exists(applicationsDir) && FileSystem.isDirectory(applicationsDir)) {
-					var list = FileSystem.readDirectory(applicationsDir);
-					for(appDir in list) {
-						if(appDir.indexOf("IntelliJ IDEA") >= 0) {
-							candidates.push(Path.join([applicationsDir, appDir]));
-						}
-					}
-				}
-			}
-		}
-		else if(CL.platform.isWindows) {
-			var applicationsDirs = [
-				Sys.getEnv("HOMEDRIVE") + "\\Program Files (x86)\\JetBrains",
-				Sys.getEnv("HOMEDRIVE") + "\\Program Files\\JetBrains",
-				Sys.getEnv("HOMEDRIVE") + "\\Program Files (x86)",
-				Sys.getEnv("HOMEDRIVE") + "\\Program Files"
-			];
-			for(applicationsDir in applicationsDirs) {
-				if(FileSystem.exists(applicationsDir) && FileSystem.isDirectory(applicationsDir)) {
-					var list = FileSystem.readDirectory(applicationsDir);
-					for(appDir in list) {
-						if(appDir.indexOf("IntelliJ IDEA") >= 0) {
-							candidates.push(Path.join([applicationsDir, appDir]));
-						}
-					}
-				}
-			}
-		}
-
-		if(candidates.length > 0) {
-			candidates.sort(function (a:String, b:String) {
-				return -Reflect.compare(a, b);
-			});
-			return candidates[0];
-		}
-		return null;
 	}
 }

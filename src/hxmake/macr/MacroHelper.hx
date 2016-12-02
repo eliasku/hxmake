@@ -10,7 +10,7 @@ class MacroHelper {
 	public static function loadFileAsString(path:String) {
 		try {
 			var p = Context.resolvePath(path);
-			Context.registerModuleDependency(Context.getLocalModule(),p);
+			Context.registerModuleDependency(Context.getLocalModule(), p);
 			return sys.io.File.getContent(p);
 		}
 		catch(e:Dynamic) {

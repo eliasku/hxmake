@@ -1,14 +1,12 @@
 package hxmake.macr;
 
-import haxe.macro.Compiler;
-import haxe.macro.Expr;
 import haxe.macro.Context;
+import haxe.macro.Expr;
 
 class InitMacro {
 	public static function generateMainClass(initialMakeDir:String, isCompiler:Bool, args:Array<String>) {
 		PluginInclude.scan(initialMakeDir);
-		Compiler.addClassPath(initialMakeDir);
-		Compiler.include("", true, null, [initialMakeDir]);
+		CompileTime.addMakePath(initialMakeDir);
 
 		var pos = Context.currentPos();
 		var fields:Array<Field> = Context.getBuildFields();

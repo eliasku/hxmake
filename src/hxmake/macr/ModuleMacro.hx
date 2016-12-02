@@ -3,7 +3,6 @@ package hxmake.macr;
 import hxlog.Log;
 import haxe.macro.Expr.Access;
 import sys.FileSystem;
-import haxe.macro.Compiler;
 import haxe.io.Path;
 import haxe.macro.Type;
 import haxe.macro.Context;
@@ -37,9 +36,9 @@ class ModuleMacro {
 			}
 
 			PluginInclude.scan(cp);
-			Compiler.addClassPath(cp);
-			Compiler.include("", true, null, [cp]);
-			childrenExprs.push(macro hxmake.Project.connect($v{modulePath}, $v{childModulePath}));
+			CompileTime.addMakePath(cp);
+
+			childrenExprs.push(macro hxmake.core.CompiledProjectData.createModuleConnection($v{modulePath}, $v{childModulePath}));
 		}
 
 		processMakeLibraries(":lib", cls.meta);
@@ -48,8 +47,7 @@ class ModuleMacro {
 			var parentMakeDir = FileSystem.absolutePath(Path.join([modulePath, "..", "make"]));
 			if(FileSystem.exists(parentMakeDir) && FileSystem.isDirectory(parentMakeDir)) {
 				PluginInclude.scan(parentMakeDir);
-				Compiler.addClassPath(parentMakeDir);
-				Compiler.include("", true, null, [parentMakeDir]);
+				CompileTime.addMakePath(parentMakeDir);
 			}
 		}
 
@@ -64,7 +62,7 @@ class ModuleMacro {
 				module.name = $v{guessModuleName};
 			}
 			module.path = $v{modulePath};
-			@:privateAccess hxmake.Project.__registerModule(module);
+			hxmake.core.CompiledProjectData.registerModule(module);
 			$b{childrenExprs}
 		}, pos));
 

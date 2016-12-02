@@ -1,5 +1,6 @@
 package hxmake.haxelib;
 
+import hxmake.utils.CachedHaxelib;
 import hxlog.Log;
 import hxmake.utils.Haxelib;
 
@@ -57,7 +58,7 @@ class HaxelibDependencies extends Task {
 				}
 			}
 			if (isHaxelib) {
-				if (Haxelib.checkInstalled(lib, isGlobal)) {
+				if (CachedHaxelib.checkInstalled(lib, isGlobal)) {
 					Haxelib.update(lib, isGlobal);
 				}
 				else {

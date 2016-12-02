@@ -69,4 +69,12 @@ class FileUtil {
 	public static function pathEquals(path1:String, path2:String):Bool {
 		return StringTools.replace(path1, "\\", "/") == StringTools.replace(path2, "\\", "/");
 	}
+
+	public static function fileExists(path:String):Bool {
+		return FileSystem.exists(path) && !FileSystem.isDirectory(path);
+	}
+
+	public static function dirExists(path:String):Bool {
+		return FileSystem.exists(path) && FileSystem.isDirectory(path);
+	}
 }
