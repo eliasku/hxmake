@@ -22,6 +22,9 @@ class HaxelibTask extends Task {
 		}
 
 		if (ext.installDev) {
+			if(ext.config.name == null) {
+				ext.config.name = module.name;
+			}
 			Haxelib.dev(ext.config.name, module.path);
 		}
 	}

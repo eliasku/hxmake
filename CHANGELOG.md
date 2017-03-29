@@ -1,8 +1,9 @@
-# v0.1.2
+# v0.1.3
 
 - support `@:module_path` for external make modules declaration
 - idea project excludes modules without idea plugin declaration
 - fix task order comparator
+- fix haxelib install dev name resolving
 
 # v0.1.0
 
