@@ -35,6 +35,11 @@ class MakeRunner {
 		else {
 			hxml.target = HaxeTarget.Neko;
 			hxml.output = "make.n";
+
+			// TODO: switch to HL?
+			// hxml.target = HaxeTarget.Hl;
+			// hxml.defines.push("interp");
+			// hxml.output = "make.hl";
 		}
 
 		hxml.macros.push('$INIT_MACRO_METHOD("$makePath",$isCompiler,[${toLiteralsArrayString(builtInArguments)}])');

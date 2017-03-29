@@ -1,9 +1,9 @@
 package hxmake.idea;
 
-import hxmake.utils.CachedHaxelib;
 import haxe.io.Path;
 import hxlog.Log;
 import hxmake.cli.FileUtil;
+import hxmake.utils.CachedHaxelib;
 import hxmake.utils.Haxelib;
 import sys.FileSystem;
 import sys.io.File;
@@ -32,6 +32,12 @@ class IdeaProjectTask extends Task {
 	}
 
 	function createModule(module:Module) {
+
+		var ideaData:IdeaData = module.get("idea", IdeaData);
+		if (ideaData == null) {
+			return;
+		}
+
 		var modules = getModules(module);
 		var libraries = getExternalLibraries(module);
 
@@ -54,25 +60,22 @@ class IdeaProjectTask extends Task {
 			skipCompilation: true
 		};
 
-		var ideaData:IdeaData = module.get("idea", IdeaData);
-		if (ideaData != null) {
-			if (ideaData.hxml != null) {
-				var buildHxml = ideaData.hxml;
-				var p = Path.join(["$MODULE_DIR$", buildHxml]);
-				var t = "Flash";
-				context.buildConfig = 1;
-				context.skipCompilation = false;
-				context.projectPath = '<option name="hxmlPath" value="$p" />';
-				context.projectTarget = '<option name="haxeTarget" value="$t" />';
-			}
-			else if (ideaData.lime != null) {
-				var limeProjectPath = ideaData.lime;
-				var p = Path.join(["$MODULE_DIR$", limeProjectPath]);
-				var t = "Flash";
-				context.buildConfig = 3;
-				context.projectPath = '<option name="openFLPath" value="$p" />';
-				context.projectTarget = '<option name="openFLTarget" value="$t" />';
-			}
+		if (ideaData.hxml != null) {
+			var buildHxml = ideaData.hxml;
+			var p = Path.join(["$MODULE_DIR$", buildHxml]);
+			var t = "Flash";
+			context.buildConfig = 1;
+			context.skipCompilation = false;
+			context.projectPath = '<option name="hxmlPath" value="$p" />';
+			context.projectTarget = '<option name="haxeTarget" value="$t" />';
+		}
+		else if (ideaData.lime != null) {
+			var limeProjectPath = ideaData.lime;
+			var p = Path.join(["$MODULE_DIR$", limeProjectPath]);
+			var t = "Flash";
+			context.buildConfig = 3;
+			context.projectPath = '<option name="openFLPath" value="$p" />';
+			context.projectTarget = '<option name="openFLTarget" value="$t" />';
 		}
 
 		var iml = _idea.iml.execute(context);
@@ -90,14 +93,17 @@ class IdeaProjectTask extends Task {
 
 		for (module in _modules) {
 			var ideaData:IdeaData = module.get("idea", IdeaData);
+			if (ideaData == null) {
+				continue;
+			}
+
 			var modulePath:String = module.path.replace(path, "");
 			var moduleData = {
 				path: '$modulePath/${module.name}.iml',
 				groupAddon: ""
 			};
 			context.modules.push(moduleData);
-
-			if (ideaData != null && ideaData.group != null) {
+			if (ideaData.group != null) {
 				moduleData.groupAddon = ' group="${ideaData.group}" ';
 			}
 		}
@@ -149,7 +155,7 @@ class IdeaProjectTask extends Task {
 
 	function isModule(libraryName:String):Bool {
 		return Lambda.exists(_modules, function(m:Module) {
-			return m.name == libraryName;
+			return m.name == libraryName && m.get("idea", IdeaData) != null;
 		});
 	}
 

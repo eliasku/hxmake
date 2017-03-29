@@ -18,8 +18,18 @@ class ModuleMacro {
 		var fields:Array<Field> = Context.getBuildFields();
 		cls.meta.add(":keep", [], pos);
 		var modulePath = getModulePath(Context.getLocalModule());
-		var guessModuleName = modulePath.split("/").pop();
 		var childrenExprs:Array<Expr> = [];
+
+		Sys.println(modulePath);
+		var changedModulePath:Array<String> = MacroHelper.extractMetaStrings(cls.meta, ":module_path");
+		if(changedModulePath.length > 0) {
+			var parentPath = modulePath;
+			modulePath = FileSystem.absolutePath(Path.join([modulePath, changedModulePath[0]]));
+			Sys.println("CHANGED TO: " + modulePath);
+			//childrenExprs.push(macro hxmake.core.CompiledProjectData.createModuleConnection($v{modulePath}, $v{childModulePath}));
+		}
+
+		var guessModuleName = modulePath.split("/").pop();
 
 		var includes:Array<String> = MacroHelper.extractMetaStrings(cls.meta, ":include");
 		for(include in includes) {
@@ -30,13 +40,13 @@ class ModuleMacro {
 			}
 
 			var cp = Path.join([childModulePath, "make"]);
-			if(!FileSystem.exists(cp)) {
-				Log.warning('Make directory is not found for module "$include"');
-				continue;
+			if(FileSystem.exists(cp)) {
+				PluginInclude.scan(cp);
+				CompileTime.addMakePath(cp);
 			}
-
-			PluginInclude.scan(cp);
-			CompileTime.addMakePath(cp);
+			else {
+				Log.warning('Make directory is not found for module "$include"');
+			}
 
 			childrenExprs.push(macro hxmake.core.CompiledProjectData.createModuleConnection($v{modulePath}, $v{childModulePath}));
 		}
