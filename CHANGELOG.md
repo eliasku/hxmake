@@ -1,3 +1,8 @@
+# v0.1.1
+
+- support `@:module_path` for external make modules declaration
+- idea project excludes modules without idea plugin declaration
+
 # v0.1.0
 
 - `hxlog` for logging. Dependency has been added
