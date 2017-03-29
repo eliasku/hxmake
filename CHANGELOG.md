@@ -2,6 +2,7 @@
 
 - support `@:module_path` for external make modules declaration
 - idea project excludes modules without idea plugin declaration
+- fix task order comparator
 
 # v0.1.0
 

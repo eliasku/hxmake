@@ -103,6 +103,6 @@ class TaskGraph {
 			}
 			after = _orderData.get(after);
 		}
-		return 0;
+		return -1;
 	}
 }
