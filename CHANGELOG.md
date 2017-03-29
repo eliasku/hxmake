@@ -1,4 +1,4 @@
-# v0.1.1
+# v0.1.2
 
 - support `@:module_path` for external make modules declaration
 - idea project excludes modules without idea plugin declaration
