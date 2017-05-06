@@ -21,7 +21,8 @@ class TestTask extends Task {
 	public var targets:Array<String> = [];
 	public var libraries:Array<String> = [];
 	public var testLibrary:String = "utest";
-	public var classPath:String = "test";
+	public var classPath:Array<String> = [];
+	public var defines:Array<String> = [];
 	public var main:String = "TestAll";
 	public var outputDir:String = "bin";
 	public var outputName:String = "test";
@@ -84,7 +85,7 @@ class TestTask extends Task {
 				compileTask.hxml.libraries.push("hxnodejs");
 				targetFilePostfix = ".node";
 			}
-			compileTask.hxml.classPath.push(classPath);
+			compileTask.hxml.classPath = compileTask.hxml.classPath.concat(classPath);
 			compileTask.hxml.dce = DceMode.DceStd;
 			compileTask.hxml.main = main;
 			compileTask.hxml.target = target.parseHaxeTarget();
@@ -101,6 +102,7 @@ class TestTask extends Task {
 				case Cs: compileTask.hxml.defines.push("unsafe"); //XXX
 				default:
 			}
+			compileTask.hxml.defines = defines.concat(compileTask.hxml.defines);
 			compileTask.hxml.debug = debug;
 			compileTask.prepend(compileTask.createSetupTask());
 			result.push(compileTask);
