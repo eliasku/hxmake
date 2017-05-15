@@ -1,12 +1,13 @@
 package hxmake.utils;
 
+import hxmake.haxelib.HaxelibInfo.HaxelibInfo;
+import hxmake.haxelib.HaxelibInfo.VcsType;
+import hxmake.haxelib.HaxelibInfo.VcsInfo;
 import hxmake.cli.CL;
 import hxlog.Log;
 import sys.FileSystem;
 import haxe.io.Path;
-import sys.FileSystem;
 import haxe.io.Input;
-import sys.io.Process;
 
 using StringTools;
 
@@ -24,11 +25,43 @@ class Haxelib {
     }
 
     public static function git(library:String, url:String, forceGlobal:Bool = false):Bool {
-        return exec(["git", library, url], forceGlobal ? ["--global"] : null);
+        return vcs(VcsType.GIT, library, url, null, null, null, forceGlobal);
+    }
+
+    public static function vcs(vcsType:VcsType, library:String, url:String, branch:String = null, subDir:String = null, version:String = null, forceGlobal:Bool = false):Bool {
+        var vcsName:String;
+        switch(vcsType) {
+            case VcsType.GIT:
+                vcsName = "git";
+            case VcsType.Mercurial:
+                vcsName = "hg";
+            case _:
+                Log.error("Unsuported vcs type " + vcsType);
+                return false;
+        }
+
+        var commands:Array<String> = [vcsName, library, url];
+        commands.push(branch == null ? "" : branch);
+        commands.push(subDir == null ? "" : subDir);
+        commands.push(version == null ? "" : version);
+        return exec(commands, forceGlobal ? ["--global"] : null);
+    }
+
+    public static function updateLib(library:HaxelibInfo):Bool {
+        return update(library.name, library.isGlobal);
     }
 
     public static function update(library:String, forceGlobal:Bool = false):Bool {
         return exec(["update", library], forceGlobal ? ["--global"] : null);
+    }
+
+    public static function installLib(library:HaxelibInfo):Bool {
+        if (library.vcsInfo != null) {
+            var vcsInfo:VcsInfo = library.vcsInfo;
+            return vcs(vcsInfo.type, library.name, vcsInfo.url, vcsInfo.branch, vcsInfo.subDir, library.version, library.isGlobal);
+        } else {
+            return install(library.name, library.version, {global: library.isGlobal});
+        }
     }
 
     public static function install(library:String, ?version:String, ?options:{?always:Bool, ?silent:Bool, ?global:Bool}):Bool {
