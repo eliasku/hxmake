@@ -10,9 +10,9 @@ import hxmake.utils.Haxelib;
 using StringTools;
 
 class HaxelibDependencies extends Task {
-    private static inline var HAXELIB_PREFIX:String = "haxelib:";
-    private static inline var HAXELIB_GIT_PREFIX:String = "haxelib-git:";
-    private static inline var HAXELIB_HG_PREFIX:String = "haxelib-hg:";
+	public static inline var HAXELIB_PREFIX:String = "haxelib:";
+	public static inline var HAXELIB_GIT_PREFIX:String = "haxelib:git:";
+	public static inline var HAXELIB_HG_PREFIX:String = "haxelib:hg:";
 
 	public function new() {}
 
@@ -62,15 +62,8 @@ class HaxelibDependencies extends Task {
 		if (version == "haxelib") {
 			return new HaxelibInfo(lib); // TODO: Probably need add global detecting here.
 		}
+
 		var isGlobal:Bool = sections.indexOf("global") != -1;
-		if (version.startsWith(HAXELIB_PREFIX)) {
-			var versionName:String = version.substring(HAXELIB_PREFIX.length);
-			if (versionName.endsWith(".git")) {
-				Log.warning(moduleName + '(Library = ${lib}). Don\'t use haxelib: for git repositories. Deprecated. Use ${HAXELIB_PREFIX}{url} [{branch}] [{subDir}] [{version}]');
-				return new HaxelibInfo(lib, null, isGlobal, new VcsInfo(VcsType.GIT, versionName));
-			}
-			return new HaxelibInfo(lib, versionName, isGlobal);
-		}
 
 		if (version.startsWith(HAXELIB_GIT_PREFIX) || version.startsWith(HAXELIB_HG_PREFIX)) {
 			var vcsType:VcsType;
@@ -83,7 +76,7 @@ class HaxelibDependencies extends Task {
 				vcsInfoString = version.substring(HAXELIB_HG_PREFIX.length);
 			}
 
-			var vcsInfoSplit:Array<String> = vcsInfoString.split(" ");
+			var vcsInfoSplit:Array<String> = vcsInfoString.split("#");
 			var argsCount:Int = vcsInfoSplit.length;
 			if (argsCount == 0) {
 				fail(moduleName + ": VCS information expected for library " + lib + ".");
@@ -106,6 +99,15 @@ class HaxelibDependencies extends Task {
 			}
 
 			return new HaxelibInfo(lib, version, isGlobal, new VcsInfo(vcsType, url, branch, subDir));
+		}
+
+		if (version.startsWith(HAXELIB_PREFIX)) {
+			var versionName:String = version.substring(HAXELIB_PREFIX.length);
+			if (versionName.endsWith(".git")) {
+				Log.warning(moduleName + '(Library = ${lib}). Don\'t use haxelib: for git repositories. Deprecated. Use ${HAXELIB_GIT_PREFIX}{url}#[{branch}]#[{subDir}]#[{version}]');
+				return new HaxelibInfo(lib, null, isGlobal, new VcsInfo(VcsType.GIT, versionName));
+			}
+			return new HaxelibInfo(lib, versionName, isGlobal);
 		}
 
 		return null;
