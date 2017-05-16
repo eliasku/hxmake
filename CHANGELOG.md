@@ -1,3 +1,8 @@
+# v0.1.4
+
+- additional support for `haxelib` git and hg libraries sources
+- multiple sources and defines for TestTask (`utest`)
+
 # v0.1.3
 
 - support `@:module_path` for external make modules declaration

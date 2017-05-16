@@ -5,7 +5,7 @@ Build tools for Haxe
 [![Build Status](https://ci.appveyor.com/api/projects/status/lxmpp7d9pfoyd7dq/branch/develop?svg=true)](https://ci.appveyor.com/project/eliasku/hxmake)
 
 [![Lang](https://img.shields.io/badge/language-haxe-orange.svg)](http://haxe.org)
-[![Version](https://img.shields.io/badge/version-v0.0.1-green.svg)](https://github.com/eliasku/hxmake)
+[![Version](https://img.shields.io/badge/version-v0.1.4-green.svg)](https://github.com/eliasku/hxmake)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ### First install
@@ -46,17 +46,17 @@ Is under development
 3. Should run on MacOS / Windows / Linux
 
 ### Cache your make program cases
-You able to add `--neko` to arguments, in this case hxmake will generate make.n in your current working directory,
-and will run it as usual but with `neko`. This program will include all your built-in arguments,
+You able to add `--haxe` to arguments, in this case hxmake will be runned in compile-time on `macro` context,
+By default file `make.n` will be generated and executed with your current `neko`. This program will include all your built-in arguments,
 but you able to run it with additional arguments. You need to recompile your make if you modify your make-scripts or
 change your project in multi-module perspective.
 
 Regular make program:
-`hxmake --neko` - just build your make program
+`hxmake` - just build your make program
 `neko make.n test --override-test-target=js` - for example, run your make program with additional arguments
 
 Specified make program:
-`hxmake --neko test --override-test-target=js` - build make program which will always run `test` task for `js` target
+`hxmake test --override-test-target=js` - build make program which will always run `test` task for `js` target
 `neko make.n  --override-test-target=flash` - and run your `test` task, but for `js` and `flash` target
 
 # TODO:
