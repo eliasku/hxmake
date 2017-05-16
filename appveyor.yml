@@ -3,9 +3,12 @@ version: "{build}"
 environment:
   global:
     HAXELIB_ROOT: C:\projects\haxelib
+  matrix:
+    - HAXE_VERSION: 3.2.1
+    - HAXE_VERSION: 3.4.2
 
 install:
-  - cinst haxe -y
+  - cinst -version %HAXE_VERSION% -y
   - RefreshEnv
   - mkdir "%HAXELIB_ROOT%"
   - haxelib setup "%HAXELIB_ROOT%"
