@@ -1,3 +1,7 @@
+# v0.1.5
+
+- `hxlog` dependency has been removed
+
 # v0.1.4
 
 - additional support for `haxelib` git and hg libraries sources

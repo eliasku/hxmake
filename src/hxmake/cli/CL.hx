@@ -1,6 +1,5 @@
 package hxmake.cli;
 
-import hxlog.Log;
 import sys.FileSystem;
 import sys.io.Process;
 
@@ -11,7 +10,7 @@ class CL {
 
 	public static function execute(cmd:String, args:Array<String>):ProcessResult {
 		var argsline = args != null ? args.join(" ") : "";
-		Log.trace('<proc> $cmd $argsline');
+		MakeLog.trace('<proc> $cmd $argsline');
 
 		var result = new ProcessResult();
 
@@ -26,19 +25,19 @@ class CL {
 			result.exitCode = 0xFFFF;
 		}
 
-//		Log.trace('stdout: ${result.stdout}');
-//		Log.trace('stderr: ${result.stderr}');
-//		Log.trace('code: ${result.exitCode}');
+//		MakeLog.trace('stdout: ${result.stdout}');
+//		MakeLog.trace('stderr: ${result.stderr}');
+//		MakeLog.trace('code: ${result.exitCode}');
 
 		return result;
 	}
 
 	public static function command(cmd:String, ?args:Array<String>):Int {
 		var argline = args != null ? args.join(" ") : "";
-		Log.trace('> $cmd $argline');
+		MakeLog.trace('> $cmd $argline');
 		var exitCode = Sys.command(cmd, args);
 		if (exitCode != 0) {
-			Log.trace('> $cmd exited: $exitCode');
+			MakeLog.trace('> $cmd exited: $exitCode');
 		}
 		return exitCode;
 	}

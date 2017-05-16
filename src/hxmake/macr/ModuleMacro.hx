@@ -1,6 +1,6 @@
 package hxmake.macr;
 
-import hxlog.Log;
+import hxmake.cli.MakeLog;
 import haxe.macro.Expr.Access;
 import sys.FileSystem;
 import haxe.io.Path;
@@ -35,7 +35,7 @@ class ModuleMacro {
 		for(include in includes) {
 			var childModulePath = FileSystem.absolutePath(Path.join([modulePath, include]));
 			if(!FileSystem.exists(childModulePath)) {
-				Log.warning('Path is not found for include "$include"');
+				MakeLog.warning('Path is not found for include "$include"');
 				continue;
 			}
 
@@ -45,7 +45,7 @@ class ModuleMacro {
 				CompileTime.addMakePath(cp);
 			}
 			else {
-				Log.warning('Make directory is not found for module "$include"');
+				MakeLog.warning('Make directory is not found for module "$include"');
 			}
 
 			childrenExprs.push(macro hxmake.core.CompiledProjectData.createModuleConnection($v{modulePath}, $v{childModulePath}));

@@ -1,6 +1,6 @@
 package hxmake.utils;
 
-import hxlog.Log;
+import hxmake.cli.MakeLog;
 import hxmake.cli.CL;
 import hxmake.cli.Platform;
 
@@ -30,7 +30,7 @@ class Haxe {
         if (path != null && path.length > 0) {
             return path;
         }
-        Log.warning("Please set HAXEPATH environment variable");
+        MakeLog.warning("Please set HAXEPATH environment variable");
         switch(CL.platform) {
 
             case Platform.MAC, Platform.LINUX:

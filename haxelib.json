@@ -19,8 +19,5 @@
 	],
 	"releasenote": "fixes, changelog",
 	"version": "0.1.4",
-	"url": "https://github.com/eliasku/hxmake",
-	"dependencies": {
-		"hxlog": ""
-	}
+	"url": "https://github.com/eliasku/hxmake"
 }

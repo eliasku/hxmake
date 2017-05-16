@@ -1,6 +1,6 @@
 package hxmake.utils;
 
-import hxlog.Log;
+import hxmake.cli.MakeLog;
 
 class TaskTools {
 
@@ -25,7 +25,7 @@ class TaskTools {
 		}
 		var moduleName = task.module != null ? task.module.name : null;
 		moduleName = moduleName != null ? moduleName : ":";
-		Log.info('$indent~ $moduleName [$path] $message');
+		MakeLog.info('$indent~ $moduleName [$path] $message');
 	}
 #else
 	@:pure

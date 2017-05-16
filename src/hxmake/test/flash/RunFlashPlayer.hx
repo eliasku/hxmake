@@ -1,6 +1,6 @@
 package hxmake.test.flash;
 
-import hxlog.Log;
+import hxmake.cli.MakeLog;
 import sys.FileSystem;
 import sys.io.File;
 import haxe.io.Path;
@@ -36,7 +36,7 @@ class RunFlashPlayer extends RunTask {
 
     override function execute() {
         super.execute();
-        Log.info(File.getContent(getFlashLog()));
+        MakeLog.info(File.getContent(getFlashLog()));
     }
 
     // https://helpx.adobe.com/flash-player/kb/configure-debugger-version-flash-player.html

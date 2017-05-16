@@ -1,10 +1,10 @@
 package hxmake.utils;
 
+import hxmake.cli.MakeLog;
 import hxmake.haxelib.HaxelibInfo.HaxelibInfo;
 import hxmake.haxelib.HaxelibInfo.VcsType;
 import hxmake.haxelib.HaxelibInfo.VcsInfo;
 import hxmake.cli.CL;
-import hxlog.Log;
 import sys.FileSystem;
 import haxe.io.Path;
 import haxe.io.Input;
@@ -36,7 +36,7 @@ class Haxelib {
             case VcsType.Mercurial:
                 vcsName = "hg";
             case _:
-                Log.error("Unsuported vcs type " + vcsType);
+                MakeLog.error("Unsuported vcs type " + vcsType);
                 return false;
         }
 
@@ -143,7 +143,7 @@ class Haxelib {
 
     public static function submit(zipPath:String):Bool {
         if(!FileSystem.exists(zipPath)) {
-            Log.error('$zipPath not found');
+            MakeLog.error('$zipPath not found');
             return false;
         }
         return exec(["submit", zipPath]);

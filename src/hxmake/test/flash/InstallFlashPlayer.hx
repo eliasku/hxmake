@@ -1,6 +1,6 @@
 package hxmake.test.flash;
 
-import hxlog.Log;
+import hxmake.cli.MakeLog;
 import sys.FileSystem;
 import haxe.Http;
 import sys.io.File;
@@ -31,7 +31,7 @@ class InstallFlashPlayer extends SetupTask {
         super.run();
 
         if(!checkInstalled()) {
-            Log.info("FLASH PLAYER NOT FOUND");
+            MakeLog.info("FLASH PLAYER NOT FOUND");
             switch (CL.platform) {
                 case Platform.LINUX:
                     CL.command("sudo", ["dpkg", "--add-architecture", "i386"]);
@@ -63,7 +63,7 @@ class InstallFlashPlayer extends SetupTask {
                         CL.command("brew", ["cleanup"]);
                         CL.command("brew", ["cask", "cleanup"]);
 //                        if (Sys.command("brew", ["tap", "caskroom/cask"]) != 0) {
-//                            Log.error("Failed to install brew cask, maybe already installed");
+//                            MakeLog.error("Failed to install brew cask, maybe already installed");
 //                        }
                         if (CL.command("brew", ["cask", "install", "flash-player-debugger", "--force"]) != 0) {
                             fail("Failed to install flash-player-debugger");
@@ -92,7 +92,7 @@ class InstallFlashPlayer extends SetupTask {
         }
         catch(e:Dynamic) {
             // TODO: message
-            Log.warning('Cannot add current directory to trusted locations');
+            MakeLog.warning('Cannot add current directory to trusted locations');
         }
     }
 
@@ -144,7 +144,7 @@ class InstallFlashPlayer extends SetupTask {
     }
 
     static function download(url:String, saveAs:String) {
-        Log.info('Downloading $url to $saveAs...');
+        MakeLog.info('Downloading $url to $saveAs...');
         var http = new Http(url);
         http.onError = function(e) {
             throw e;
