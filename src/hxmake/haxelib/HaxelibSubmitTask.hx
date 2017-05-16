@@ -1,6 +1,6 @@
 package hxmake.haxelib;
 
-import hxlog.Log;
+import hxmake.cli.MakeLog;
 import hxmake.utils.Haxelib;
 
 class HaxelibSubmitTask extends Task {
@@ -17,12 +17,12 @@ class HaxelibSubmitTask extends Task {
         }
 
         if(ext.config.license == null || ext.config.license.length == 0) {
-            Log.info('Haxelib: missing license value');
+            MakeLog.info('Haxelib: missing license value');
             return;
         }
 
         if(ext.config.releasenote == null || ext.config.releasenote.length == 0) {
-            Log.info('Haxelib: missing releasenote value');
+            MakeLog.info('Haxelib: missing releasenote value');
             return;
         }
 

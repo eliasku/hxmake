@@ -46,20 +46,28 @@ Is under development
 3. Should run on MacOS / Windows / Linux
 
 ### Cache your make program cases
+
 You able to add `--haxe` to arguments, in this case hxmake will be runned in compile-time on `macro` context,
 By default file `make.n` will be generated and executed with your current `neko`. This program will include all your built-in arguments,
 but you able to run it with additional arguments. You need to recompile your make if you modify your make-scripts or
 change your project in multi-module perspective.
 
 Regular make program:
+
 `hxmake` - just build your make program
+
 `neko make.n test --override-test-target=js` - for example, run your make program with additional arguments
 
 Specified make program:
+
 `hxmake test --override-test-target=js` - build make program which will always run `test` task for `js` target
+
 `neko make.n  --override-test-target=flash` - and run your `test` task, but for `js` and `flash` target
 
-# TODO:
-- Support plugins infrastructure
-- Add Daemon mode with Haxe compiler server (for recompiling make scripts faster)
-- Core: re-install on windows, cannot overwrite self executable
+### Logging
+
+`--verbose`: include all TRACE and DEBUG messages
+
+`--silent`: disable all messages from `hxmake` code
+
+Use `MakeLog.*` methods for logging in your tasks.

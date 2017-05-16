@@ -1,6 +1,5 @@
 package hxmake.cli;
 
-import hxlog.Log;
 import haxe.io.Path;
 import sys.FileSystem;
 
@@ -11,7 +10,7 @@ class FileUtil {
 		for (file in FileSystem.readDirectory(path)) {
 			var fullPath = Path.join([path, file]);
 			if (!FileSystem.isDirectory(fullPath) && checkNameFilter(file, filter)) {
-				Log.trace('delete file: $fullPath');
+				MakeLog.trace('delete file: $fullPath');
 				FileSystem.deleteFile(fullPath);
 			}
 		}

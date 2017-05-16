@@ -1,10 +1,10 @@
 package hxmake.haxelib;
 
+import hxmake.cli.MakeLog;
 import hxmake.haxelib.HaxelibInfo.HaxelibInfo;
 import hxmake.haxelib.HaxelibInfo.VcsInfo;
 import hxmake.haxelib.HaxelibInfo.VcsType;
 import hxmake.utils.CachedHaxelib;
-import hxlog.Log;
 import hxmake.utils.Haxelib;
 
 using StringTools;
@@ -33,7 +33,7 @@ class HaxelibDependencies extends Task {
 					if (existLibrary == null) {
 						dependencies.set(library, libraryInfo);
 					} else if (!libraryInfo.compareTo(existLibrary)) {
-						Log.warning(module.name + " has conflict dependency " + libraryInfo + " with " + existLibrary + ". Previous is left.");
+						MakeLog.warning(module.name + " has conflict dependency " + libraryInfo + " with " + existLibrary + ". Previous is left.");
 					} else {
 						// Do nothing.
 					}
@@ -104,7 +104,7 @@ class HaxelibDependencies extends Task {
 		if (version.startsWith(HAXELIB_PREFIX)) {
 			var versionName:String = version.substring(HAXELIB_PREFIX.length);
 			if (versionName.endsWith(".git")) {
-				Log.warning(moduleName + '(Library = ${lib}). Don\'t use haxelib: for git repositories. Deprecated. Use ${HAXELIB_GIT_PREFIX}{url}#[{branch}]#[{subDir}]#[{version}]');
+				MakeLog.warning(moduleName + '(Library = ${lib}). Don\'t use haxelib: for git repositories. Deprecated. Use ${HAXELIB_GIT_PREFIX}{url}#[{branch}]#[{subDir}]#[{version}]');
 				return new HaxelibInfo(lib, null, isGlobal, new VcsInfo(VcsType.GIT, versionName));
 			}
 			return new HaxelibInfo(lib, versionName, isGlobal);

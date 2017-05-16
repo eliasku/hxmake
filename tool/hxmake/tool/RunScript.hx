@@ -1,22 +1,22 @@
 package hxmake.tool;
 
-import hxlog.Log;
-import hxmake.cli.LogConfig;
+import hxmake.cli.MakeLog;
 import haxe.Timer;
 
 class RunScript {
 
 	public static function main() {
-		LogConfig.initialize();
 		var args = popRunCwd(Sys.args());
 		var success = false;
+
+		MakeLog.initialize(args);
 
 		measure(function() {
 			success = run(args);
 		}, args.indexOf("--times") < 0);
 
 		if(!success) {
-			Log.error("hxmake FAILED");
+			MakeLog.error("hxmake FAILED");
 			Sys.exit(-1);
 		}
 	}
@@ -37,7 +37,7 @@ class RunScript {
 		var startTime = Timer.stamp();
 		func();
 		var totalTime = Std.int(100 * (Timer.stamp() - startTime)) / 100;
-		Log.info("Total time: " + totalTime + " sec.");
+		MakeLog.info("Total time: " + totalTime + " sec.");
 	}
 
 	static function popRunCwd(args:Array<String>):Array<String> {

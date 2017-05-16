@@ -1,8 +1,7 @@
 package hxmake;
 
 import haxe.Timer;
-import hxlog.Log;
-import hxmake.cli.LogConfig;
+import hxmake.cli.MakeLog;
 import hxmake.core.ModuleGraph;
 import hxmake.core.TaskGraph;
 
@@ -40,10 +39,10 @@ class Project {
 	var _moduleGraph:ModuleGraph;
 
 	function new(buildArguments:Array<String>, isCompiler:Bool) {
-		LogConfig.initialize();
+		MakeLog.initialize(buildArguments);
 
 		if (isCompiler) {
-			Log.trace("[MakeProject] Compiler mode");
+			MakeLog.trace("[MakeProject] Compiler mode");
 		}
 
 		args = isCompiler ? buildArguments : buildArguments.concat(Sys.args());
@@ -66,7 +65,7 @@ class Project {
 		_moduleGraph.finish();
 
 		var totalTime = Std.int(100 * (Timer.stamp() - startTime)) / 100;
-		Log.info("Make time: " + totalTime + " sec.");
+		MakeLog.info("Make time: " + totalTime + " sec.");
 		Sys.exit(0);
 	}
 
