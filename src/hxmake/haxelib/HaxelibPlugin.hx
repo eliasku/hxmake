@@ -34,8 +34,8 @@ class HaxelibPlugin extends Plugin {
 				if(params == "haxelib") {
 					params = "";
 				}
-				else if(params.indexOf("haxelib:") == 0) {
-					params = params.substring("haxelib:".length);
+				else if(params.indexOf(HaxelibDependencies.HAXELIB_PREFIX) == 0) {
+					params = params.substring(HaxelibDependencies.HAXELIB_PREFIX.length);
 				}
 				data.config.dependencies.set(k, params);
 			}
