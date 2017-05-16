@@ -5,6 +5,9 @@ class IdeaData {
 	// group for idea module 'grouping'
 	public var group:String;
 
+	// iml path
+	public var imlPath:String;
+
 	// lime project file,
 	// TODO: "" - search project.lime/xml,
 	// TODO: "path to dir or project.lime"
