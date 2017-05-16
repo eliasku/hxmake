@@ -14,7 +14,7 @@ branches:
     - develop
 
 test_script:
-  - cinst -version %HAXE_VERSION% -y
+  - cinst -version "%HAXE_VERSION%" -y
   - RefreshEnv
   - mkdir "%HAXELIB_ROOT%"
   - haxelib setup "%HAXELIB_ROOT%"
