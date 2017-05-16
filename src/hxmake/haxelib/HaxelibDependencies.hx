@@ -1,5 +1,8 @@
 package hxmake.haxelib;
 
+import hxmake.haxelib.HaxelibInfo.HaxelibInfo;
+import hxmake.haxelib.HaxelibInfo.VcsInfo;
+import hxmake.haxelib.HaxelibInfo.VcsType;
 import hxmake.utils.CachedHaxelib;
 import hxlog.Log;
 import hxmake.utils.Haxelib;
@@ -7,28 +10,32 @@ import hxmake.utils.Haxelib;
 using StringTools;
 
 class HaxelibDependencies extends Task {
+    private static inline var HAXELIB_PREFIX:String = "haxelib:";
+    private static inline var HAXELIB_GIT_PREFIX:String = "haxelib-git:";
+    private static inline var HAXELIB_HG_PREFIX:String = "haxelib-hg:";
 
 	public function new() {}
 
 	override public function run() {
-		var dependencies = collectDependencies(module.allModules);
-		installDependencies(dependencies);
+		var dependencies:Map<String, HaxelibInfo> = collectHaxelibDependencies(module.allModules);
+		installHaxelibDependencies(dependencies);
 	}
 
-	function collectDependencies(modules:Array<Module>) {
-		var dependencies:Map<String, Array<String>> = new Map();
-		for (mod in modules) {
-			var moduleDeps = mod.config.getAllDependencies();
-			for (lib in moduleDeps.keys()) {
-				var sections:Array<String> = moduleDeps.get(lib).split(";");
-				var params:String = sections[0];
-				if (params == "haxelib" || params.indexOf("haxelib:") == 0) {
-					var settedArgs = dependencies.get(lib);
-					if (settedArgs == null) {
-						dependencies.set(lib, sections);
-					}
-					else if (settedArgs[0] != params) {
-						Log.warning(mod.name + " has conflict dependency");
+	function collectHaxelibDependencies(modules:Array<Module>):Map<String, HaxelibInfo> {
+		var dependencies:Map<String, HaxelibInfo> = new Map();
+		for (module in modules) {
+			var moduleDependencies:Map<String, String> = module.config.getAllDependencies();
+			for (library in moduleDependencies.keys()) {
+				var sections:Array<String> = moduleDependencies[library].split(";");
+				var libraryInfo:HaxelibInfo = extractHaxelibInformation(library, sections, module.name);
+				if (libraryInfo != null) {
+					var existLibrary:HaxelibInfo = dependencies.get(library);
+					if (existLibrary == null) {
+						dependencies.set(library, libraryInfo);
+					} else if (!libraryInfo.compareTo(existLibrary)) {
+						Log.warning(module.name + " has conflict dependency " + libraryInfo + " with " + existLibrary + ". Previous is left.");
+					} else {
+						// Do nothing.
 					}
 				}
 			}
@@ -36,40 +43,71 @@ class HaxelibDependencies extends Task {
 		return dependencies;
 	}
 
-	function installDependencies(dependencies:Map<String, Array<String>>) {
-		for (lib in dependencies.keys()) {
-			var sections:Array<String> = dependencies.get(lib);
-			var ver = sections.shift();
-			var isHaxelib:Bool = false;
-			var isGit:Bool = false;
-			var isGlobal:Bool = false;
-			var params:String = null;
-			if (ver == "haxelib") {
-				isHaxelib = true;
-			}
-			else if (ver.indexOf("haxelib:") == 0) {
-				isHaxelib = true;
-				params = ver.substring("haxelib:".length);
-				if (params.endsWith(".git")) {
-					isGit = true;
-				}
-				if (sections.indexOf("global") >= 0) {
-					isGlobal = true;
-				}
-			}
-			if (isHaxelib) {
-				if (CachedHaxelib.checkInstalled(lib, isGlobal)) {
-					Haxelib.update(lib, isGlobal);
-				}
-				else {
-					if (isGit) {
-						Haxelib.git(lib, params, isGlobal);
-					}
-					else {
-						Haxelib.install(lib, {global: isGlobal});
-					}
-				}
+	function installHaxelibDependencies(dependencies:Map<String, HaxelibInfo>) {
+		for (library in dependencies.iterator()) {
+			if (CachedHaxelib.checkInstalled(library.name, library.isGlobal)) {
+				Haxelib.updateLib(library);
+			} else {
+				Haxelib.installLib(library);
 			}
 		}
+	}
+
+	function extractHaxelibInformation(lib:String, sections:Array<String>, moduleName:String):HaxelibInfo {
+		var version:String = (sections != null && sections.length > 0) ? sections[0] : null;
+		if (version == null || version == "") {
+			return null;
+		}
+
+		if (version == "haxelib") {
+			return new HaxelibInfo(lib); // TODO: Probably need add global detecting here.
+		}
+		var isGlobal:Bool = sections.indexOf("global") != -1;
+		if (version.startsWith(HAXELIB_PREFIX)) {
+			var versionName:String = version.substring(HAXELIB_PREFIX.length);
+			if (versionName.endsWith(".git")) {
+				Log.warning(moduleName + '(Library = ${lib}). Don\'t use haxelib: for git repositories. Deprecated. Use ${HAXELIB_PREFIX}{url} [{branch}] [{subDir}] [{version}]');
+				return new HaxelibInfo(lib, null, isGlobal, new VcsInfo(VcsType.GIT, versionName));
+			}
+			return new HaxelibInfo(lib, versionName, isGlobal);
+		}
+
+		if (version.startsWith(HAXELIB_GIT_PREFIX) || version.startsWith(HAXELIB_HG_PREFIX)) {
+			var vcsType:VcsType;
+			var vcsInfoString:String;
+			if (version.startsWith(HAXELIB_GIT_PREFIX)) {
+				vcsType = VcsType.GIT;
+				vcsInfoString = version.substring(HAXELIB_GIT_PREFIX.length);
+			} else {
+				vcsType = VcsType.Mercurial;
+				vcsInfoString = version.substring(HAXELIB_HG_PREFIX.length);
+			}
+
+			var vcsInfoSplit:Array<String> = vcsInfoString.split(" ");
+			var argsCount:Int = vcsInfoSplit.length;
+			if (argsCount == 0) {
+				fail(moduleName + ": VCS information expected for library " + lib + ".");
+				return null;
+			}
+
+			var url:String = vcsInfoSplit[0];
+			var branch:String = null;
+			var subDir:String = null;
+			var version:String = null;
+
+			if (argsCount > 1) {
+				branch = vcsInfoSplit[1];
+			}
+			if (argsCount > 2) {
+				subDir = vcsInfoSplit[2];
+			}
+			if (argsCount > 3) {
+				version = vcsInfoSplit[3];
+			}
+
+			return new HaxelibInfo(lib, version, isGlobal, new VcsInfo(vcsType, url, branch, subDir));
+		}
+
+		return null;
 	}
 }
