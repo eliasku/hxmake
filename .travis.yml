@@ -5,10 +5,11 @@ dist: trusty
 
 os:
   - linux
-#  - osx
+  - osx
 
 haxe:
   - "3.2.1"
+  - "3.4.2"
   - development
 
 branches:
