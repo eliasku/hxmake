@@ -1,7 +1,5 @@
 package hxmake.cli.logging;
 
-import hxmake.cli.logging.AnsiColor;
-import haxe.Log;
 import haxe.PosInfos;
 
 class Logger {
@@ -22,27 +20,29 @@ class Logger {
 		setFilter(LogLevel.FILTER_STD);
 	}
 
-	inline public function trace(message:Any, ?position:PosInfos) {
+	inline public function trace(message:Dynamic, ?position:PosInfos) {
 		print(message, LogLevel.TRACE, position);
 	}
 
-	inline public function debug(message:Any, ?position:PosInfos) {
+	inline public function debug(message:Dynamic, ?position:PosInfos) {
 		print(message, LogLevel.DEBUG, position);
 	}
 
-	inline public function info(message:Any, ?position:PosInfos) {
+	inline public function info(message:Dynamic, ?position:PosInfos) {
 		print(message, LogLevel.INFO, position);
 	}
 
-	inline public function warning(message:Any, ?position:PosInfos) {
+	inline public function warning(message:Dynamic, ?position:PosInfos) {
 		print(message, LogLevel.WARNING, position);
 	}
 
-	inline public function error(message:Any, ?position:PosInfos) {
+	inline public function error(message:Dynamic, ?position:PosInfos) {
 		print(message, LogLevel.ERROR, position);
 	}
 
-	public function print(text:String, level:LogLevel, ?position:PosInfos) {
+	public function print(data:Dynamic, level:LogLevel, ?position:PosInfos) {
+		var text = Std.string(data);
+
 		if((_filter & (1 << level)) == 0) {
 			return;
 		}

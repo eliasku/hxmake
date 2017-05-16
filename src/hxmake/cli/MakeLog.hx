@@ -10,23 +10,23 @@ class MakeLog {
 
 	public static var logger(default, null):Logger = new Logger();
 
-	public inline static function trace(message:Any, ?position:PosInfos) {
+	public inline static function trace(message:Dynamic, ?position:PosInfos) {
 		logger.trace(message, position);
 	}
 
-	public inline static function debug(message:Any, ?position:PosInfos) {
+	public inline static function debug(message:Dynamic, ?position:PosInfos) {
 		logger.debug(message, position);
 	}
 
-	public inline static function info(message:Any, ?position:PosInfos) {
+	public inline static function info(message:Dynamic, ?position:PosInfos) {
 		logger.info(message, position);
 	}
 
-	public inline static function warning(message:Any, ?position:PosInfos) {
+	public inline static function warning(message:Dynamic, ?position:PosInfos) {
 		logger.warning(message, position);
 	}
 
-	public inline static function error(message:Any, ?position:PosInfos) {
+	public inline static function error(message:Dynamic, ?position:PosInfos) {
 		logger.error(message, position);
 	}
 
@@ -40,7 +40,7 @@ class MakeLog {
 		Log.trace = onHaxeTrace;
 	}
 
-	static function onHaxeTrace(message:Any, ?position:PosInfos) {
+	static function onHaxeTrace(message:Dynamic, ?position:PosInfos) {
 		trace(message, LogLevel.TRACE, position);
 	}
 }
