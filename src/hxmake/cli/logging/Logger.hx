@@ -48,7 +48,7 @@ class Logger {
 		}
 
 		if(_positions[level]) {
-			text = position.fileName + ":" + position.lineNumber + " ";
+			text = position.fileName + ":" + position.lineNumber + " " + text;
 		}
 
 		Sys.println(_colors[level] + _levels[level] + text + AnsiColor.RESET);

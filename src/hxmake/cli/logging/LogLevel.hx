@@ -9,5 +9,7 @@ package hxmake.cli.logging;
 
 	public static inline var FILTER_SILENT = 0;
 	public static inline var FILTER_VERBOSE = 0xFF;
-	public static inline var FILTER_STD = (1 << INFO) | (1 << WARNING) | (1 << ERROR);
+
+	// TODO: remove magic number when haxe 3.2.1 support
+	public static inline var FILTER_STD = 0xFC; // (1 << INFO) | (1 << WARNING) | (1 << ERROR);
 }
