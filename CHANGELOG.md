@@ -1,6 +1,9 @@
 # v0.1.5
 
+- `--silent` and `--verbose` options
+- TestTask (utest) class-path include module test src by default
 - `hxlog` dependency has been removed
+- Idea project: generate misc.xml, select Haxe SDK and `out` folder for project
 
 # v0.1.4
 

@@ -1,5 +1,6 @@
 package hxmake.idea;
 
+import hxmake.cli.FileUtil;
 import hxmake.cli.MakeLog;
 import haxe.io.Path;
 import hxmake.cli.FileUtil;
@@ -88,7 +89,8 @@ class IdeaProjectTask extends Task {
 		MakeLog.info("SETUP IDEA PROJECT...");
 
 		var context = {
-			modules: []
+			modules: [],
+			haxeSdkName: _idea.getHaxeSdkName()
 		};
 
 		for (module in _modules) {
@@ -108,11 +110,9 @@ class IdeaProjectTask extends Task {
 			}
 		}
 
-		var dotIdeaPath = Path.join([path, ".idea"]);
-		if (!FileSystem.exists(dotIdeaPath)) {
-			FileSystem.createDirectory(dotIdeaPath);
-		}
 
+		var dotIdeaPath = FileUtil.ensureDirectory(path, ".idea");
+		var tempOutPath = FileUtil.ensureDirectory(path, "out");
 		var haxeXmlPath = Path.join([dotIdeaPath, "haxe.xml"]);
 		if (!FileSystem.exists(haxeXmlPath)) {
 			File.saveContent(haxeXmlPath, _idea.xmlHaxe.execute(context));
@@ -125,6 +125,9 @@ class IdeaProjectTask extends Task {
 
 		var modulesXmlPath = Path.join([dotIdeaPath, "modules.xml"]);
 		File.saveContent(modulesXmlPath, _idea.xmlModules.execute(context));
+
+		var miscXml = Path.join([dotIdeaPath, "misc.xml"]);
+		File.saveContent(miscXml, _idea.xmlMisc.execute(context));
 	}
 
 	function createRun(path:String) {

@@ -36,6 +36,8 @@ class TestTask extends Task {
 		if (!module.isActive) {
 			return;
 		}
+		classPath = classPath.concat(module.config.testPath);
+
 		targets = overrideTargets();
 		_compileTasks = compileTasks();
 		_runTasks = runTasks();

@@ -21,6 +21,7 @@ class IdeaContext {
 
 	public var iml(default, null):Template;
 	public var xmlModules(default, null):Template;
+	public var xmlMisc(default, null):Template;
 	public var xmlHaxe(default, null):Template;
 	public var xmlRunConfig(default, null):Template;
 
@@ -33,6 +34,7 @@ class IdeaContext {
 		xmlModules = new Template(CompileTime.readFile("../resources/idea/modules.xml"));
 		xmlHaxe = new Template(CompileTime.readFile("../resources/idea/haxe.xml"));
 		xmlRunConfig = new Template(CompileTime.readFile("../resources/idea/runConfiguration.xml"));
+		xmlMisc = new Template(CompileTime.readFile("../resources/idea/misc.xml"));
 	}
 
 	public function getFlexSdkName() {
