@@ -1,3 +1,4 @@
+import hxmake.test.RunTask;
 import hxmake.haxelib.HaxelibExt;
 import hxmake.haxelib.HaxelibPlugin;
 import hxmake.idea.IdeaPlugin;
@@ -22,5 +23,8 @@ class HxMake extends hxmake.Module {
 
 			ext.pack.includes = ["src", "resources", "tool", "build.hxml", "haxelib.json", "run.n", "README.md"];
 		});
+
+		// Stub task for CI check.
+		task("haxe", new RunTask('haxe', ['-version']));
 	}
 }
