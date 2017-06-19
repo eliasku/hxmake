@@ -83,7 +83,7 @@ class TaskGraph {
 	static function findDependedTask(taskNode:TaskNode, addedTasks:Array<TaskNode>):Void {
 		var currentTask:Task = taskNode.task;
 		var taskModule:Module = taskNode.module;
-		for (depended in currentTask.__depends.iterator()) {
+		for (depended in currentTask.__depends) {
 			var alreadyExists:Bool = false;
 			for (addedTask in addedTasks) {
 				if (addedTask.name == depended && addedTask.module == taskModule) {
@@ -132,7 +132,7 @@ class TaskGraph {
 					}
 				}
 				if (dependedTask == null) {
-					throw 'Illegal state. Task `${depended}` added as dependency to task `${task.name} but received null task value.`';
+					throw 'Illegal state. Task `${depended}` added as dependency to task `${task.name}` but received null task value.`';
 				}
 				var relationIndex:Int = allTasksIndexes.get(dependedTask);
 				executionOrderRelations[taskIndex][relationIndex] = 1;

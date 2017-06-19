@@ -1,4 +1,3 @@
-import hxmake.test.RunTask;
 import hxmake.haxelib.HaxelibExt;
 import hxmake.haxelib.HaxelibPlugin;
 import hxmake.idea.IdeaPlugin;
@@ -13,7 +12,7 @@ class HxMake extends hxmake.Module {
 		apply(HaxelibPlugin);
 
 		library(function(ext:HaxelibExt) {
-			ext.config.version = "0.1.5";
+			ext.config.version = "0.1.6";
 			ext.config.description = "Task automation for Haxe multi-module projects";
 			ext.config.url = "https://github.com/eliasku/hxmake";
 			ext.config.tags = ["haxe", "make", "build", "haxelib", "tools", "neko", "project", "module", "cross"];
@@ -23,8 +22,5 @@ class HxMake extends hxmake.Module {
 
 			ext.pack.includes = ["src", "resources", "tool", "build.hxml", "haxelib.json", "run.n", "README.md"];
 		});
-
-		// Stub task for CI check.
-		task("haxe", new RunTask('haxe', ['-version']));
 	}
 }

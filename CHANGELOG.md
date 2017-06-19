@@ -1,3 +1,7 @@
+# v0.1.6
+
+- Task graph resolving improvements
+
 # v0.1.5
 
 - `--silent` and `--verbose` options

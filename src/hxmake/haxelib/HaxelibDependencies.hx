@@ -17,8 +17,10 @@ class HaxelibDependencies extends Task {
 	public function new() {}
 
 	override public function run() {
-		var dependencies:Map<String, HaxelibInfo> = collectHaxelibDependencies(module.allModules);
-		installHaxelibDependencies(dependencies);
+		if(module.parent == null) {
+			var dependencies = collectHaxelibDependencies(module.allModules);
+			installHaxelibDependencies(dependencies);
+		}
 	}
 
 	function collectHaxelibDependencies(modules:Array<Module>):Map<String, HaxelibInfo> {
