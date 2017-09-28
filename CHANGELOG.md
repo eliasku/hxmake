@@ -2,6 +2,7 @@
 
 - Task graph resolving improvements
 - Fix Haxe Library redundant update if version is specified
+- Obsolete `hxlog.Log` removed (use `MakeLog` instead)
 
 # v0.1.5
 
