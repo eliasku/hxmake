@@ -47,7 +47,7 @@ class HaxelibDependencies extends Task {
 
 	function installHaxelibDependencies(dependencies:Map<String, HaxelibInfo>) {
 		for (library in dependencies.iterator()) {
-			if (CachedHaxelib.checkInstalled(library.name, library.isGlobal)) {
+			if (CachedHaxelib.checkInstalled(library.name, library.isGlobal) && library.version == null) {
 				Haxelib.updateLib(library);
 			} else {
 				Haxelib.installLib(library);
