@@ -1,3 +1,7 @@
+# v0.1.7
+
+- Fix Haxe Library redundant update if version is specified
+
 # v0.1.6
 
 - Task graph resolving improvements
