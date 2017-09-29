@@ -110,9 +110,6 @@ class Haxelib {
 
     public static function classPath(library:String, forceGlobal:Bool = false):String {
         var optLines = path(library, forceGlobal);
-        if(optLines == null) {
-            return null;
-        }
         for (opt in optLines) {
             if (opt.length > 0 && opt.charAt(0) != "-" && FileSystem.exists(opt)) {
                 return opt;
@@ -126,19 +123,7 @@ class Haxelib {
         if(forceGlobal) {
             args.unshift("--global");
         }
-        var opts:Array<String> = null;
-//        var proc = new Process(ALIAS, ["path", library].concat(args));
-//        opts = readLines(proc.stdout);
-//        opts = opts.concat(readLines(proc.stderr));
-//        if(proc.exitCode() != 0) {
-//            opts = null;
-//        }
-        //proc.close();
-        var result = CL.execute(ALIAS, ["path", library].concat(args));
-        if(result.exitCode == 0) {
-            opts = StringTools.replace(result.stdout, "\r", "").split("\n");
-        }
-        return opts;
+        return CL.execute(ALIAS, ["path", library].concat(args)).readLines();
     }
 
     public static function submit(zipPath:String):Bool {
