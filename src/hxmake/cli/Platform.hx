@@ -23,4 +23,20 @@ package hxmake.cli;
 	inline function get_isLinux() {
 		return this == LINUX;
 	}
+
+	public static function parse(name:String):Platform {
+		var platforms = [
+			Platform.WINDOWS => ~/window/i,
+			Platform.LINUX => ~/linux/i,
+			Platform.MAC => ~/mac/i
+		];
+
+		for (platform in platforms.keys()) {
+			if (platforms.get(platform).match(name)) {
+				return platform;
+			}
+		}
+
+		return Platform.UNKNOWN;
+	}
 }
