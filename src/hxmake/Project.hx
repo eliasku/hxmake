@@ -34,6 +34,7 @@ class Project {
 
 	public var args(default, null):Array<String>;
 	public var modules(get, never):Array<Module>;
+	public var properties(default, null):Map<String, String>;
 
 	var _taskGraph:TaskGraph;
 	var _moduleGraph:ModuleGraph;
@@ -46,8 +47,24 @@ class Project {
 		}
 
 		args = isCompiler ? buildArguments : buildArguments.concat(Sys.args());
+		properties = parsePropertyMap(args);
+
 		_moduleGraph = @:privateAccess new ModuleGraph();
 		_taskGraph = @:privateAccess new TaskGraph(args, _moduleGraph.modules);
+	}
+
+	/**
+	* Read property value from running Arguments
+	* For example, `property("--build")` call:
+	* 1) for arguments `--build=VALUE`, will return `VALUE`
+	* 2) for argument `--build`, will return empty string
+	* 3) if argument is not found, will return `null`
+	*
+	* @name - name of property (for example `--build`)
+	* @returns - property value or Null of property is not provided
+	**/
+	public function property(name:String):Null<String> {
+		return properties.exists(name) ? properties.get(name) : null;
 	}
 
 	function run() {
@@ -73,4 +90,15 @@ class Project {
 		return _moduleGraph.modules;
 	}
 
+	// TODO: move to utils
+	static function parsePropertyMap(args:Array<String>):Map<String, String> {
+		var props = new Map<String, String>();
+		var re = ~/^(-[^=]+)[=]?(.*)?/;
+		for (arg in args) {
+			if (re.match(arg)) {
+				props.set(re.matched(1), re.matched(2));
+			}
+		}
+		return props;
+	}
 }

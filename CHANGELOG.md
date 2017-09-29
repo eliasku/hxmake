@@ -3,6 +3,8 @@
 - Task graph resolving improvements
 - Fix Haxe Library redundant update if version is specified
 - Obsolete `hxlog.Log` removed (use `MakeLog` instead)
+- `module.project.property("--key")` method to get `VALUE` from argument `--key=VALUE`
+- `readLines()` method in `ProcessResult` object 
 
 # v0.1.5
 
