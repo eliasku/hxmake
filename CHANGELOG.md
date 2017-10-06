@@ -1,3 +1,7 @@
+# v0.1.7
+
+- `task.project` alias
+
 # v0.1.6
 
 - Task graph resolving improvements
