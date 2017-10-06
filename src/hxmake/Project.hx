@@ -90,6 +90,13 @@ class Project {
 		return _moduleGraph.modules;
 	}
 
+	public function findModuleByName(name:String):Module {
+		for(module in _moduleGraph.modules) {
+			if(module.name == name) return module;
+		}
+		return null;
+	}
+
 	// TODO: move to utils
 	static function parsePropertyMap(args:Array<String>):Map<String, String> {
 		var props = new Map<String, String>();

@@ -95,7 +95,6 @@ class Module {
 		return pluginInstance;
 	}
 
-
 	public function update<T>(id:String, closure:T->Void):Module {
 		var data:T = cast _data.get(id);
 		if(data == null) {
