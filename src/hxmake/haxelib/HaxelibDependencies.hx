@@ -1,24 +1,26 @@
 package hxmake.haxelib;
 
+import hxmake.cli.MakeLog;
 import hxmake.haxelib.HaxelibInfo.HaxelibInfo;
 import hxmake.haxelib.HaxelibInfo.VcsInfo;
 import hxmake.haxelib.HaxelibInfo.VcsType;
 import hxmake.utils.CachedHaxelib;
-import hxlog.Log;
 import hxmake.utils.Haxelib;
 
 using StringTools;
 
 class HaxelibDependencies extends Task {
-    private static inline var HAXELIB_PREFIX:String = "haxelib:";
-    private static inline var HAXELIB_GIT_PREFIX:String = "haxelib-git:";
-    private static inline var HAXELIB_HG_PREFIX:String = "haxelib-hg:";
+	public static inline var HAXELIB_PREFIX:String = "haxelib:";
+	public static inline var HAXELIB_GIT_PREFIX:String = "haxelib:git:";
+	public static inline var HAXELIB_HG_PREFIX:String = "haxelib:hg:";
 
 	public function new() {}
 
 	override public function run() {
-		var dependencies:Map<String, HaxelibInfo> = collectHaxelibDependencies(module.allModules);
-		installHaxelibDependencies(dependencies);
+		if(module.parent == null) {
+			var dependencies = collectHaxelibDependencies(module.allModules);
+			installHaxelibDependencies(dependencies);
+		}
 	}
 
 	function collectHaxelibDependencies(modules:Array<Module>):Map<String, HaxelibInfo> {
@@ -33,7 +35,7 @@ class HaxelibDependencies extends Task {
 					if (existLibrary == null) {
 						dependencies.set(library, libraryInfo);
 					} else if (!libraryInfo.compareTo(existLibrary)) {
-						Log.warning(module.name + " has conflict dependency " + libraryInfo + " with " + existLibrary + ". Previous is left.");
+						MakeLog.warning(module.name + " has conflict dependency " + libraryInfo + " with " + existLibrary + ". Previous is left.");
 					} else {
 						// Do nothing.
 					}
@@ -45,7 +47,7 @@ class HaxelibDependencies extends Task {
 
 	function installHaxelibDependencies(dependencies:Map<String, HaxelibInfo>) {
 		for (library in dependencies.iterator()) {
-			if (CachedHaxelib.checkInstalled(library.name, library.isGlobal)) {
+			if (CachedHaxelib.checkInstalled(library.name, library.isGlobal) && library.version == null) {
 				Haxelib.updateLib(library);
 			} else {
 				Haxelib.installLib(library);
@@ -62,15 +64,8 @@ class HaxelibDependencies extends Task {
 		if (version == "haxelib") {
 			return new HaxelibInfo(lib); // TODO: Probably need add global detecting here.
 		}
+
 		var isGlobal:Bool = sections.indexOf("global") != -1;
-		if (version.startsWith(HAXELIB_PREFIX)) {
-			var versionName:String = version.substring(HAXELIB_PREFIX.length);
-			if (versionName.endsWith(".git")) {
-				Log.warning(moduleName + '(Library = ${lib}). Don\'t use haxelib: for git repositories. Deprecated. Use ${HAXELIB_PREFIX}{url} [{branch}] [{subDir}] [{version}]');
-				return new HaxelibInfo(lib, null, isGlobal, new VcsInfo(VcsType.GIT, versionName));
-			}
-			return new HaxelibInfo(lib, versionName, isGlobal);
-		}
 
 		if (version.startsWith(HAXELIB_GIT_PREFIX) || version.startsWith(HAXELIB_HG_PREFIX)) {
 			var vcsType:VcsType;
@@ -83,7 +78,7 @@ class HaxelibDependencies extends Task {
 				vcsInfoString = version.substring(HAXELIB_HG_PREFIX.length);
 			}
 
-			var vcsInfoSplit:Array<String> = vcsInfoString.split(" ");
+			var vcsInfoSplit:Array<String> = vcsInfoString.split("#");
 			var argsCount:Int = vcsInfoSplit.length;
 			if (argsCount == 0) {
 				fail(moduleName + ": VCS information expected for library " + lib + ".");
@@ -106,6 +101,15 @@ class HaxelibDependencies extends Task {
 			}
 
 			return new HaxelibInfo(lib, version, isGlobal, new VcsInfo(vcsType, url, branch, subDir));
+		}
+
+		if (version.startsWith(HAXELIB_PREFIX)) {
+			var versionName:String = version.substring(HAXELIB_PREFIX.length);
+			if (versionName.endsWith(".git")) {
+				MakeLog.warning(moduleName + '(Library = ${lib}). Don\'t use haxelib: for git repositories. Deprecated. Use ${HAXELIB_GIT_PREFIX}{url}#[{branch}]#[{subDir}]#[{version}]');
+				return new HaxelibInfo(lib, null, isGlobal, new VcsInfo(VcsType.GIT, versionName));
+			}
+			return new HaxelibInfo(lib, versionName, isGlobal);
 		}
 
 		return null;

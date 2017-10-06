@@ -1,17 +1,30 @@
 package hxmake.cli;
 
-import hxlog.Log;
 import haxe.io.Path;
 import sys.FileSystem;
 
 @:final
 class FileUtil {
 
+	/**
+	* 	Create directory `dir` in existing `path`
+	* 	returns path to created directory `path/dir`
+	**/
+	public static function ensureDirectory(path:String, dir:String):String {
+		if(!FileSystem.exists(path)) throw '$path not found';
+		if(!FileSystem.isDirectory(path)) throw '$path is not directory';
+
+		path = Path.join([path, dir]);
+		if(!FileSystem.exists(path)) FileSystem.createDirectory(path);
+
+		return path;
+	}
+
 	public static function deleteFiles(path:String, filter:String) {
 		for (file in FileSystem.readDirectory(path)) {
 			var fullPath = Path.join([path, file]);
 			if (!FileSystem.isDirectory(fullPath) && checkNameFilter(file, filter)) {
-				Log.trace('delete file: $fullPath');
+				MakeLog.trace('delete file: $fullPath');
 				FileSystem.deleteFile(fullPath);
 			}
 		}

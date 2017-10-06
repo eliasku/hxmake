@@ -1,7 +1,8 @@
 package hxmake.idea;
 
+import hxmake.cli.FileUtil;
+import hxmake.cli.MakeLog;
 import haxe.io.Path;
-import hxlog.Log;
 import hxmake.cli.FileUtil;
 import hxmake.utils.CachedHaxelib;
 import hxmake.utils.Haxelib;
@@ -79,16 +80,17 @@ class IdeaProjectTask extends Task {
 		}
 
 		var iml = _idea.iml.execute(context);
-		Log.info("Writing " + module.name + ".iml");
+		MakeLog.info("Writing " + module.name + ".iml");
 		FileUtil.deleteFiles(module.path, "*.iml");
 		File.saveContent(Path.join([module.path, '${module.name}.iml']), iml);
 	}
 
 	function createProject(path:String) {
-		Log.info("SETUP IDEA PROJECT...");
+		MakeLog.info("SETUP IDEA PROJECT...");
 
 		var context = {
-			modules: []
+			modules: [],
+			haxeSdkName: _idea.getHaxeSdkName()
 		};
 
 		for (module in _modules) {
@@ -108,11 +110,9 @@ class IdeaProjectTask extends Task {
 			}
 		}
 
-		var dotIdeaPath = Path.join([path, ".idea"]);
-		if (!FileSystem.exists(dotIdeaPath)) {
-			FileSystem.createDirectory(dotIdeaPath);
-		}
 
+		var dotIdeaPath = FileUtil.ensureDirectory(path, ".idea");
+		var tempOutPath = FileUtil.ensureDirectory(path, "out");
 		var haxeXmlPath = Path.join([dotIdeaPath, "haxe.xml"]);
 		if (!FileSystem.exists(haxeXmlPath)) {
 			File.saveContent(haxeXmlPath, _idea.xmlHaxe.execute(context));
@@ -125,10 +125,13 @@ class IdeaProjectTask extends Task {
 
 		var modulesXmlPath = Path.join([dotIdeaPath, "modules.xml"]);
 		File.saveContent(modulesXmlPath, _idea.xmlModules.execute(context));
+
+		var miscXml = Path.join([dotIdeaPath, "misc.xml"]);
+		File.saveContent(miscXml, _idea.xmlMisc.execute(context));
 	}
 
 	function createRun(path:String) {
-		Log.info("SETUP IDEA RUN CONFIGURATIONS...");
+		MakeLog.info("SETUP IDEA RUN CONFIGURATIONS...");
 		var rcPath = Path.join([path, ".idea", "runConfigurations"]);
 
 		if (!FileSystem.exists(rcPath)) {
@@ -146,7 +149,7 @@ class IdeaProjectTask extends Task {
 					};
 					var runConfigurationPath = Path.join([rcPath, '$name.xml']);
 					var runConfigurationContent = _idea.xmlRunConfig.execute(context);
-					Log.trace('Run Configuration: $runConfigurationPath');
+					MakeLog.trace('Run Configuration: $runConfigurationPath');
 					File.saveContent(runConfigurationPath, runConfigurationContent);
 				}
 			}

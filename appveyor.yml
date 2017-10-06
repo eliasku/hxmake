@@ -3,12 +3,9 @@ version: "{build}"
 environment:
   global:
     HAXELIB_ROOT: C:\projects\haxelib
-
-install:
-  - cinst haxe -version 3.2.1 -y
-  - RefreshEnv
-  - mkdir "%HAXELIB_ROOT%"
-  - haxelib setup "%HAXELIB_ROOT%"
+  matrix:
+    - HAXE_VERSION: "3.2.1"
+    - HAXE_VERSION: "3.4.2"
 
 build: off
 
@@ -16,8 +13,14 @@ branches:
   only:
     - develop
 
+install:
+  - cinst haxe -version %HAXE_VERSION% -y
+  - RefreshEnv
+  - mkdir "%HAXELIB_ROOT%"
+  - haxelib setup "%HAXELIB_ROOT%"
+
 test_script:
   - haxelib dev hxmake .
   - haxelib run hxmake _
   - hxmake _
-  - hxmake haxe
+  - hxmake package-haxelib

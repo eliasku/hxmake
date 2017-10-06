@@ -1,6 +1,5 @@
 -cp tool
 -cp src
--lib hxlog
 #-debug
 --each
 

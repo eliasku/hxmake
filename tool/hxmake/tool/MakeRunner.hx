@@ -1,6 +1,5 @@
 package hxmake.tool;
 
-import hxlog.Log;
 import hxmake.cli.CL;
 import hxmake.utils.HaxeTarget;
 import hxmake.utils.Hxml;
@@ -14,7 +13,6 @@ class MakeRunner {
 	static inline var INIT_MACRO_METHOD:String = "hxmake.macr.InitMacro.generateMainClass";
 
 	// TODO path exists (cwd, make, lib)
-	@:noUsing
 	public static function make(path:String, builtInArguments:Array<String>):Bool {
 
 		Sys.setCwd(path);
@@ -25,7 +23,7 @@ class MakeRunner {
 
 		var hxml = new Hxml();
 		hxml.main = "HxMakeMain";
-		hxml.libraries = ["hxlog"];
+		hxml.libraries = [];
 		hxml.classPath.push(libPath);
 		hxml.defines.push("hxmake");
 

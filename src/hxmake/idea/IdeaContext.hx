@@ -1,9 +1,9 @@
 package hxmake.idea;
 
+import hxmake.cli.MakeLog;
 import haxe.Template;
 import haxe.io.Path;
 import haxe.xml.Fast;
-import hxlog.Log;
 import hxmake.cli.CL;
 import hxmake.cli.FileUtil;
 import hxmake.macr.CompileTime;
@@ -21,6 +21,7 @@ class IdeaContext {
 
 	public var iml(default, null):Template;
 	public var xmlModules(default, null):Template;
+	public var xmlMisc(default, null):Template;
 	public var xmlHaxe(default, null):Template;
 	public var xmlRunConfig(default, null):Template;
 
@@ -33,6 +34,7 @@ class IdeaContext {
 		xmlModules = new Template(CompileTime.readFile("../resources/idea/modules.xml"));
 		xmlHaxe = new Template(CompileTime.readFile("../resources/idea/haxe.xml"));
 		xmlRunConfig = new Template(CompileTime.readFile("../resources/idea/runConfiguration.xml"));
+		xmlMisc = new Template(CompileTime.readFile("../resources/idea/misc.xml"));
 	}
 
 	public function getFlexSdkName() {
@@ -45,7 +47,7 @@ class IdeaContext {
 
 	public function openProject(path:String) {
 		if (appPath == null) {
-			Log.warning("IDEA executable is not found");
+			MakeLog.warning("IDEA executable is not found");
 			return;
 		}
 		if (CL.platform.isMac) {
@@ -92,10 +94,10 @@ class IdeaContext {
 	static function resolveConfigPath() {
 		var pathes = findLatestPreferences();
 		for (path in pathes) {
-			Log.trace("Found IntelliJ Idea config folder: " + path);
+			MakeLog.trace("Found IntelliJ Idea config folder: " + path);
 			return path;
 		}
-		Log.error("IntelliJ Idea configuration is not found");
+		MakeLog.error("IntelliJ Idea configuration is not found");
 		return null;
 	}
 
@@ -105,7 +107,7 @@ class IdeaContext {
 		var ideaPathName = CL.platform.isMac ? "IntelliJIdea" : ".IntelliJIdea";
 		var versions = getVersions();
 
-		Log.trace('Search IntelliJ IDEA Preferences in: $prefsPath');
+		MakeLog.trace('Search IntelliJ IDEA Preferences in: $prefsPath');
 
 		versions.reverse();
 		for (version in versions) {

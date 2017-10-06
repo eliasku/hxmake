@@ -1,8 +1,8 @@
 package hxmake.haxelib;
 
+import hxmake.cli.MakeLog;
 import haxe.Json;
 import haxe.io.Path;
-import hxlog.Log;
 import hxmake.utils.Haxelib;
 import sys.io.File;
 
@@ -30,9 +30,35 @@ class HaxelibTask extends Task {
 	}
 
 	function saveHaxelibJson(config:LibraryConfig) {
+		validateDependencies(config);
 		var json:Dynamic = Json.stringify(config.toDynamic(), null, '\t');
 		var path:String = Path.join([module.path, "haxelib.json"]);
-		Log.info('Writing $path ...');
+		MakeLog.info('Writing $path ...');
 		File.saveContent(path, json);
+	}
+
+	function validateDependencies(config:LibraryConfig):Void {
+		var dependencies:Map<String, String> = config.dependencies;
+
+		if (dependencies == null) {
+			return;
+		}
+
+		for (libraryName in dependencies.keys()) {
+			var libraryVersion:String = dependencies.get(libraryName);
+
+			if (libraryVersion == null || libraryVersion == "") {
+				continue;
+			}
+
+			if (libraryVersion.indexOf("hg:") == 0) {
+				MakeLog.warning('haxelib.json generating: ${module.name} has a mercurial dependency ${libraryName} which is not supported by haxelib.json.');
+			} else if (libraryVersion.indexOf("git:") == 0) {
+				var gitSettings:Array<String> = libraryVersion.split("#");
+				if (gitSettings.length > 2) {
+					MakeLog.warning('haxelib.json generating: ${module.name} has a git dependency ${libraryName} with specified sub directory or version which are not supported by haxelib.json.');
+				}
+			}
+		}
 	}
 }

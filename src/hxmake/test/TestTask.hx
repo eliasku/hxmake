@@ -1,7 +1,6 @@
 package hxmake.test;
 
-import hxlog.Log;
-import StringTools;
+import hxmake.cli.MakeLog;
 import haxe.io.Path;
 import hxmake.cli.CL;
 import hxmake.test.flash.InstallFlashPlayer;
@@ -37,6 +36,8 @@ class TestTask extends Task {
 		if (!module.isActive) {
 			return;
 		}
+		classPath = classPath.concat(module.config.testPath);
+
 		targets = overrideTargets();
 		_compileTasks = compileTasks();
 		_runTasks = runTasks();
@@ -209,7 +210,7 @@ class TestTask extends Task {
 			case Java:
 				runTask.set("java", ["-jar", bin]);
 			case Hl:
-				Log.warning("Running HashLink target is in progress...");
+				MakeLog.warning("Running HashLink target is in progress...");
 				if(target == "hl") {
 					runTask.set("hl", [bin]);
 				}

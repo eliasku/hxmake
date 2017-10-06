@@ -1,3 +1,19 @@
+# v0.1.6
+
+- Task graph resolving improvements
+- Fix Haxe Library redundant update if version is specified
+- Obsolete `hxlog.Log` removed (use `MakeLog` instead)
+- `module.project.property("--key")` method to get `VALUE` from argument `--key=VALUE`
+- `readLines` method in `ProcessResult` object
+- `project.findModuleByName` method
+
+# v0.1.5
+
+- `--silent` and `--verbose` options
+- TestTask (utest) class-path include module test src by default
+- `hxlog` dependency has been removed
+- Idea project: generate misc.xml, select Haxe SDK and `out` folder for project
+
 # v0.1.4
 
 - additional support for `haxelib` git and hg libraries sources

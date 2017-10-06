@@ -8,12 +8,10 @@ class HaxelibPlugin extends Plugin {
 
 	override function apply(module:Module) {
 		ext = module.set("haxelib", new HaxelibExt());
-		module.task("haxelib", new HaxelibTask()).dependsOn("haxelibDependencies");
+		module.task("haxelib", new HaxelibTask()).dependsOn("haxelib-dependencies");
 		module.task("package-haxelib", new HaxelibPackageTask()).dependsOn("haxelib");
 		module.task("submit-haxelib", new HaxelibSubmitTask()).dependsOn("package-haxelib");
-		if(module.parent == null) {
-			module.task("haxelibDependencies", new HaxelibDependencies());
-		}
+		module.task("haxelib-dependencies", new HaxelibDependencies());
 	}
 
 	public static function library(module:Module, ?configurator:HaxelibExt->Void):HaxelibExt {
@@ -34,8 +32,8 @@ class HaxelibPlugin extends Plugin {
 				if(params == "haxelib") {
 					params = "";
 				}
-				else if(params.indexOf("haxelib:") == 0) {
-					params = params.substring("haxelib:".length);
+				else if(params.indexOf(HaxelibDependencies.HAXELIB_PREFIX) == 0) {
+					params = params.substring(HaxelibDependencies.HAXELIB_PREFIX.length);
 				}
 				data.config.dependencies.set(k, params);
 			}

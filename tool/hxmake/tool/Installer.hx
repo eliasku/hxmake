@@ -1,8 +1,8 @@
 package hxmake.tool;
 
 import haxe.io.Path;
-import hxlog.Log;
 import hxmake.cli.CL;
+import hxmake.cli.MakeLog;
 import hxmake.utils.Haxe;
 import hxmake.utils.Haxelib;
 import sys.FileSystem;
@@ -19,52 +19,49 @@ class Installer {
 			alias = library;
 		}
 
-		// dependencies
-		Haxelib.install("hxlog");
-
 		var libPath = Haxelib.libPath(library);
 		if (libPath == null) {
-			Log.error('"$library" is not installed');
+			MakeLog.error('"$library" is not installed');
 			return false;
 		}
 
 		if (!FileSystem.exists(libPath)) {
-			Log.error('"$library" not found at $libPath');
+			MakeLog.error('"$library" not found at $libPath');
 			return false;
 		}
 
-		Log.trace('Use "$library" from "$libPath"');
+		MakeLog.trace('Use "$library" from "$libPath"');
 
 		return CL.workingDir.with(libPath, function() {
 
 			// COMPILATION
 			if (!Haxe.exec(["build.hxml"])) {
-				Log.error("HxMake library build failed");
+				MakeLog.error("HxMake library build failed");
 				return false;
 			}
 
 			if (CL.platform.isWindows && FileSystem.exists('$alias.exe')) {
-				Log.info('Alias should be installed already');
-				Log.info('If you need to reinstall alias script use:');
-				Log.info('> haxelib run $library _');
+				MakeLog.info('Alias should be installed already');
+				MakeLog.info('If you need to reinstall alias script use:');
+				MakeLog.info('> haxelib run $library _');
 				return true;
 			}
 
 			if (CL.command('nekotools', ['boot', '$library.n']) != 0) {
-				Log.error('Failed to create alias-script executable');
+				MakeLog.error('Failed to create alias-script executable');
 				return false;
 			}
 
 			// INSTALL
-			Log.info('We`re going to install ${alias.toUpperCase()} command');
-			Log.info('Please enter password if required...');
+			MakeLog.info('We`re going to install ${alias.toUpperCase()} command');
+			MakeLog.info('Please enter password if required...');
 			try {
 				if (CL.platform.isWindows) {
 					var haxePath = Haxe.path();
 					var pn = '$alias.exe';
 					var src = Path.join([libPath, pn]);
 					var dst = Path.join([haxePath, pn]);
-					Log.trace('Copy hxmake.exe to $haxePath');
+					MakeLog.trace('Copy hxmake.exe to $haxePath');
 					File.copy(src, dst);
 
 					// TODO:
@@ -80,8 +77,8 @@ class Installer {
 				}
 			}
 			catch (e:Dynamic) {
-				Log.error(e);
-				Log.error("Error while installing system command-line");
+				MakeLog.error(e);
+				MakeLog.error("Error while installing system command-line");
 				return false;
 			}
 

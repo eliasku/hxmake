@@ -1,8 +1,8 @@
 package hxmake.core;
 
+import hxmake.cli.MakeLog;
 import haxe.io.Path;
 import hxmake.cli.FileUtil;
-import hxlog.Log;
 
 @:final
 @:access(hxmake.Module)
@@ -12,7 +12,7 @@ class ModuleGraph {
 
 	function new() {
 		modules = CompiledProjectData.getModules();
-		Log.trace("[ModuleGraph] input modules: " + modules.map(function(m:Module) {return m.name;}).join(","));
+		MakeLog.trace("[ModuleGraph] input modules: " + modules.map(function(m:Module) {return m.name;}).join(","));
 	}
 
 	public function resolveHierarchy() {
@@ -80,7 +80,7 @@ class ModuleGraph {
 			icon = isMain ? "[+]  " : "[^]  ";
 		}
 
-		Log.info(icon + pref + left + " " + module.name + " @ " + module.path);
+		MakeLog.info(icon + pref + left + " " + module.name + " @ " + module.path);
 		var i = 0;
 		for (child in module.children) {
 			var sym = ++i == module.children.length ? "`" : "|";
