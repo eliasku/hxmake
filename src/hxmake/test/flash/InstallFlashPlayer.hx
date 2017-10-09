@@ -135,7 +135,7 @@ class InstallFlashPlayer extends SetupTask {
             case Platform.LINUX:
                 Path.join([Sys.getEnv("HOME"), ".macromedia/Flash_Player/#Security/FlashPlayerTrust"]);
             case Platform.MAC:
-                "/Library/Application Support/Macromedia/FlashPlayerTrust";
+                Path.join([Sys.getEnv("HOME"), "Library", "Preferences", "Macromedia", "Flash Player", "#Security", "FlashPlayerTrust"]);
             case Platform.WINDOWS:
                 Path.join([Sys.getEnv("SYSTEMROOT"), "system32", "Macromed", "Flash", "FlashPlayerTrust"]);
             case _:
