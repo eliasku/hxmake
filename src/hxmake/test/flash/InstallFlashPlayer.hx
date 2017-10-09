@@ -130,7 +130,7 @@ class InstallFlashPlayer extends SetupTask {
 
 
     static function getFpTrust():String {
-        // http://help.adobe.com/en_US/ActionScript/3.0_ProgrammingAS3/WS5b3ccc516d4fbf351e63e3d118a9b90204-7c95.html
+        // http://help.adobe.com/en_US/ActionScript/3.0_ProgrammingAS3/WS5b3ccc516d4fbf351e63e3d118a9b90204-7c91.html#WSD2DCB535-92C6-49ff-8954-D8D5130404F1
         return switch (CL.platform) {
             case Platform.LINUX:
                 Path.join([Sys.getEnv("HOME"), ".macromedia/Flash_Player/#Security/FlashPlayerTrust"]);
