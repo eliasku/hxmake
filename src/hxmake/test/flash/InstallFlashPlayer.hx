@@ -137,7 +137,7 @@ class InstallFlashPlayer extends SetupTask {
             case Platform.MAC:
                 Path.join([Sys.getEnv("HOME"), "Library", "Preferences", "Macromedia", "Flash Player", "#Security", "FlashPlayerTrust"]);
             case Platform.WINDOWS:
-                Path.join([Sys.getEnv("SYSTEMROOT"), "system32", "Macromed", "Flash", "FlashPlayerTrust"]);
+                Path.join([Sys.getEnv("APPDATA"), "Macromedia", "Flash Player", "#Security", "FlashPlayerTrust"]);
             case _:
                 throw "unsupported system";
         }
