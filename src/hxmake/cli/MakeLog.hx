@@ -39,6 +39,6 @@ class MakeLog {
 	}
 
 	static function onHaxeTrace(message:Dynamic, ?position:PosInfos) {
-		trace(message, LogLevel.TRACE, position);
+		logger.trace(message, position);
 	}
 }

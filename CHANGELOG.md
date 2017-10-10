@@ -5,6 +5,7 @@
 - Prints property-map on start
 - Flash Player trust location PER USER for macOS and Windows
 - `--macrolog` enabled traces from compile-time
+- Fixed recursive call in `trace(..)` calls
 
 # v0.1.6
 
