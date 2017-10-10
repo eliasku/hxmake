@@ -22,6 +22,10 @@ class TestTask extends Task {
 	public var testLibrary:String = "utest";
 	public var classPath:Array<String> = [];
 	public var defines:Array<String> = [];
+	public var macros:Array<String> = [];
+	public var flags:Array<String> = [];
+	public var flagArguments:Array<String> = [];
+	public var dce:DceMode = DceMode.DceStd;
 	public var main:String = "TestAll";
 	public var outputDir:String = "bin";
 	public var outputName:String = "test";
@@ -87,7 +91,7 @@ class TestTask extends Task {
 				targetFilePostfix = ".node";
 			}
 			compileTask.hxml.classPath = compileTask.hxml.classPath.concat(classPath);
-			compileTask.hxml.dce = DceMode.DceStd;
+			compileTask.hxml.dce = dce;
 			compileTask.hxml.main = main;
 			compileTask.hxml.target = target.parseHaxeTarget();
 			compileTask.hxml.output = compileTask.hxml.target.buildOutput(
@@ -104,6 +108,9 @@ class TestTask extends Task {
 				default:
 			}
 			compileTask.hxml.defines = defines.concat(compileTask.hxml.defines);
+			compileTask.hxml.macros = macros.concat(compileTask.hxml.macros);
+			compileTask.hxml.flags = flags.concat(compileTask.hxml.flags);
+			compileTask.hxml.flagArguments = flagArguments.concat(compileTask.hxml.flagArguments);
 			compileTask.hxml.debug = debug;
 			compileTask.prepend(compileTask.createSetupTask());
 			result.push(compileTask);
