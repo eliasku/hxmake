@@ -6,6 +6,7 @@
 - Flash Player trust location PER USER for macOS and Windows
 - `--macrolog` enabled traces from compile-time
 - Fixed recursive call in `trace(..)` calls
+- Add `macros`, `flags`, `flagArguments`, `dce` into `hxmake.test.TestTask` to allow more accurate configuration of compile task
 
 # v0.1.6
 
