@@ -40,14 +40,14 @@ class Project {
 	var _moduleGraph:ModuleGraph;
 
 	function new(buildArguments:Array<String>, isCompiler:Bool) {
-		MakeLog.initialize(buildArguments);
+		args = isCompiler ? buildArguments : buildArguments.concat(Sys.args());
+		properties = parsePropertyMap(args);
+
+		MakeLog.initialize(hasProperty("--silent"), hasProperty("--verbose"));
 
 		if (isCompiler) {
 			MakeLog.trace("[MakeProject] Compiler mode");
 		}
-
-		args = isCompiler ? buildArguments : buildArguments.concat(Sys.args());
-		properties = parsePropertyMap(args);
 
 		_moduleGraph = @:privateAccess new ModuleGraph();
 		_taskGraph = @:privateAccess new TaskGraph(args, _moduleGraph.modules);
@@ -65,6 +65,10 @@ class Project {
 	**/
 	public function property(name:String):Null<String> {
 		return properties.exists(name) ? properties.get(name) : null;
+	}
+
+	public function hasProperty(name:String):Bool {
+		return property(name) != null;
 	}
 
 	function run() {

@@ -4,6 +4,7 @@
 - `Task.empty(name, desc)` creates empty task
 - Prints property-map on start
 - Flash Player trust location PER USER for macOS and Windows
+- `--macrolog` enabled traces from compile-time
 
 # v0.1.6
 
