@@ -55,21 +55,22 @@ class ModuleGraph {
 		}
 	}
 
-	public function printHierarchies() {
+	public function printStructure() {
+		MakeLog.info("Module structure:");
 		for (module in modules) {
-			if(module.parent == null) {
-				printModuleHierarchy(module);
+			if (module.parent == null) {
+				printModuleStructure(module);
 			}
 		}
 	}
 
 	public function finish() {
-		for(module in modules) {
+		for (module in modules) {
 			module.finish();
 		}
 	}
 
-	function printModuleHierarchy(module:Module, pref:String = "") {
+	function printModuleStructure(module:Module, pref:String = "") {
 		var isRoot = module.parent == null;
 		var left = isRoot ? "*-" : "--";
 		var icon = "     ";
@@ -85,7 +86,7 @@ class ModuleGraph {
 		for (child in module.children) {
 			var sym = ++i == module.children.length ? "`" : "|";
 			var indent = isRoot ? "" : "   ";
-			printModuleHierarchy(child, pref + indent + sym);
+			printModuleStructure(child, pref + indent + sym);
 		}
 	}
 }

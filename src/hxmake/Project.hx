@@ -70,9 +70,11 @@ class Project {
 	function run() {
 		var startTime = Timer.stamp();
 
+		printProperties();
+
 		_moduleGraph.prepare(this);
 		_moduleGraph.resolveHierarchy();
-		_moduleGraph.printHierarchies();
+		_moduleGraph.printStructure();
 		_moduleGraph.initialize();
 
 		_taskGraph.build();
@@ -86,13 +88,23 @@ class Project {
 		Sys.exit(0);
 	}
 
+	function printProperties() {
+		MakeLog.info("Running with properties:");
+		for (name in properties.keys()) {
+			var value = property(name);
+			var str = '  $name';
+			if (value.length > 0) str += ' = $value';
+			MakeLog.info(str);
+		}
+	}
+
 	inline function get_modules():Array<Module> {
 		return _moduleGraph.modules;
 	}
 
 	public function findModuleByName(name:String):Module {
-		for(module in _moduleGraph.modules) {
-			if(module.name == name) return module;
+		for (module in _moduleGraph.modules) {
+			if (module.name == name) return module;
 		}
 		return null;
 	}

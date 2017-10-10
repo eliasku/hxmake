@@ -2,6 +2,7 @@
 
 - `task.project` alias
 - `Task.empty(name, desc)` creates empty task
+- Prints property-map on start
 
 # v0.1.6
 
