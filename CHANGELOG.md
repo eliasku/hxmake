@@ -9,6 +9,7 @@
 - Add `macros`, `flags`, `flagArguments`, `dce` into `hxmake.test.TestTask` to allow more accurate configuration of compile task
 - Common `ServeTask` starts local server with `nekotools`
 - Common `ListTasks` prints list of available tasks
+- Fixed phantomjs exit on utest
 
 # v0.1.6
 
