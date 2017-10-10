@@ -3,6 +3,7 @@
 - `task.project` alias
 - `Task.empty(name, desc)` creates empty task
 - Prints property-map on start
+- Flash Player trust location PER USER for macOS and Windows
 
 # v0.1.6
 
