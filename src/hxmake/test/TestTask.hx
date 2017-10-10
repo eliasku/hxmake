@@ -103,7 +103,6 @@ class TestTask extends Task {
 			}
 			switch(compileTask.hxml.target) {
 				case Swf: compileTask.hxml.defines.push("native_trace");
-				case Js: compileTask.hxml.defines.push("travis");
 				case Cs: compileTask.hxml.defines.push("unsafe"); //XXX
 				default:
 			}
