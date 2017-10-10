@@ -3,8 +3,7 @@ package hxmake;
 using hxmake.utils.TaskTools;
 
 class Task {
-
-	public var pack:Array<String>;
+	
 	public var name:String;
 	public var description:String = "";
 	public var enabled:Bool = true;
@@ -131,4 +130,18 @@ class Task {
 	function get_project():Project {
 		return module != null ? module.project : null;
 	}
+
+	public static function empty(name:String = null, description = ""):Task {
+		var task = new EmptyTask();
+		task.name = name;
+		task.description = description;
+		return task;
+	}
+}
+
+
+private class EmptyTask extends Task {
+	function new() {}
+
+	override public function run() {}
 }

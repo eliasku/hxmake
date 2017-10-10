@@ -1,6 +1,7 @@
 # v0.1.7
 
 - `task.project` alias
+- `Task.empty(name, desc)` creates empty task
 
 # v0.1.6
 
