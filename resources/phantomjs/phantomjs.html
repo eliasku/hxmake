@@ -4,6 +4,12 @@
     <meta charset="utf-8"/>
 </head>
 <body>
+    <script>
+        var phantom = {};
+        phantom.exit = function(exitCode) {
+            console.log("<hxmake::exit>" + exitCode);
+        };
+    </script>
     <script src="::jsFile::"></script>
 </body>
 </html>

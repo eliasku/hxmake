@@ -102,8 +102,11 @@ class TestTask extends Task {
 				compileTask.hxml.output = StringTools.replace(compileTask.hxml.output, ".hl", ".c");
 			}
 			switch(compileTask.hxml.target) {
-				case Swf: compileTask.hxml.defines.push("native_trace");
-				case Js: compileTask.hxml.defines.push("travis");
+				case Swf:
+					compileTask.hxml.defines.push("native_trace");
+					if (testLibrary == "utest") {
+						compileTask.hxml.defines.push("exit");
+					}
 				case Cs: compileTask.hxml.defines.push("unsafe"); //XXX
 				default:
 			}
