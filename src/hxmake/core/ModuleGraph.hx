@@ -1,8 +1,8 @@
 package hxmake.core;
 
-import hxmake.cli.MakeLog;
 import haxe.io.Path;
 import hxmake.cli.FileUtil;
+import hxmake.cli.MakeLog;
 
 @:final
 @:access(hxmake.Module)
@@ -43,24 +43,7 @@ class ModuleGraph {
 	public function initialize() {
 		for (module in modules) {
 			module.__initialize();
-
-			// apply default initialization
-			// TODO: move to internal plugin
-			if (module.config.makePath.indexOf("make") < 0) {
-				module.config.makePath.push("make");
-			}
-			if (module.name != "hxmake" && module.config.devDependencies.get("hxmake") == null) {
-				module.config.devDependencies.set("hxmake", "haxelib;global");
-			}
-		}
-	}
-
-	public function printStructure() {
-		MakeLog.info("Module structure:");
-		for (module in modules) {
-			if (module.parent == null) {
-				printModuleStructure(module);
-			}
+			initializeBuiltIn(module);
 		}
 	}
 
@@ -70,23 +53,20 @@ class ModuleGraph {
 		}
 	}
 
-	function printModuleStructure(module:Module, pref:String = "") {
-		var isRoot = module.parent == null;
-		var left = isRoot ? "*-" : "--";
-		var icon = "     ";
-
-		var isMain = module.isMain;
-		var isActive = module.isActive;
-		if (isActive || isMain) {
-			icon = isMain ? "[+]  " : "[^]  ";
+	function initializeBuiltIn(module:Module) {
+		// apply default initialization
+		// TODO: move to internal plugin
+		if (module.config.makePath.indexOf("make") < 0) {
+			module.config.makePath.push("make");
 		}
 
-		MakeLog.info(icon + pref + left + " " + module.name + " @ " + module.path);
-		var i = 0;
-		for (child in module.children) {
-			var sym = ++i == module.children.length ? "`" : "|";
-			var indent = isRoot ? "" : "   ";
-			printModuleStructure(child, pref + indent + sym);
+		if (module.name != "hxmake" && module.config.devDependencies.get("hxmake") == null) {
+			module.config.devDependencies.set("hxmake", "haxelib;global");
+		}
+
+		if (module.isMain) {
+			module.task("tasks", new hxmake.tasks.ListTask());
+			module.task("modules", new hxmake.tasks.ListModules());
 		}
 	}
 }

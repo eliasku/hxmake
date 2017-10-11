@@ -8,11 +8,7 @@ class ListTask extends Task {
 
 	public function new() {
 		name = "tasks";
-		description = "Print list of available tasks";
-	}
-
-	override public function configure() {
-
+		description = "Prints list of available tasks";
 	}
 
 	override public function run() {
@@ -40,6 +36,8 @@ class ListTask extends Task {
 			}
 		);
 
+		if (list.length > 0) MakeLog.info("Project tasks:");
+
 		for (taskName in list) {
 			var task = map.get(taskName)[0];
 			var desc = task.description;
@@ -49,7 +47,7 @@ class ListTask extends Task {
 			for (l in ll) {
 				inModules.push(l.module.name);
 			}
-			MakeLog.info('> $taskName - $desc (${inModules.join(", ")})');
+			MakeLog.info('\t> $taskName - $desc (${inModules.join(", ")})');
 		}
 	}
 }

@@ -1,13 +1,14 @@
 package hxmake.core;
 
+import hxmake.cli.CL;
 import hxmake.cli.MakeLog;
 import hxmake.Task;
-import hxmake.cli.CL;
 
 @:final
 @:access(hxmake.Module)
 @:access(hxmake.Task)
 class TaskGraph {
+
 	var _modules:Array<Module>;
 	var _runTasks:Array<String>;
 	var _taskNodes:Array<TaskNode> = [];
@@ -36,7 +37,7 @@ class TaskGraph {
 	}
 
 	public function printTasks() {
-		MakeLog.info("Task dependency order: ");
+		if (_taskNodes.length > 0) MakeLog.info("Task dependency order: ");
 		for (taskNode in _taskNodes) {
 			MakeLog.info("\t" + taskNode.module.name + "." + taskNode.name);
 		}

@@ -78,7 +78,6 @@ class Project {
 
 		_moduleGraph.prepare(this);
 		_moduleGraph.resolveHierarchy();
-		_moduleGraph.printStructure();
 		_moduleGraph.initialize();
 
 		_taskGraph.build();
@@ -93,8 +92,12 @@ class Project {
 	}
 
 	function printProperties() {
-		MakeLog.info("Running with properties:");
+		var first = true;
 		for (name in properties.keys()) {
+			if(first) {
+				MakeLog.info("Running with properties:");
+				first = false;
+			}
 			var value = property(name);
 			var str = '  $name';
 			if (value.length > 0) str += ' = $value';
