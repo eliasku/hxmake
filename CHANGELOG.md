@@ -7,8 +7,9 @@
 - `--macrolog` enabled traces from compile-time
 - Fixed recursive call in `trace(..)` calls
 - Add `macros`, `flags`, `flagArguments`, `dce` into `hxmake.test.TestTask` to allow more accurate configuration of compile task
-- Common `ServeTask` starts local server with `nekotools`
-- Common `ListTasks` prints list of available tasks (`hxmake tasks`)
+- Utility `ServeTask` starts local server with `nekotools`
+- Built-in `ListTasks` prints list of available tasks (`hxmake tasks`)
+- Built-in `ListModules` task prints current project modules hierarchy (`hxmake modules`)
 
 # v0.1.6
 

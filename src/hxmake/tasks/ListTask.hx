@@ -8,11 +8,7 @@ class ListTask extends Task {
 
 	public function new() {
 		name = "tasks";
-		description = "Print list of available tasks";
-	}
-
-	override public function configure() {
-
+		description = "Prints list of available tasks";
 	}
 
 	override public function run() {
