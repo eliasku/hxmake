@@ -8,7 +8,7 @@ import hxmake.cli.logging.LogLevel;
 @:final
 class MakeLog {
 
-	public static var logger(default, null):Logger = new Logger();
+	public static var logger(default, null):Logger;
 
 	public inline static function trace(message:Dynamic, ?position:PosInfos) {
 		logger.trace(message, position);
@@ -30,17 +30,15 @@ class MakeLog {
 		logger.error(message, position);
 	}
 
-	public static function initialize(args:Array<String>) {
-		if(args.indexOf("--silent") >= 0) {
-			logger.setFilter(LogLevel.FILTER_SILENT);
-		}
-		else if(args.indexOf("--verbose") >= 0) {
-			logger.setFilter(LogLevel.FILTER_VERBOSE);
-		}
+	public static function initialize(silent:Bool, verbose:Bool) {
+		var filter = LogLevel.FILTER_STD;
+		if(verbose) filter = LogLevel.FILTER_VERBOSE;
+		if(silent) filter = LogLevel.FILTER_SILENT;
+		logger = new Logger(filter);
 		Log.trace = onHaxeTrace;
 	}
 
 	static function onHaxeTrace(message:Dynamic, ?position:PosInfos) {
-		trace(message, LogLevel.TRACE, position);
+		logger.trace(message, position);
 	}
 }

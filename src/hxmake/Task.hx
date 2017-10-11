@@ -3,12 +3,21 @@ package hxmake;
 using hxmake.utils.TaskTools;
 
 class Task {
-
-	public var pack:Array<String>;
+	
 	public var name:String;
 	public var description:String = "";
 	public var enabled:Bool = true;
+
+	/**
+	* `Module` associated with this Task
+	**/
 	public var module(default, null):Module;
+
+	/**
+	 * `Project` of associated module
+	 * `null` if task is not linked to any module
+	**/
+	public var project(get, never):Project;
 
 	public var chainBefore(default, null):Array<Task> = [];
 	public var chainAfter(default, null):Array<Task> = [];
@@ -20,18 +29,18 @@ class Task {
 	var __finalized:Map<String, String> = new Map();
 	var __depends:Map<String, String> = new Map();
 
-	var _doFirst:Array<Task->Void> = [];
-	var _doLast:Array<Task->Void> = [];
+	var _doFirst:Array<Task -> Void> = [];
+	var _doLast:Array<Task -> Void> = [];
 
 	function _configure() {
 		this.logStep("Configuration BEGIN");
 		configure();
 		this.logStep("Sub-tasks configuration (BEFORE)");
-		for(chained in chainBefore) {
+		for (chained in chainBefore) {
 			chained._configure();
 		}
 		this.logStep("Sub-tasks configuration (AFTER)");
-		for(chained in chainAfter) {
+		for (chained in chainAfter) {
 			chained._configure();
 		}
 		this.logStep("Configuration END");
@@ -41,20 +50,20 @@ class Task {
 		this.logStep("Run BEGIN");
 		this.logStep("Run BEFORE tasks");
 
-		for(chained in chainBefore) {
+		for (chained in chainBefore) {
 			chained._run();
 		}
-		for(cb in _doFirst) {
+		for (cb in _doFirst) {
 			cb(this);
 		}
 		this.logStep("Running");
 		run();
 
 		this.logStep("Run AFTER tasks");
-		for(cb in _doLast) {
+		for (cb in _doLast) {
 			cb(this);
 		}
-		for(chained in chainAfter) {
+		for (chained in chainAfter) {
 			chained._run();
 		}
 		this.logStep("Run END");
@@ -82,6 +91,7 @@ class Task {
 	}
 
 	public function configure() {}
+
 	public function run() {}
 
 	public function then<T:Task>(task:T):T {
@@ -99,7 +109,7 @@ class Task {
 	}
 
 	function fail(description:String = "") {
-		if(parent != null) {
+		if (parent != null) {
 			throw 'Sub-task $name of task ${parent.name} failed: \n$description';
 		}
 		else {
@@ -107,13 +117,31 @@ class Task {
 		}
 	}
 
-	public function doFirst(func:Task->Void):Task {
+	public function doFirst(func:Task -> Void):Task {
 		_doFirst.push(func);
 		return this;
 	}
 
-	public function doLast(func:Task->Void):Task {
+	public function doLast(func:Task -> Void):Task {
 		_doLast.push(func);
 		return this;
 	}
+
+	function get_project():Project {
+		return module != null ? module.project : null;
+	}
+
+	public static function empty(name:String = null, description = ""):Task {
+		var task = new EmptyTask();
+		task.name = name;
+		task.description = description;
+		return task;
+	}
+}
+
+
+private class EmptyTask extends Task {
+	function new() {}
+
+	override public function run() {}
 }

@@ -1,3 +1,18 @@
+# v0.1.7
+
+- `task.project` alias
+- `Task.empty(name, desc)` creates empty task
+- Prints property-map on start
+- Flash Player trust location PER USER for macOS and Windows
+- `--macrolog` enabled traces from compile-time
+- Fixed recursive call in `trace(..)` calls
+- Add `macros`, `flags`, `flagArguments`, `dce` into `hxmake.test.TestTask` to allow more accurate configuration of compile task
+- Fixed phantomjs exit on utest
+- Add force `exit` define for swf target for utest
+- Utility `ServeTask` starts local server with `nekotools`
+- Built-in `ListTasks` prints list of available tasks (`hxmake tasks`)
+- Built-in `ListModules` task prints current project modules hierarchy (`hxmake modules`)
+
 # v0.1.6
 
 - Task graph resolving improvements

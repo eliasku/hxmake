@@ -1,12 +1,11 @@
 package hxmake.macr;
 
-import hxmake.cli.MakeLog;
-import haxe.macro.Expr.Access;
-import sys.FileSystem;
 import haxe.io.Path;
-import haxe.macro.Type;
 import haxe.macro.Context;
+import haxe.macro.Expr.Access;
 import haxe.macro.Expr;
+import haxe.macro.Type;
+import sys.FileSystem;
 
 using StringTools;
 
@@ -20,32 +19,34 @@ class ModuleMacro {
 		var modulePath = getModulePath(Context.getLocalModule());
 		var childrenExprs:Array<Expr> = [];
 
-		MakeLog.trace(modulePath);
+		CompileTime.log(modulePath);
 		var changedModulePath:Array<String> = MacroHelper.extractMetaStrings(cls.meta, ":module_path");
-		if(changedModulePath.length > 0) {
+		if (changedModulePath.length > 0) {
 			var parentPath = modulePath;
 			modulePath = FileSystem.absolutePath(Path.join([modulePath, changedModulePath[0]]));
-			MakeLog.trace("CHANGED TO: " + modulePath);
+			CompileTime.log("CHANGED TO: " + modulePath);
 			//childrenExprs.push(macro hxmake.core.CompiledProjectData.createModuleConnection($v{modulePath}, $v{childModulePath}));
 		}
 
 		var guessModuleName = modulePath.split("/").pop();
 
 		var includes:Array<String> = MacroHelper.extractMetaStrings(cls.meta, ":include");
-		for(include in includes) {
+		for (include in includes) {
 			var childModulePath = FileSystem.absolutePath(Path.join([modulePath, include]));
-			if(!FileSystem.exists(childModulePath)) {
-				MakeLog.warning('Path is not found for include "$include"');
+			if (!FileSystem.exists(childModulePath)) {
+				// TODO: pos of meta
+				Context.warning('Path is not found for include "$include"', pos);
 				continue;
 			}
 
 			var cp = Path.join([childModulePath, "make"]);
-			if(FileSystem.exists(cp)) {
+			if (FileSystem.exists(cp)) {
 				PluginInclude.scan(cp);
 				CompileTime.addMakePath(cp);
 			}
 			else {
-				MakeLog.warning('Make directory is not found for module "$include"');
+				// TODO: pos of meta
+				Context.warning('Make directory is not found for module "$include"', pos);
 			}
 
 			childrenExprs.push(macro hxmake.core.CompiledProjectData.createModuleConnection($v{modulePath}, $v{childModulePath}));
@@ -53,9 +54,9 @@ class ModuleMacro {
 
 		processMakeLibraries(":lib", cls.meta);
 
-		if(!cls.meta.has(":root")) {
+		if (!cls.meta.has(":root")) {
 			var parentMakeDir = FileSystem.absolutePath(Path.join([modulePath, "..", "make"]));
-			if(FileSystem.exists(parentMakeDir) && FileSystem.isDirectory(parentMakeDir)) {
+			if (FileSystem.exists(parentMakeDir) && FileSystem.isDirectory(parentMakeDir)) {
 				PluginInclude.scan(parentMakeDir);
 				CompileTime.addMakePath(parentMakeDir);
 			}
@@ -67,13 +68,13 @@ class ModuleMacro {
 		};
 
 		fields.push(MacroHelper.makeInitField(macro {
-			var module = @:privateAccess new $tp();
-			if(module.name == null) {
-				module.name = $v{guessModuleName};
-			}
-			module.path = $v{modulePath};
-			hxmake.core.CompiledProjectData.registerModule(module);
-			$b{childrenExprs}
+		var module = @:privateAccess new $tp();
+		if(module.name == null) {
+		module.name = $v{guessModuleName};
+		}
+		module.path = $v{modulePath};
+		hxmake.core.CompiledProjectData.registerModule(module);
+		$b{childrenExprs}
 		}, pos));
 
 		transformConstructor(fields);
@@ -83,11 +84,11 @@ class ModuleMacro {
 
 	static function processMakeLibraries(libraryMeta:String, metaAccess:MetaAccess) {
 		var metaList:Array<MetadataEntry> = metaAccess.extract(libraryMeta);
-		for(meta in metaList) {
-			if(meta.params.length > 0) {
+		for (meta in metaList) {
+			if (meta.params.length > 0) {
 				var libName = exprGetStringConst(meta.params[0]);
 				var libPath = exprGetStringConst(meta.params[1]);
-				if(libName == null) {
+				if (libName == null) {
 					throw '@$libraryMeta first argument need to be String literal';
 				}
 				PluginInclude.include(libName, libPath);
@@ -99,7 +100,7 @@ class ModuleMacro {
 	}
 
 	static function exprGetStringConst(expr:Expr):Null<String> {
-		if(expr == null) {
+		if (expr == null) {
 			return null;
 		}
 		return switch(expr.expr) {
@@ -113,8 +114,8 @@ class ModuleMacro {
 	}
 
 	static function transformConstructor(fields:Array<Field>) {
-		for(field in fields) {
-			if(field.name == "new") {
+		for (field in fields) {
+			if (field.name == "new") {
 				field.name = "__initialize";
 				field.access = [Access.AOverride];
 				// TODO: add more validation at Compile-time

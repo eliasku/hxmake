@@ -14,4 +14,10 @@ class CompileTime {
 		Compiler.addClassPath(makePath);
 		Compiler.include("", true, null, [makePath]);
 	}
+
+	public static function log(message:String) {
+		#if hxmake_macrolog
+		Sys.println('[MACRO] $message');
+		#end
+	}
 }

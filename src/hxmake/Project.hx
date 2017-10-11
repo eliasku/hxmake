@@ -40,14 +40,14 @@ class Project {
 	var _moduleGraph:ModuleGraph;
 
 	function new(buildArguments:Array<String>, isCompiler:Bool) {
-		MakeLog.initialize(buildArguments);
+		args = isCompiler ? buildArguments : buildArguments.concat(Sys.args());
+		properties = parsePropertyMap(args);
+
+		MakeLog.initialize(hasProperty("--silent"), hasProperty("--verbose"));
 
 		if (isCompiler) {
 			MakeLog.trace("[MakeProject] Compiler mode");
 		}
-
-		args = isCompiler ? buildArguments : buildArguments.concat(Sys.args());
-		properties = parsePropertyMap(args);
 
 		_moduleGraph = @:privateAccess new ModuleGraph();
 		_taskGraph = @:privateAccess new TaskGraph(args, _moduleGraph.modules);
@@ -67,12 +67,17 @@ class Project {
 		return properties.exists(name) ? properties.get(name) : null;
 	}
 
+	public function hasProperty(name:String):Bool {
+		return property(name) != null;
+	}
+
 	function run() {
 		var startTime = Timer.stamp();
 
+		printProperties();
+
 		_moduleGraph.prepare(this);
 		_moduleGraph.resolveHierarchy();
-		_moduleGraph.printHierarchies();
 		_moduleGraph.initialize();
 
 		_taskGraph.build();
@@ -86,13 +91,27 @@ class Project {
 		Sys.exit(0);
 	}
 
+	function printProperties() {
+		var first = true;
+		for (name in properties.keys()) {
+			if(first) {
+				MakeLog.info("Running with properties:");
+				first = false;
+			}
+			var value = property(name);
+			var str = '  $name';
+			if (value.length > 0) str += ' = $value';
+			MakeLog.info(str);
+		}
+	}
+
 	inline function get_modules():Array<Module> {
 		return _moduleGraph.modules;
 	}
 
 	public function findModuleByName(name:String):Module {
-		for(module in _moduleGraph.modules) {
-			if(module.name == name) return module;
+		for (module in _moduleGraph.modules) {
+			if (module.name == name) return module;
 		}
 		return null;
 	}

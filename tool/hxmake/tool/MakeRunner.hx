@@ -1,11 +1,11 @@
 package hxmake.tool;
 
+import haxe.io.Path;
 import hxmake.cli.CL;
-import hxmake.utils.HaxeTarget;
-import hxmake.utils.Hxml;
 import hxmake.utils.Haxe;
 import hxmake.utils.Haxelib;
-import haxe.io.Path;
+import hxmake.utils.HaxeTarget;
+import hxmake.utils.Hxml;
 
 @:final
 class MakeRunner {
@@ -26,8 +26,11 @@ class MakeRunner {
 		hxml.libraries = [];
 		hxml.classPath.push(libPath);
 		hxml.defines.push("hxmake");
+		if (builtInArguments.indexOf("--macrolog") >= 0) {
+			hxml.defines.push("hxmake_macrolog");
+		}
 
-		if(isCompiler) {
+		if (isCompiler) {
 			hxml.target = HaxeTarget.Interp;
 		}
 		else {
@@ -46,7 +49,7 @@ class MakeRunner {
 		hxml.showTimes = builtInArguments.indexOf("--times") >= 0;
 
 		var result = Haxe.compile(hxml);
-		if(!result || isCompiler) {
+		if (!result || isCompiler) {
 			return result;
 		}
 
@@ -55,8 +58,8 @@ class MakeRunner {
 
 	static function toLiteralsArrayString(values:Array<String>):String {
 		var args = [];
-		if(values != null) {
-			for(v in values) {
+		if (values != null) {
+			for (v in values) {
 				args.push('"$v"');
 			}
 		}

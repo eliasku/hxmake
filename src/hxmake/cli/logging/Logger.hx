@@ -4,20 +4,18 @@ import haxe.PosInfos;
 
 class Logger {
 
-	public static var current(default, null):Logger = new Logger();
-
 	var _filter:Int;
 	var _colors:Array<AnsiColor> = [];
 	var _levels:Array<String> = [];
 	var _positions:Array<Bool> = [];
 
-	public function new() {
+	public function new(filter:Int) {
 		setLevelFormat(LogLevel.TRACE, "[T] ", AnsiColor.GREY, true);
 		setLevelFormat(LogLevel.DEBUG, "[D] ", AnsiColor.WHITE, true);
 		setLevelFormat(LogLevel.INFO, "", AnsiColor.CYAN, false);
 		setLevelFormat(LogLevel.WARNING, "[WARNING] ", AnsiColor.YELLOW, false);
 		setLevelFormat(LogLevel.ERROR, "[ERROR] ", AnsiColor.RED, false);
-		setFilter(LogLevel.FILTER_STD);
+		setFilter(filter);
 	}
 
 	inline public function trace(message:Dynamic, ?position:PosInfos) {
@@ -43,11 +41,11 @@ class Logger {
 	public function print(data:Dynamic, level:LogLevel, ?position:PosInfos) {
 		var text = Std.string(data);
 
-		if((_filter & (1 << level)) == 0) {
+		if ((_filter & (1 << level)) == 0) {
 			return;
 		}
 
-		if(_positions[level]) {
+		if (_positions[level]) {
 			text = position.fileName + ":" + position.lineNumber + " " + text;
 		}
 
