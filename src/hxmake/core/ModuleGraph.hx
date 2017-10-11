@@ -1,8 +1,8 @@
 package hxmake.core;
 
-import hxmake.cli.MakeLog;
 import haxe.io.Path;
 import hxmake.cli.FileUtil;
+import hxmake.cli.MakeLog;
 
 @:final
 @:access(hxmake.Module)
@@ -43,15 +43,7 @@ class ModuleGraph {
 	public function initialize() {
 		for (module in modules) {
 			module.__initialize();
-
-			// apply default initialization
-			// TODO: move to internal plugin
-			if (module.config.makePath.indexOf("make") < 0) {
-				module.config.makePath.push("make");
-			}
-			if (module.name != "hxmake" && module.config.devDependencies.get("hxmake") == null) {
-				module.config.devDependencies.set("hxmake", "haxelib;global");
-			}
+			initializeBuiltIn(module);
 		}
 	}
 
@@ -67,6 +59,22 @@ class ModuleGraph {
 	public function finish() {
 		for (module in modules) {
 			module.finish();
+		}
+	}
+
+	function initializeBuiltIn(module:Module) {
+		// apply default initialization
+		// TODO: move to internal plugin
+		if (module.config.makePath.indexOf("make") < 0) {
+			module.config.makePath.push("make");
+		}
+
+		if (module.name != "hxmake" && module.config.devDependencies.get("hxmake") == null) {
+			module.config.devDependencies.set("hxmake", "haxelib;global");
+		}
+
+		if (module.isMain) {
+			module.task("tasks", new hxmake.tasks.ListTask());
 		}
 	}
 
