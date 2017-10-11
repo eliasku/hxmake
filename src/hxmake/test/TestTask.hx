@@ -107,6 +107,7 @@ class TestTask extends Task {
 					if (testLibrary == "utest") {
 						compileTask.hxml.defines.push("exit");
 					}
+				case Js: compileTask.hxml.defines.push("travis");
 				case Cs: compileTask.hxml.defines.push("unsafe"); //XXX
 				default:
 			}
