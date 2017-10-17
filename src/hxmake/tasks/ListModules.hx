@@ -10,12 +10,13 @@ class ListModules extends Task {
 	}
 
 	override public function run() {
-		var modules = module.root.allModules;
+		var roots = project.modules.filter(function(module:Module) {
+			return module.parent == null;
+		});
+
 		MakeLog.info("Module structure:");
-		for (module in modules) {
-			if (module.parent == null) {
-				printModuleStructure(module);
-			}
+		for (root in roots) {
+			printModuleStructure(root);
 		}
 	}
 

@@ -13,4 +13,12 @@ class TaskNode {
 	function get_module():Module {
 		return task.module;
 	}
+
+	public function toString() {
+		return module.name + "::" + name;
+	}
+
+	public function equals(other:TaskNode) {
+		return name == other.name && module == other.module;
+	}
 }

@@ -2,8 +2,10 @@ package hxmake;
 
 import haxe.Timer;
 import hxmake.cli.MakeLog;
+import hxmake.core.CompiledProjectData;
 import hxmake.core.ModuleGraph;
-import hxmake.core.TaskGraph;
+import hxmake.core.TaskQueue;
+import hxmake.core.TaskQueueBuilder;
 
 /***
 
@@ -36,7 +38,6 @@ class Project {
 	public var modules(get, never):Array<Module>;
 	public var properties(default, null):Map<String, String>;
 
-	var _taskGraph:TaskGraph;
 	var _moduleGraph:ModuleGraph;
 
 	function new(buildArguments:Array<String>, isCompiler:Bool) {
@@ -49,8 +50,7 @@ class Project {
 			MakeLog.trace("[MakeProject] Compiler mode");
 		}
 
-		_moduleGraph = @:privateAccess new ModuleGraph();
-		_taskGraph = @:privateAccess new TaskGraph(args, _moduleGraph.modules);
+		_moduleGraph = @:privateAccess new ModuleGraph(CompiledProjectData.getModules());
 	}
 
 	/**
@@ -76,13 +76,18 @@ class Project {
 
 		printProperties();
 
+		if (_moduleGraph.modules.length == 0) {
+			MakeLog.error("Modules not found");
+		}
+
 		_moduleGraph.prepare(this);
-		_moduleGraph.resolveHierarchy();
+		_moduleGraph.resolveHierarchy(CompiledProjectData.getConnectionsList());
 		_moduleGraph.initialize();
 
-		_taskGraph.build();
-		_taskGraph.printTasks();
-		_taskGraph.run();
+		var taskQueue = new TaskQueue(TaskQueueBuilder.createNodeList(modules, parseTasks(args)));
+		taskQueue.print();
+		taskQueue.configure();
+		taskQueue.run();
 
 		_moduleGraph.finish();
 
@@ -94,7 +99,7 @@ class Project {
 	function printProperties() {
 		var first = true;
 		for (name in properties.keys()) {
-			if(first) {
+			if (first) {
 				MakeLog.info("Running with properties:");
 				first = false;
 			}
@@ -110,8 +115,12 @@ class Project {
 	}
 
 	public function findModuleByName(name:String):Module {
+//		MakeLog.info("search " + name);
 		for (module in _moduleGraph.modules) {
-			if (module.name == name) return module;
+			if (module.name == name) {
+//				MakeLog.info("FOUND " + name);
+				return module;
+			}
 		}
 		return null;
 	}
@@ -126,5 +135,15 @@ class Project {
 			}
 		}
 		return props;
+	}
+
+	public static function parseTasks(args:Array<String>):Array<String> {
+		var result:Array<String> = [];
+		for (arg in args) {
+			if (arg.charAt(0) != "-") {
+				result.push(arg);
+			}
+		}
+		return result;
 	}
 }

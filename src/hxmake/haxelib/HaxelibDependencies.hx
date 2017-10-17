@@ -17,8 +17,8 @@ class HaxelibDependencies extends Task {
 	public function new() {}
 
 	override public function run() {
-		if(module.parent == null) {
-			var dependencies = collectHaxelibDependencies(module.allModules);
+		if (module.parent == null) {
+			var dependencies = collectHaxelibDependencies(module.getSubModules(true, false));
 			installHaxelibDependencies(dependencies);
 		}
 	}

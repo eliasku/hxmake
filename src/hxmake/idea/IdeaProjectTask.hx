@@ -1,9 +1,8 @@
 package hxmake.idea;
 
-import hxmake.cli.FileUtil;
-import hxmake.cli.MakeLog;
 import haxe.io.Path;
 import hxmake.cli.FileUtil;
+import hxmake.cli.MakeLog;
 import hxmake.utils.CachedHaxelib;
 import hxmake.utils.Haxelib;
 import sys.FileSystem;
@@ -22,7 +21,7 @@ class IdeaProjectTask extends Task {
 
 	override public function run() {
 		_idea = new IdeaContext();
-		_modules = module.allModules;
+		_modules = module.getSubModules(true, false);
 		_rootModule = module;
 		for (mod in _modules) {
 			createModule(mod);

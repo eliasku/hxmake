@@ -2,28 +2,31 @@ package hxmake;
 
 @:autoBuild(hxmake.macr.ModuleMacro.build())
 class Module {
+	@:deprecated("Use Module::getSubModules(false, false);")
+	public var subModules(get, never):Array<Module>;
+
+	inline function get_subModules():Array<Module> return getSubModules(false, false);
+
+	@:deprecated("Use Module::getSubModules(true, false);")
+	public var allModules(get, never):Array<Module>;
+
+	inline function get_allModules():Array<Module> return getSubModules(true, false);
+
 	public var project(default, null):Project;
 	public var root(get, never):Module;
 	public var parent(default, null):Module;
 	public var children(default, null):Array<Module> = [];
 
-	// all nested modules
-	public var subModules(get, never):Array<Module>;
-
-	// this module + all nested modules
-	public var allModules(get, never):Array<Module>;
-
 	public var name(default, null):String;
 	public var path(default, null):String;
 	public var config(get, never):ModuleConfig;
-	
+
 	public var isMain(default, null):Bool = false;
 	public var isActive(get, never):Bool;
 
-	var _subModules:Array<Module>;
-	var _data:Map<String, Dynamic> = ["config" => new ModuleConfig()];
 	var _tasks:Map<String, Task> = new Map();
 	var _plugins:Array<Plugin> = [];
+	var _data:Map<String, Dynamic> = ["config" => new ModuleConfig()];
 
 	function __initialize() {
 		// Constuctor will be moved here
@@ -39,12 +42,12 @@ class Module {
 	}
 
 	public function task(name:String, ?task:Task, ?type:Class<Task>):Task {
-		if(task != null) {
+		if (task != null) {
 			@:privateAccess task.module = this;
 			_tasks.set(name, task);
 			return task;
 		}
-		if(type != null) {
+		if (type != null) {
 			throw "not implemented";
 		}
 		return _tasks.get(name);
@@ -65,7 +68,7 @@ class Module {
 
 	function get_root():Module {
 		var r = this;
-		while(r.parent != null) {
+		while (r.parent != null) {
 			r = r.parent;
 		}
 		return r;
@@ -75,18 +78,32 @@ class Module {
 		return cast _data.get("config");
 	}
 
-	function get_allModules():Array<Module> {
-		return [this].concat(subModules);
-	}
+	// TODO: int flags?
+	public function getSubModules(includeSelf:Bool = false, includeDependecies:Bool = false):Array<Module> {
+		var result = [];
 
-	function get_subModules():Array<Module> {
-		if(_subModules == null) {
-			_subModules = children.copy();
-			for(child in children) {
-				_subModules = _subModules.concat(child.subModules);
+		if (includeSelf) {
+			result.push(this);
+		}
+
+		for (child in children) {
+			var childSubModules = child.getSubModules(true, false);
+			for (childSubModule in childSubModules) {
+				result.push(childSubModule);
 			}
 		}
-		return _subModules;
+
+		if (includeDependecies) {
+			var dependencyMap = config.getAllDependencies();
+			for (dependency in dependencyMap.keys()) {
+				var module = project.findModuleByName(dependency);
+				if (module != null && result.indexOf(module) < 0) {
+					result.push(module);
+				}
+			}
+		}
+
+		return result;
 	}
 
 	function apply<T:Plugin>(plugin:Class<T>):T {
@@ -95,9 +112,9 @@ class Module {
 		return pluginInstance;
 	}
 
-	public function update<T>(id:String, closure:T->Void):Module {
+	public function update<T>(id:String, closure:T -> Void):Module {
 		var data:T = cast _data.get(id);
-		if(data == null) {
+		if (data == null) {
 			throw 'Data slot "$id" is not found';
 		}
 		closure(data);

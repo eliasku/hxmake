@@ -5,23 +5,16 @@ Build tools for Haxe
 [![Build Status](https://ci.appveyor.com/api/projects/status/lxmpp7d9pfoyd7dq/branch/develop?svg=true)](https://ci.appveyor.com/project/eliasku/hxmake)
 
 [![Lang](https://img.shields.io/badge/language-haxe-orange.svg)](http://haxe.org)
-[![Version](https://img.shields.io/badge/version-v0.1.6-green.svg)](https://github.com/eliasku/hxmake)
+[![Version](https://img.shields.io/badge/version-v0.1.8-green.svg)](https://github.com/eliasku/hxmake)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
-### First install
-1. Install library
+### Installation
 
-`haxelib git hxmake https://github.com/eliasku/hxmake.git`
-
-or clone source code and install as `dev` version
-
-`haxelib dev hxmake path/to/hxmake`
-
-2. Build hxmake and install command-line alias
-
-`haxelib run hxmake _`
-
-Enter system password if required to install alias
+```
+haxelib install hxmake
+haxelib run hxmake _
+```
+_Enter system password if required to install alias_
 
 ### Usage
 `hxmake` - run hxmake
@@ -66,8 +59,25 @@ Specified make program:
 
 ### Logging
 
+Use `MakeLog.*` methods for logging in your tasks.
+
 `--verbose`: include all TRACE and DEBUG messages
 
 `--silent`: disable all messages from `hxmake` code
 
-Use `MakeLog.*` methods for logging in your tasks.
+`--macrolog`: enables output from hxmake compile-time code
+
+### Development
+
+- Install with `haxelib` from git repository
+```
+haxelib git hxmake https://github.com/eliasku/hxmake.git
+```
+- or checkout manually and set to local directory using `haxelib dev` command
+```
+haxelib dev hxmake path/to/hxmake
+```
+- Then do initial rebuild command 
+```
+haxelib run hxmake _
+```

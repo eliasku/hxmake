@@ -1,6 +1,6 @@
 # v0.1.8
 
-
+- Resolve tasks according to module dependencies
 
 # v0.1.7
 

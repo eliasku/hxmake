@@ -10,13 +10,15 @@ class ModuleGraph {
 
 	public var modules(default, null):Array<Module>;
 
-	function new() {
-		modules = CompiledProjectData.getModules();
-		MakeLog.trace("[ModuleGraph] input modules: " + modules.map(function(m:Module) {return m.name;}).join(","));
+	function new(modules:Array<Module>) {
+		this.modules = modules;
+		var names = modules.map(function(m:Module) {
+			return m.name;
+		});
+		MakeLog.trace("[ModuleGraph] input modules: " + names.join(","));
 	}
 
-	public function resolveHierarchy() {
-		var connections = CompiledProjectData.getConnectionsList();
+	public function resolveHierarchy(connections:Array<ModuleConnectionData>) {
 		for (connection in connections) {
 			for (parent in modules) {
 				if (FileUtil.pathEquals(parent.path, connection.parentPath)) {
