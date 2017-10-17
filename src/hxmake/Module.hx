@@ -78,7 +78,7 @@ class Module {
 		return cast _data.get("config");
 	}
 
-	// TODO: int flags?
+	// TODO: bool arguments to int-flags?
 	public function getSubModules(includeSelf:Bool = false, includeDependecies:Bool = false):Array<Module> {
 		var result = [];
 

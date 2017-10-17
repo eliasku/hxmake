@@ -12,7 +12,7 @@ class MakeRunner {
 
 	static inline var INIT_MACRO_METHOD:String = "hxmake.macr.InitMacro.generateMainClass";
 
-	// TODO path exists (cwd, make, lib)
+	// TODO: path exists (cwd, make, lib)
 	public static function make(path:String, builtInArguments:Array<String>):Bool {
 
 		Sys.setCwd(path);
@@ -31,16 +31,13 @@ class MakeRunner {
 		}
 
 		if (isCompiler) {
+			// TODO: EVAL instead of --interp
 			hxml.target = HaxeTarget.Interp;
 		}
 		else {
+			// TODO: try Node.js instead of Neko?
 			hxml.target = HaxeTarget.Neko;
 			hxml.output = "make.n";
-
-			// TODO: switch to HL?
-			// hxml.target = HaxeTarget.Hl;
-			// hxml.defines.push("interp");
-			// hxml.output = "make.hl";
 		}
 
 		hxml.macros.push('$INIT_MACRO_METHOD("$makePath",$isCompiler,[${toLiteralsArrayString(builtInArguments)}])');

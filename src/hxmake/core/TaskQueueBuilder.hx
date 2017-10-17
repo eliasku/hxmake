@@ -26,7 +26,7 @@ class TaskQueueBuilder {
 	function findDependedTasks(initialTasks:Array<TaskNode>):Array<TaskNode> {
 		var tasks = initialTasks.copy();
 		for (task in initialTasks) {
-			pushUniqueNodes(tasks, findTaskDependencies(task));
+			addRangeUnique(tasks, findTaskDependencies(task));
 		}
 		return tasks;
 	}
@@ -171,10 +171,10 @@ class TaskQueueBuilder {
 		return executionOrder;
 	}
 
-	static function pushUniqueNodes(toArray:Array<TaskNode>, nodes:Array<TaskNode>) {
-		for (node in nodes) {
-			if (toArray.indexOf(node) < 0) {
-				toArray.push(node);
+	static function addRangeUnique(array:Array<TaskNode>, range:Array<TaskNode>) {
+		for (it in range) {
+			if (array.indexOf(it) < 0) {
+				array.push(it);
 			}
 		}
 	}

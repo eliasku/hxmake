@@ -64,7 +64,7 @@ class Installer {
 					MakeLog.trace('Copy hxmake.exe to $haxePath');
 					File.copy(src, dst);
 
-					// TODO:
+					// TODO: windows replace .exe issue
 					// we need delete hxmake.exe to prevent running from the current folder:
 					// - if hxmake.exe will be runned from current folder, OS will not able to overwrite the file
 					// FileSystem.deleteFile(src);
