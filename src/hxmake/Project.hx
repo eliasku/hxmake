@@ -38,19 +38,22 @@ class Project {
 	public var modules(get, never):Array<Module>;
 	public var properties(default, null):Map<String, String>;
 
+	var _data:CompiledProjectData;
 	var _moduleGraph:ModuleGraph;
 
-	function new(buildArguments:Array<String>, isCompiler:Bool) {
-		args = isCompiler ? buildArguments : buildArguments.concat(Sys.args());
+	function new(data:CompiledProjectData) {
+		_data = data;
+
+		args = data.isCompiler ? data.buildArguments : data.buildArguments.concat(Sys.args());
 		properties = parsePropertyMap(args);
 
 		MakeLog.initialize(hasProperty("--silent"), hasProperty("--verbose"));
 
-		if (isCompiler) {
+		if (data.isCompiler) {
 			MakeLog.trace("[MakeProject] Compiler mode");
 		}
 
-		_moduleGraph = @:privateAccess new ModuleGraph(CompiledProjectData.getModules());
+		_moduleGraph = @:privateAccess new ModuleGraph(data.modules);
 	}
 
 	/**
@@ -81,7 +84,7 @@ class Project {
 		}
 
 		_moduleGraph.prepare(this);
-		_moduleGraph.resolveHierarchy(CompiledProjectData.getConnectionsList());
+		_moduleGraph.resolveHierarchy(_data.getConnections());
 		_moduleGraph.initialize();
 
 		var taskQueue = new TaskQueue(TaskQueueBuilder.createNodeList(modules, parseTasks(args)));

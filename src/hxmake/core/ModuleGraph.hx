@@ -8,6 +8,7 @@ import hxmake.cli.MakeLog;
 @:access(hxmake.Module)
 class ModuleGraph {
 
+	// readonly!
 	public var modules(default, null):Array<Module>;
 
 	function new(modules:Array<Module>) {

@@ -25,4 +25,5 @@ install:
 script:
   - haxelib run hxmake _
   - hxmake _
+  - hxmake test
   - hxmake package-haxelib

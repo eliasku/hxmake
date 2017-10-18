@@ -22,4 +22,5 @@ test_script:
   - haxelib dev hxmake .
   - haxelib run hxmake _
   - hxmake _
+  - hxmake test
   - hxmake package-haxelib

@@ -14,7 +14,8 @@ class InitMacro {
 			args: [],
 			ret: null,
 			expr: macro {
-				var prj = new hxmake.Project($v{args}, $v{isCompiler});
+				hxmake.core.CompiledProjectData.initCurrent($v{args}, $v{isCompiler});
+				var prj = new hxmake.Project(hxmake.core.CompiledProjectData.CURRENT);
 				prj.run();
 			}
 		};

@@ -1,12 +1,17 @@
 import hxmake.haxelib.HaxelibExt;
 import hxmake.haxelib.HaxelibPlugin;
 import hxmake.idea.IdeaPlugin;
+import hxmake.test.TestTask;
 
 using hxmake.haxelib.HaxelibPlugin;
 
 class HxMake extends hxmake.Module {
 	function new() {
 		config.classPath = ["src", "tool"];
+		config.testPath = ["test"];
+		config.devDependencies = [
+			"utest" => "haxelib"
+		];
 
 		apply(IdeaPlugin);
 		apply(HaxelibPlugin);
@@ -22,5 +27,10 @@ class HxMake extends hxmake.Module {
 
 			ext.pack.includes = ["src", "resources", "tool", "build.hxml", "haxelib.json", "run.n", "README.md"];
 		});
+
+		var test = new TestTask();
+		test.targets = ["neko"];
+		test.libraries = ["hxmake"];
+		task("test", test);
 	}
 }

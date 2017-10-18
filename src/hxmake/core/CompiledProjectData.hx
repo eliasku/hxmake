@@ -3,44 +3,54 @@ package hxmake.core;
 @:final
 class CompiledProjectData {
 
-	static var MODULES:Array<Module>;
-	static var CONNECTIONS:Map<String, ModuleConnectionData>;
+	public var isCompiler(default, null):Bool = false;
+	public var buildArguments(default, null):Array<String> = [];
+	public var modules(default, null):Array<Module> = [];
 
-	public static function registerModule(module:Module) {
-		if (MODULES == null) {
-			MODULES = [];
-		}
-		MODULES.push(module);
+	var _connectionsMap:Map<String, ModuleConnectionData> = new Map();
+
+	function new() {}
+
+	public function getConnections():Array<ModuleConnectionData> {
+		return Lambda.array(_connectionsMap);
 	}
 
-	public static function createModuleConnection(parentModulePath:String, childModulePath:String) {
+	public function connect(parentModulePath:String, childModulePath:String) {
 		if (parentModulePath == null || parentModulePath.length == 0) {
 			return;
 		}
 
-		if (CONNECTIONS == null) {
-			CONNECTIONS = new Map();
-		}
-
-		var data:ModuleConnectionData = CONNECTIONS.get(parentModulePath);
+		var data:ModuleConnectionData = _connectionsMap.get(parentModulePath);
 		if (data == null) {
 			data = new ModuleConnectionData(parentModulePath);
-			CONNECTIONS.set(parentModulePath, data);
+			_connectionsMap.set(parentModulePath, data);
 		}
 		data.childPath.push(childModulePath);
 	}
 
-	public static function getConnectionsList():Array<ModuleConnectionData> {
-		var result = [];
-		if (CONNECTIONS != null) {
-			for (connection in CONNECTIONS) {
-				result.push(connection);
-			}
-		}
-		return result;
+	/**
+	* Static methods for access CURRENT context provided by project compilation
+	* **/
+
+	@:isVar public static var CURRENT(get, null):CompiledProjectData;
+
+	public static function initCurrent(buildArguments:Array<String>, isCompiler:Bool) {
+		CURRENT.buildArguments = buildArguments;
+		CURRENT.isCompiler = isCompiler;
 	}
 
-	public static function getModules():Array<Module> {
-		return MODULES != null ? MODULES : [];
+	public static function registerModule(module:Module) {
+		CURRENT.modules.push(module);
+	}
+
+	public static function createModuleConnection(parentModulePath:String, childModulePath:String) {
+		CURRENT.connect(parentModulePath, childModulePath);
+	}
+
+	static function get_CURRENT():CompiledProjectData {
+		if (CURRENT == null) {
+			CURRENT = new CompiledProjectData();
+		}
+		return CURRENT;
 	}
 }
