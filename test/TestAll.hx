@@ -1,13 +1,13 @@
 package ;
 
-import hxmake.tests.SimpleTest;
+import hxmake.tests.RunEmptyProjectTest;
 import utest.Runner;
 import utest.ui.Report;
 
 class TestAll {
 
 	public static function addTests(runner:Runner) {
-		runner.addCase(new SimpleTest());
+		runner.addCase(new RunEmptyProjectTest());
 	}
 
 	public static function main() {

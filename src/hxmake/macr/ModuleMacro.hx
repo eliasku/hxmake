@@ -53,7 +53,7 @@ class ModuleMacro {
 			//Context.warning('Make directory is not found for module "$include"', includePos);
 			//}
 
-			childrenExprs.push(macro hxmake.core.CompiledProjectData.createModuleConnection($v{modulePath}, $v{childModulePath}));
+			childrenExprs.push(macro hxmake.core.CompiledProjectData.CURRENT.connect($v{modulePath}, $v{childModulePath}));
 		}
 
 		// TODO: readme @:lib
@@ -78,7 +78,7 @@ class ModuleMacro {
 				module.name = $v{guessModuleName};
 			}
 			module.path = $v{modulePath};
-			hxmake.core.CompiledProjectData.registerModule(module);
+			hxmake.core.CompiledProjectData.CURRENT.addModule(module);
 			$b{childrenExprs}
 		}, pos));
 

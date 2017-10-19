@@ -1,5 +1,6 @@
 package hxmake.core;
 
+import hxmake.utils.ArrayTools;
 import hxmake.utils.MapTools;
 using hxmake.utils.MapTools;
 
@@ -7,13 +8,14 @@ using hxmake.utils.MapTools;
 	Internal structure transforms modules and tasks to unique TaskNode lookups for searching,
 	and provide utility functions.
 **/
+
 @:final
-@:access(hxmake.Module)
 class TaskGraph {
 
 	var _byName:Map<String, Array<TaskNode>> = new Map();
 	var _byModule:Map<String, Array<TaskNode>> = new Map();
 
+	@:access(hxmake.Module)
 	public function new(modules:Array<Module>) {
 		for (module in modules) {
 			var tasks = module._tasks;
@@ -59,7 +61,7 @@ class TaskGraph {
 	public function requireTasks(names:Array<String>):Array<TaskNode> {
 		var result:Array<TaskNode> = [];
 		for (name in names) {
-			result = result.concat(requireNodes(name));
+			ArrayTools.pushRange(result, requireNodes(name));
 		}
 		return result;
 	}

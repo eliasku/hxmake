@@ -1,5 +1,7 @@
 package hxmake;
 
+import hxmake.cli.FileUtil;
+
 @:autoBuild(hxmake.macr.ModuleMacro.build())
 class Module {
 	@:deprecated("Use Module::getSubModules(false, false);")
@@ -12,7 +14,14 @@ class Module {
 
 	inline function get_allModules():Array<Module> return getSubModules(true, false);
 
+	/**
+		Shared "project" context between modules.
+	**/
 	public var project(default, null):Project;
+
+	/**
+		Root module
+	**/
 	public var root(get, never):Module;
 	public var parent(default, null):Module;
 	public var children(default, null):Array<Module> = [];
@@ -21,7 +30,15 @@ class Module {
 	public var path(default, null):String;
 	public var config(get, never):ModuleConfig;
 
-	public var isMain(default, null):Bool = false;
+	/**
+		Module is "main" (or current).
+		That means that `hxmake` running in the directory of this module.
+	**/
+	public var isMain(get, never):Bool;
+
+	/**
+		Active means that module is "main" or have "main" ancestor.
+	**/
 	public var isActive(get, never):Bool;
 
 	var _tasks:Map<String, Task> = new Map();
@@ -123,5 +140,9 @@ class Module {
 
 	function get_isActive():Bool {
 		return isMain || (parent != null && parent.isActive);
+	}
+
+	function get_isMain():Bool {
+		return FileUtil.pathEquals(path, project.workingDir);
 	}
 }

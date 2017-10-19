@@ -3,12 +3,11 @@ package hxmake.cli;
 import haxe.Log;
 import haxe.PosInfos;
 import hxmake.cli.logging.Logger;
-import hxmake.cli.logging.LogLevel;
 
 @:final
 class MakeLog {
 
-	public static var logger(default, null):Logger;
+	public static var logger(get, never):Logger;
 
 	public inline static function trace(message:Dynamic, ?position:PosInfos) {
 		logger.trace(message, position);
@@ -30,15 +29,17 @@ class MakeLog {
 		logger.error(message, position);
 	}
 
-	public static function initialize(silent:Bool, verbose:Bool) {
-		var filter = LogLevel.FILTER_STD;
-		if(verbose) filter = LogLevel.FILTER_VERBOSE;
-		if(silent) filter = LogLevel.FILTER_SILENT;
-		logger = new Logger(filter);
-		Log.trace = onHaxeTrace;
+	static function onHaxeTrace(message:Dynamic, ?position:PosInfos) {
+		_logger.trace(message, position);
 	}
 
-	static function onHaxeTrace(message:Dynamic, ?position:PosInfos) {
-		logger.trace(message, position);
+	static var _logger:Logger;
+
+	static function get_logger():Logger {
+		if (_logger == null) {
+			_logger = new Logger();
+			Log.trace = onHaxeTrace;
+		}
+		return _logger;
 	}
 }

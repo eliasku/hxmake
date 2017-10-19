@@ -1,7 +1,7 @@
 # v0.1.8
 
 - Resolve tasks according to module dependencies
-- Drop Haxe 3.2.X support, switch CI to Haxe 3.4.X 
+- Drop Haxe 3.2.X support, switch CI to Haxe 3.4.X
 
 # v0.1.7
 

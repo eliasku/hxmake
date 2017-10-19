@@ -1,5 +1,8 @@
 package hxmake.core;
 
+/**
+	Node for task graph
+**/
 class TaskNode {
 	public var name(default, null):String;
 	public var task(default, null):Task;

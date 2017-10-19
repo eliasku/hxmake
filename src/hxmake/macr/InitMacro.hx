@@ -3,7 +3,12 @@ package hxmake.macr;
 import haxe.macro.Context;
 import haxe.macro.Expr;
 
+@:final
 class InitMacro {
+
+	/**
+		Generates Main class to run make routine
+	**/
 	public static function generateMainClass(initialMakeDir:String, isCompiler:Bool, args:Array<String>) {
 		PluginInclude.scan(initialMakeDir);
 		CompileTime.addMakePath(initialMakeDir);
@@ -13,11 +18,14 @@ class InitMacro {
 		var mainFun:Function = {
 			args: [],
 			ret: null,
-			expr: macro {
-				hxmake.core.CompiledProjectData.initCurrent($v{args}, $v{isCompiler});
-				var prj = new hxmake.Project(hxmake.core.CompiledProjectData.CURRENT);
-				prj.run();
-			}
+			expr: macro @:privateAccess hxmake.core.ProjectRunner.runFromInitMacro(
+				$v{args},
+				$v{isCompiler},
+				hxmake.core.CompiledProjectData.CURRENT.build(),
+				Sys.getCwd(),
+				Sys.args(),
+				hxmake.cli.MakeLog.logger
+			)
 		};
 		var main:Field = {
 			name: "main",
@@ -29,9 +37,6 @@ class InitMacro {
 			pack: [],
 			name: "HxMakeMain",
 			pos: pos,
-			meta: [{name: ":access", params: [macro hxmake.Project], pos: pos}],
-			//@:optional var params : Array<TypeParamDecl>;
-			//@:optional var isExtern : Bool;
 			kind: TypeDefKind.TDClass(),
 			fields: [main]
 		};

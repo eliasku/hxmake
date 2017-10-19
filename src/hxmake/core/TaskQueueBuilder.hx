@@ -1,7 +1,6 @@
 package hxmake.core;
 
 @:final
-@:access(hxmake.Task)
 class TaskQueueBuilder {
 
 	var _nodes:Array<TaskNode>;
@@ -31,6 +30,7 @@ class TaskQueueBuilder {
 		return tasks;
 	}
 
+	@:access(hxmake.Task)
 	function findTaskDependencies(taskNode:TaskNode):Array<TaskNode> {
 		// find same task in module dependencies
 		var dependedModules = taskNode.module.getSubModules(false, true);
@@ -57,6 +57,7 @@ class TaskQueueBuilder {
 		return nodes;
 	}
 
+	@:access(hxmake.Task)
 	static function resolveTasksOrder(tasks:Array<TaskNode>):Array<TaskNode> {
 		var tasksLength:Int = tasks.length;
 

@@ -14,6 +14,7 @@ class TaskQueue {
 		_queue = queue;
 	}
 
+	// TODO: move to "Printer" utility
 	public function print() {
 		if (_queue.length > 0) {
 			MakeLog.info("Tasks order: ");

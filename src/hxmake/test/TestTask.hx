@@ -1,8 +1,8 @@
 package hxmake.test;
 
-import hxmake.cli.MakeLog;
 import haxe.io.Path;
 import hxmake.cli.CL;
+import hxmake.cli.MakeLog;
 import hxmake.test.flash.InstallFlashPlayer;
 import hxmake.test.flash.RunFlashPlayer;
 import hxmake.test.js.InstallPhantomJs;
@@ -59,13 +59,11 @@ class TestTask extends Task {
 
 	@:pure
 	function overrideTargets() {
-		var customTargets:Array<String> = [];
-		for (arg in module.project.args) {
-			if (arg.indexOf(OPTION_OVERRIDE_TEST_TARGET) == 0) {
-				customTargets = customTargets.concat(arg.substr(OPTION_OVERRIDE_TEST_TARGET.length).split(","));
-			}
+		var customTargetsValue = project.property(OPTION_OVERRIDE_TEST_TARGET);
+		if (customTargetsValue != null && customTargetsValue.length > 0) {
+			return customTargetsValue.split(",");
 		}
-		return customTargets.length > 0 ? customTargets : targets;
+		return targets;
 	}
 
 	@:pure
@@ -98,7 +96,7 @@ class TestTask extends Task {
 				Path.join([outputDir, outputName + targetFilePostfix])
 			);
 			// TODO: rethink building output name
-			if(target == "c") {
+			if (target == "c") {
 				compileTask.hxml.output = StringTools.replace(compileTask.hxml.output, ".hl", ".c");
 			}
 			switch(compileTask.hxml.target) {
@@ -222,10 +220,10 @@ class TestTask extends Task {
 				runTask.set("java", ["-jar", bin]);
 			case Hl:
 				MakeLog.warning("Running HashLink target is in progress...");
-				if(target == "hl") {
+				if (target == "hl") {
 					runTask.set("hl", [bin]);
 				}
-				else if(target == "c") {
+				else if (target == "c") {
 					// todo:
 				}
 		}
