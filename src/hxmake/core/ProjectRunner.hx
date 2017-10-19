@@ -57,8 +57,10 @@ class ProjectRunner {
 		var moduleGraph = new ModuleGraph(modules);
 		moduleGraph.initialize();
 
-		var taskQueue = new TaskQueue(TaskQueueBuilder.createNodeList(modules, project.arguments.tasks));
-		taskQueue.print();
+		var tasks = TaskQueueBuilder.createNodeList(modules, project.arguments.tasks);
+		new Printer(project.logger).printTaskOrder(tasks);
+
+		var taskQueue = new TaskQueue(tasks);
 		taskQueue.configure();
 		taskQueue.run();
 

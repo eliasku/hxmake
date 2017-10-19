@@ -35,4 +35,16 @@ class Printer {
 		if (names.length == 0) _logger.error("Modules not found");
 		else _logger.print("Modules: " + names.join(", "), level);
 	}
+
+	public function printTaskOrder(nodes:Array<TaskNode>, level:LogLevel = LogLevel.INFO) {
+		if (nodes.length > 0) {
+			_logger.print("Tasks order:", level);
+			for (node in nodes) {
+				_logger.print('\t${node.name} for ${node.module.name}', level);
+			}
+		}
+		else {
+			_logger.warning("No tasks for execution");
+		}
+	}
 }

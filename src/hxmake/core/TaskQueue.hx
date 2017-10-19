@@ -1,7 +1,6 @@
 package hxmake.core;
 
 import hxmake.cli.CL;
-import hxmake.cli.MakeLog;
 import hxmake.Task;
 
 @:final
@@ -12,19 +11,6 @@ class TaskQueue {
 
 	public function new(queue:Array<TaskNode>) {
 		_queue = queue;
-	}
-
-	// TODO: move to "Printer" utility
-	public function print() {
-		if (_queue.length > 0) {
-			MakeLog.info("Tasks order: ");
-			for (node in _queue) {
-				MakeLog.info('\t${node.name} for ${node.module.name}');
-			}
-		}
-		else {
-			MakeLog.warning("No tasks for execution");
-		}
 	}
 
 	public function configure():Void {
