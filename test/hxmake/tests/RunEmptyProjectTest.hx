@@ -25,7 +25,7 @@ class RunEmptyProjectTest {
 		_project = new Project(modules, args, cwd, logger);
 	}
 
-	public function testLog() {
+	public function testProject() {
 		ProjectRunner.runProject(_project);
 		Assert.pass("Project created and run passed");
 	}

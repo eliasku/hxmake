@@ -28,9 +28,9 @@ class Arguments {
 	* @name - name of property (for example `--build`)
 	* @returns - property value or Null of property is not provided
 	**/
-	public function property(name:String):Null<String> {
+	public function property(name:String, separator:String = ","):Null<String> {
 		var values = propertyValues(name);
-		return values.length > 0 ? values[0] : null;
+		return values.length > 0 ? values.join(separator) : null;
 	}
 
 	public function propertyValues(name:String):Array<String> {
