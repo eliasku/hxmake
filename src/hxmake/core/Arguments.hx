@@ -41,6 +41,10 @@ class Arguments {
 		return property(name) != null;
 	}
 
+	public function hasTask(name:String):Bool {
+		return tasks.indexOf(name) >= 0;
+	}
+
 	/**
 		Creates Dynamic object with keys and joined values
 	**/
