@@ -1,7 +1,5 @@
 package hxmake.idea;
 
-import hxmake.cli.FileUtil;
-import hxmake.cli.MakeLog;
 import haxe.io.Path;
 import hxmake.cli.FileUtil;
 import hxmake.utils.CachedHaxelib;
@@ -22,7 +20,7 @@ class IdeaProjectTask extends Task {
 
 	override public function run() {
 		_idea = new IdeaContext();
-		_modules = module.allModules;
+		_modules = module.getSubModules(true, false);
 		_rootModule = module;
 		for (mod in _modules) {
 			createModule(mod);
@@ -80,13 +78,13 @@ class IdeaProjectTask extends Task {
 		}
 
 		var iml = _idea.iml.execute(context);
-		MakeLog.info("Writing " + module.name + ".iml");
+		project.logger.info("Writing " + module.name + ".iml");
 		FileUtil.deleteFiles(module.path, "*.iml");
 		File.saveContent(Path.join([module.path, '${module.name}.iml']), iml);
 	}
 
 	function createProject(path:String) {
-		MakeLog.info("SETUP IDEA PROJECT...");
+		project.logger.info("SETUP IDEA PROJECT...");
 
 		var context = {
 			modules: [],
@@ -131,7 +129,7 @@ class IdeaProjectTask extends Task {
 	}
 
 	function createRun(path:String) {
-		MakeLog.info("SETUP IDEA RUN CONFIGURATIONS...");
+		project.logger.info("SETUP IDEA RUN CONFIGURATIONS...");
 		var rcPath = Path.join([path, ".idea", "runConfigurations"]);
 
 		if (!FileSystem.exists(rcPath)) {
@@ -149,7 +147,7 @@ class IdeaProjectTask extends Task {
 					};
 					var runConfigurationPath = Path.join([rcPath, '$name.xml']);
 					var runConfigurationContent = _idea.xmlRunConfig.execute(context);
-					MakeLog.trace('Run Configuration: $runConfigurationPath');
+					project.logger.trace('Run Configuration: $runConfigurationPath');
 					File.saveContent(runConfigurationPath, runConfigurationContent);
 				}
 			}

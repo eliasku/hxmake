@@ -20,22 +20,26 @@ class ModuleMacro {
 		var childrenExprs:Array<Expr> = [];
 
 		CompileTime.log(modulePath);
+
+		// TODO: readme @:module_path
 		var changedModulePath:Array<String> = MacroHelper.extractMetaStrings(cls.meta, ":module_path");
 		if (changedModulePath.length > 0) {
 			var parentPath = modulePath;
 			modulePath = FileSystem.absolutePath(Path.join([modulePath, changedModulePath[0]]));
 			CompileTime.log("CHANGED TO: " + modulePath);
-			//childrenExprs.push(macro hxmake.core.CompiledProjectData.createModuleConnection($v{modulePath}, $v{childModulePath}));
 		}
 
 		var guessModuleName = modulePath.split("/").pop();
 
-		var includes:Array<String> = MacroHelper.extractMetaStrings(cls.meta, ":include");
-		for (include in includes) {
+		// TODO: readme @:include
+		var includesPositions:Array<Position> = [];
+		var includes:Array<String> = MacroHelper.extractMetaStrings(cls.meta, ":include", includesPositions);
+		for (i in 0...includes.length) {
+			var include = includes[i];
+			var includePos = includesPositions[i];
 			var childModulePath = FileSystem.absolutePath(Path.join([modulePath, include]));
 			if (!FileSystem.exists(childModulePath)) {
-				// TODO: pos of meta
-				Context.warning('Path is not found for include "$include"', pos);
+				Context.warning('Path is not found for include "$include"', includePos);
 				continue;
 			}
 
@@ -44,14 +48,15 @@ class ModuleMacro {
 				PluginInclude.scan(cp);
 				CompileTime.addMakePath(cp);
 			}
-			else {
-				// TODO: pos of meta
-				Context.warning('Make directory is not found for module "$include"', pos);
-			}
+			// TODO: post check?
+			//else {
+			//Context.warning('Make directory is not found for module "$include"', includePos);
+			//}
 
-			childrenExprs.push(macro hxmake.core.CompiledProjectData.createModuleConnection($v{modulePath}, $v{childModulePath}));
+			childrenExprs.push(macro hxmake.core.CompiledProjectData.CURRENT.connect($v{modulePath}, $v{childModulePath}));
 		}
 
+		// TODO: readme @:lib
 		processMakeLibraries(":lib", cls.meta);
 
 		if (!cls.meta.has(":root")) {
@@ -68,13 +73,13 @@ class ModuleMacro {
 		};
 
 		fields.push(MacroHelper.makeInitField(macro {
-		var module = @:privateAccess new $tp();
-		if(module.name == null) {
-		module.name = $v{guessModuleName};
-		}
-		module.path = $v{modulePath};
-		hxmake.core.CompiledProjectData.registerModule(module);
-		$b{childrenExprs}
+			var module = @:privateAccess new $tp();
+			if(module.name == null) {
+				module.name = $v{guessModuleName};
+			}
+			module.path = $v{modulePath};
+			hxmake.core.CompiledProjectData.CURRENT.addModule(module);
+			$b{childrenExprs}
 		}, pos));
 
 		transformConstructor(fields);
@@ -126,7 +131,7 @@ class ModuleMacro {
 		fields.push(MacroHelper.makeEmptyConstructor(Context.currentPos()));
 	}
 
-	public static function getModulePath(haxeModulePath:String) {
+	static function getModulePath(haxeModulePath:String) {
 		var moduleRelativePath = haxeModulePath.replace(".", "/") + ".hx";
 		var depth = moduleRelativePath.split("/").length + 1;
 		var modulePath:String = Context.resolvePath(moduleRelativePath);

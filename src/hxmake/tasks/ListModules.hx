@@ -1,7 +1,5 @@
 package hxmake.tasks;
 
-import hxmake.cli.MakeLog;
-
 class ListModules extends Task {
 
 	public function new() {
@@ -10,12 +8,13 @@ class ListModules extends Task {
 	}
 
 	override public function run() {
-		var modules = module.root.allModules;
-		MakeLog.info("Module structure:");
-		for (module in modules) {
-			if (module.parent == null) {
-				printModuleStructure(module);
-			}
+		var roots = project.modules.filter(function(module:Module) {
+			return module.parent == null;
+		});
+
+		project.logger.info("Module structure:");
+		for (root in roots) {
+			printModuleStructure(root);
 		}
 	}
 
@@ -30,10 +29,11 @@ class ListModules extends Task {
 			icon = isMain ? "[+]  " : "[^]  ";
 		}
 
-		MakeLog.info(icon + pref + left + " " + module.name + " @ " + module.path);
+		project.logger.info(icon + pref + left + " " + module.name + " @ " + module.path);
 		var i = 0;
-		for (child in module.children) {
-			var sym = ++i == module.children.length ? "`" : "|";
+		var children = module.children;
+		for (child in children) {
+			var sym = ++i == children.length ? "`" : "|";
 			var indent = isRoot ? "" : "   ";
 			printModuleStructure(child, pref + indent + sym);
 		}

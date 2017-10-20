@@ -4,8 +4,7 @@ environment:
   global:
     HAXELIB_ROOT: C:\projects\haxelib
   matrix:
-    - HAXE_VERSION: "3.2.1"
-    - HAXE_VERSION: "3.4.2"
+    - HAXE_VERSION: "3.4.4"
 
 build: off
 
@@ -23,4 +22,5 @@ test_script:
   - haxelib dev hxmake .
   - haxelib run hxmake _
   - hxmake _
+  - hxmake test
   - hxmake package-haxelib

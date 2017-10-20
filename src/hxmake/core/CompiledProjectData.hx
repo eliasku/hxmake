@@ -1,46 +1,72 @@
 package hxmake.core;
 
+import hxmake.cli.FileUtil;
+
+/**
+	Storage for data, which collected during compilation, or manually provided for Project
+**/
 @:final
 class CompiledProjectData {
 
-	static var MODULES:Array<Module>;
-	static var CONNECTIONS:Map<String, ModuleConnectionData>;
+	var _modules:Array<Module> = [];
+	var _connectionsMap:Map<String, ModuleConnectionData> = new Map();
 
-	public static function registerModule(module:Module) {
-		if (MODULES == null) {
-			MODULES = [];
-		}
-		MODULES.push(module);
+	function new() {}
+
+	public function addModule(module:Module) {
+		_modules.push(module);
 	}
 
-	public static function createModuleConnection(parentModulePath:String, childModulePath:String) {
+	public function build():Array<Module> {
+		resolveHierarchy(_modules, _connectionsMap);
+		return _modules;
+	}
+
+	public function connect(parentModulePath:String, childModulePath:String) {
 		if (parentModulePath == null || parentModulePath.length == 0) {
 			return;
 		}
 
-		if (CONNECTIONS == null) {
-			CONNECTIONS = new Map();
-		}
-
-		var data:ModuleConnectionData = CONNECTIONS.get(parentModulePath);
+		var data:ModuleConnectionData = _connectionsMap.get(parentModulePath);
 		if (data == null) {
 			data = new ModuleConnectionData(parentModulePath);
-			CONNECTIONS.set(parentModulePath, data);
+			_connectionsMap.set(parentModulePath, data);
 		}
 		data.childPath.push(childModulePath);
 	}
 
-	public static function getConnectionsList():Array<ModuleConnectionData> {
-		var result = [];
-		if (CONNECTIONS != null) {
-			for (connection in CONNECTIONS) {
-				result.push(connection);
+	static function resolveHierarchy(modules:Array<Module>, connections:Iterable<ModuleConnectionData>) {
+		for (connection in connections) {
+			for (parent in modules) {
+				if (FileUtil.pathEquals(parent.path, connection.parentPath)) {
+					for (childPath in connection.childPath) {
+						for (child in modules) {
+							if (FileUtil.pathEquals(child.path, childPath)) {
+								appendChildModule(parent, child);
+							}
+						}
+					}
+				}
 			}
 		}
-		return result;
 	}
 
-	public static function getModules():Array<Module> {
-		return MODULES != null ? MODULES : [];
+	@:access(hxmake.Module)
+	static function appendChildModule(parent:Module, child:Module) {
+		parent._children.push(child);
+		child.parent = parent;
+	}
+
+	/**
+	* Static methods for access CURRENT context provided by project compilation
+	* **/
+
+	@:isVar public static var CURRENT(get, null):CompiledProjectData;
+
+	static function get_CURRENT():CompiledProjectData {
+		if (CURRENT == null) {
+			CURRENT = new CompiledProjectData();
+		}
+		return CURRENT;
 	}
 }

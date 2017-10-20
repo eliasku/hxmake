@@ -1,56 +1,36 @@
 package hxmake;
 
-import haxe.Timer;
-import hxmake.cli.MakeLog;
-import hxmake.core.ModuleGraph;
-import hxmake.core.TaskGraph;
+import haxe.io.Path;
+import hxmake.cli.logging.Logger;
+import hxmake.core.Arguments;
 
-/***
-
- 1. COMPILE-TIME PHASE
- 	-  Pluigns and modules are collected and code generated
-
- 2. CONSTRUCTION PHASE
-  	- Global make-project context is constructed
-	- Set project context to each module
- 	- Build modules tree
- 	- Determine project's roots
-
- 3. CONFIGURATION PHASE:
- 	- Modules are initializing (plugins are applying as well)
-
- 4. RESOLVING PHASE:
-	- Task order resolving
-
- 5. EXECUTION PHASE
-	- Running
-
- 6. FINALIZATION PHASE
-	- Modules finish()
-
-**/
-
+@:final
 class Project {
 
-	public var args(default, null):Array<String>;
-	public var modules(get, never):Array<Module>;
-	public var properties(default, null):Map<String, String>;
+	// TODO: drop deprecated
+	@:deprecated("use property() and hasProperty() methods")
+	public var args(get, never):Array<String>;
+	@:deprecated("use property() and hasProperty() methods")
+	public var properties(get, never):Map<String, Array<String>>;
 
-	var _taskGraph:TaskGraph;
-	var _moduleGraph:ModuleGraph;
+	inline function get_args() return arguments.args;
 
-	function new(buildArguments:Array<String>, isCompiler:Bool) {
-		args = isCompiler ? buildArguments : buildArguments.concat(Sys.args());
-		properties = parsePropertyMap(args);
+	inline function get_properties() return arguments.propertyMap;
 
-		MakeLog.initialize(hasProperty("--silent"), hasProperty("--verbose"));
+	public var modules(default, null):Array<Module>;
+	public var workingDir(default, null):String;
+	public var logger(default, null):Logger;
+	public var arguments(default, null):Arguments;
 
-		if (isCompiler) {
-			MakeLog.trace("[MakeProject] Compiler mode");
+	@:access(hxmake.Module)
+	function new(modules:Array<Module>, arguments:Arguments, workingDir:String, logger:Logger) {
+		this.arguments = arguments;
+		this.logger = logger;
+		this.workingDir = Path.directory(workingDir);
+		this.modules = modules;
+		for (module in modules) {
+			module.project = this;
 		}
-
-		_moduleGraph = @:privateAccess new ModuleGraph();
-		_taskGraph = @:privateAccess new TaskGraph(args, _moduleGraph.modules);
 	}
 
 	/**
@@ -64,67 +44,19 @@ class Project {
 	* @returns - property value or Null of property is not provided
 	**/
 	public function property(name:String):Null<String> {
-		return properties.exists(name) ? properties.get(name) : null;
+		return arguments.property(name);
 	}
 
 	public function hasProperty(name:String):Bool {
-		return property(name) != null;
-	}
-
-	function run() {
-		var startTime = Timer.stamp();
-
-		printProperties();
-
-		_moduleGraph.prepare(this);
-		_moduleGraph.resolveHierarchy();
-		_moduleGraph.initialize();
-
-		_taskGraph.build();
-		_taskGraph.printTasks();
-		_taskGraph.run();
-
-		_moduleGraph.finish();
-
-		var totalTime = Std.int(100 * (Timer.stamp() - startTime)) / 100;
-		MakeLog.info("Make time: " + totalTime + " sec.");
-		Sys.exit(0);
-	}
-
-	function printProperties() {
-		var first = true;
-		for (name in properties.keys()) {
-			if(first) {
-				MakeLog.info("Running with properties:");
-				first = false;
-			}
-			var value = property(name);
-			var str = '  $name';
-			if (value.length > 0) str += ' = $value';
-			MakeLog.info(str);
-		}
-	}
-
-	inline function get_modules():Array<Module> {
-		return _moduleGraph.modules;
+		return arguments.hasProperty(name);
 	}
 
 	public function findModuleByName(name:String):Module {
-		for (module in _moduleGraph.modules) {
-			if (module.name == name) return module;
-		}
-		return null;
-	}
-
-	// TODO: move to utils
-	static function parsePropertyMap(args:Array<String>):Map<String, String> {
-		var props = new Map<String, String>();
-		var re = ~/^(-[^=]+)[=]?(.*)?/;
-		for (arg in args) {
-			if (re.match(arg)) {
-				props.set(re.matched(1), re.matched(2));
+		for (module in modules) {
+			if (module.name == name) {
+				return module;
 			}
 		}
-		return props;
+		return null;
 	}
 }

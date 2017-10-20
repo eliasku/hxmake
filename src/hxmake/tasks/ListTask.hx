@@ -1,9 +1,10 @@
 package hxmake.tasks;
 
-import hxmake.cli.MakeLog;
+import hxmake.utils.MapTools;
 
 using Lambda;
 
+@:access(hxmake.Module)
 class ListTask extends Task {
 
 	public function new() {
@@ -12,20 +13,12 @@ class ListTask extends Task {
 	}
 
 	override public function run() {
-		var modules = module.root.allModules;
+		var modules = project.modules;
 		var map = new Map<String, Array<Task>>();
 		for (module in modules) {
-			var moduleTasks:Map<String, Task> = @:privateAccess module._tasks;
+			var moduleTasks = module._tasks;
 			for (name in moduleTasks.keys()) {
-				var task:Task = moduleTasks.get(name);
-				//if (task.name != null) {
-				var con:Array<Task> = map.get(name);
-				if (con == null) {
-					con = [];
-					map.set(name, con);
-				}
-				con.push(task);
-				//}
+				MapTools.pushToValueArray(map, name, moduleTasks.get(name));
 			}
 		}
 
@@ -36,18 +29,19 @@ class ListTask extends Task {
 			}
 		);
 
-		if (list.length > 0) MakeLog.info("Project tasks:");
-
-		for (taskName in list) {
-			var task = map.get(taskName)[0];
-			var desc = task.description;
-			if (desc == null || desc.length == 0) desc = "No description";
-			var ll = map.get(taskName);
-			var inModules = [];
-			for (l in ll) {
-				inModules.push(l.module.name);
+		if (list.length > 0) {
+			project.logger.info("Project tasks:");
+			for (taskName in list) {
+				var task:Task = map.get(taskName)[0];
+				var desc = task.description;
+				if (desc == null || desc.length == 0) desc = "No description";
+				var availableTasks:Array<Task> = map.get(taskName);
+				var registeredInModules = [for (task in availableTasks) task.module.name];
+				project.logger.info('\t> $taskName - $desc (${registeredInModules.join(", ")})');
 			}
-			MakeLog.info('\t> $taskName - $desc (${inModules.join(", ")})');
+		}
+		else {
+			project.logger.warning("Project tasks not found");
 		}
 	}
 }

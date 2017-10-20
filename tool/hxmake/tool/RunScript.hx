@@ -1,43 +1,44 @@
 package hxmake.tool;
 
+import haxe.io.Path;
 import haxe.Timer;
+import hxmake.cli.CL;
 import hxmake.cli.MakeLog;
+import hxmake.core.Arguments;
+import hxmake.core.MakeArgument;
+import hxmake.utils.Haxe;
+import hxmake.utils.Haxelib;
+import hxmake.utils.HaxeTarget;
+import hxmake.utils.Hxml;
 
 class RunScript {
 
+	static inline var INIT_MACRO_METHOD:String = "hxmake.macr.InitMacro.generateMainClass";
+
 	public static function main() {
-		var args = popRunCwd(Sys.args());
-		var success = false;
+		var args = new Arguments(popRunCwd(Sys.args()));
+		var logger = MakeLog.logger;
 
-		MakeLog.initialize(args.indexOf("--silent") >= 0, args.indexOf("--verbose") >= 0);
+		logger.setupFilter(
+			args.hasProperty(MakeArgument.SILENT),
+			args.hasProperty(MakeArgument.VERBOSE)
+		);
 
-		measure(function() {
-			success = run(args);
-		}, args.indexOf("--times") < 0);
-
-		if (!success) {
-			MakeLog.error("hxmake FAILED");
+		if (!make(Sys.getCwd(), args)) {
+			logger.error("Make compilation FAILED");
 			Sys.exit(-1);
 		}
 	}
 
-	static function run(args:Array<String>):Bool {
-		if (args.indexOf("_") >= 0) {
-			return Installer.run("hxmake");
-		}
-		return MakeRunner.make(Sys.getCwd(), args);
-	}
-
-	static function measure(func:Void -> Void, bypass:Bool = false) {
-		if (bypass) {
-			func();
-			return;
+	static function measure<T>(func:Void -> T, callback:Float -> Void):T {
+		if (callback == null) {
+			return func();
 		}
 
 		var startTime = Timer.stamp();
-		func();
-		var totalTime = Std.int(100 * (Timer.stamp() - startTime)) / 100;
-		MakeLog.info("Total time: " + totalTime + " sec.");
+		var result = func();
+		callback(Std.int(100 * (Timer.stamp() - startTime)) / 100);
+		return result;
 	}
 
 	static function popRunCwd(args:Array<String>):Array<String> {
@@ -47,5 +48,50 @@ class RunScript {
 			Sys.setCwd(result.pop());
 		}
 		return result;
+	}
+
+	// TODO: path exists (cwd, make, lib)
+	static function make(path:String, arguments:Arguments):Bool {
+
+		Sys.setCwd(path);
+
+		var makePath = Path.join([path, "make"]);
+		var libPath = Haxelib.classPath("hxmake", true);
+		var isCompiler = arguments.hasProperty(MakeArgument.MAKE_COMPILER_MODE);
+
+		var hxml = new Hxml();
+		hxml.main = "HxMakeMain";
+		hxml.libraries = [];
+		hxml.classPath.push(libPath);
+		hxml.defines.push("hxmake");
+		if (arguments.hasProperty(MakeArgument.MAKE_COMPILER_LOG)) {
+			hxml.defines.push("hxmake_compiler_log");
+		}
+
+		if (isCompiler) {
+			// TODO: EVAL instead of --interp
+			hxml.target = HaxeTarget.Interp;
+		}
+		else {
+			// TODO: try Node.js instead of Neko?
+			hxml.target = HaxeTarget.Neko;
+			hxml.output = "make.n";
+		}
+
+		hxml.macros.push('$INIT_MACRO_METHOD("$makePath",$isCompiler,[${toLiteralsArrayString(arguments.args)}])');
+
+		hxml.showMacroTimes =
+		hxml.showTimes = arguments.hasProperty(MakeArgument.MAKE_COMPILER_TIME);
+
+		var result = Haxe.compile(hxml);
+		if (!result || isCompiler) {
+			return result;
+		}
+
+		return CL.command("neko", ["make.n"]) == 0;
+	}
+
+	static function toLiteralsArrayString(values:Array<String>):String {
+		return values != null ? values.map(function(v:String) return '"$v"').join(",") : "";
 	}
 }

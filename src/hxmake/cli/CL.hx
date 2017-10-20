@@ -3,6 +3,7 @@ package hxmake.cli;
 import sys.FileSystem;
 import sys.io.Process;
 
+@:final
 class CL {
 
 	public static var workingDir(default, null):WorkingDirectory = new WorkingDirectory();
@@ -52,5 +53,15 @@ class CL {
 			return homeDir;
 		}
 		throw "HOME FOLDER is not found!";
+	}
+
+	public static function navigateUrl(url:String) {
+		var args = [url];
+		if (CL.platform.isWindows) {
+			Sys.command("start", args);
+		}
+		else {
+			Sys.command("open", args);
+		}
 	}
 }

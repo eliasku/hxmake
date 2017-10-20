@@ -4,18 +4,19 @@ import haxe.PosInfos;
 
 class Logger {
 
-	var _filter:Int;
 	var _colors:Array<AnsiColor> = [];
 	var _levels:Array<String> = [];
 	var _positions:Array<Bool> = [];
 
-	public function new(filter:Int) {
+	public var filter:Int;
+
+	public function new(?filter:Int) {
 		setLevelFormat(LogLevel.TRACE, "[T] ", AnsiColor.GREY, true);
 		setLevelFormat(LogLevel.DEBUG, "[D] ", AnsiColor.WHITE, true);
 		setLevelFormat(LogLevel.INFO, "", AnsiColor.CYAN, false);
 		setLevelFormat(LogLevel.WARNING, "[WARNING] ", AnsiColor.YELLOW, false);
 		setLevelFormat(LogLevel.ERROR, "[ERROR] ", AnsiColor.RED, false);
-		setFilter(filter);
+		this.filter = filter != null ? filter : LogLevel.FILTER_STD;
 	}
 
 	inline public function trace(message:Dynamic, ?position:PosInfos) {
@@ -41,7 +42,7 @@ class Logger {
 	public function print(data:Dynamic, level:LogLevel, ?position:PosInfos) {
 		var text = Std.string(data);
 
-		if ((_filter & (1 << level)) == 0) {
+		if ((filter & (1 << level)) == 0) {
 			return;
 		}
 
@@ -52,8 +53,10 @@ class Logger {
 		Sys.println(_colors[level] + _levels[level] + text + AnsiColor.RESET);
 	}
 
-	public function setFilter(filter:Int) {
-		_filter = filter;
+	public function setupFilter(silent:Bool, verbose:Bool) {
+		filter = LogLevel.FILTER_STD;
+		if (verbose) filter = LogLevel.FILTER_VERBOSE;
+		if (silent) filter = LogLevel.FILTER_SILENT;
 	}
 
 	public function setLevelFormat(level:LogLevel, prefix:String, color:AnsiColor, position:Bool) {

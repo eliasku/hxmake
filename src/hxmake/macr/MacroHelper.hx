@@ -40,11 +40,14 @@ class MacroHelper {
 		};
 	}
 
-	public static function extractMetaStrings(metaAccess:MetaAccess, name:String):Array<String> {
+	public static function extractMetaStrings(metaAccess:MetaAccess, name:String, ?extractPositions:Array<Position>):Array<String> {
 		var result:Array<String> = [];
 		var metaList:Array<MetadataEntry> = metaAccess.extract(name);
 		for(meta in metaList) {
 			for(param in meta.params) {
+				if(extractPositions != null) {
+					extractPositions.push(param.pos);
+				}
 				result.push(
 					switch(param.expr) {
 						case EConst(x):

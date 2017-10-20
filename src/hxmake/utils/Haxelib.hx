@@ -102,6 +102,7 @@ class Haxelib {
             return null;
         }
         // FIXME: temproary workaround
+        // TODO: resolve class-path from haxelib.json
         if(Path.removeTrailingSlashes(path).endsWith("src")) {
             return Path.normalize(Path.join([path, ".."]));
         }

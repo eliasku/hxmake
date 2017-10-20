@@ -1,15 +1,11 @@
 package hxmake.utils;
 
-import hxmake.cli.MakeLog;
-
 class TaskTools {
-
-	//public static var verbose:Bool = true;
 
 	public static function getDepth(task:Task):Int {
 		var depth = 0;
 		var current = task.parent;
-		while(current != null) {
+		while (current != null) {
 			++depth;
 			current = current.parent;
 		}
@@ -25,9 +21,10 @@ class TaskTools {
 		}
 		var moduleName = task.module != null ? task.module.name : null;
 		moduleName = moduleName != null ? moduleName : ":";
-		MakeLog.info('$indent~ $moduleName [$path] $message');
+		task.project.logger.info('$indent~ $moduleName [$path] $message');
 	}
 #else
+
 	@:pure
 	inline public static function logStep(task:Task, message:String) {}
 #end

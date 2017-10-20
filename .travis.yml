@@ -8,8 +8,7 @@ os:
   - osx
 
 haxe:
-  - "3.2.1"
-  - "3.4.2"
+  - "3.4.4"
   - development
 
 branches:
@@ -26,4 +25,5 @@ install:
 script:
   - haxelib run hxmake _
   - hxmake _
+  - hxmake test
   - hxmake package-haxelib

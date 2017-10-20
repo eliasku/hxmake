@@ -1,70 +1,79 @@
-package hxmake.tool;
+package hxmake.tasks;
 
 import haxe.io.Path;
 import hxmake.cli.CL;
-import hxmake.cli.MakeLog;
+import hxmake.cli.logging.Logger;
 import hxmake.utils.Haxe;
 import hxmake.utils.Haxelib;
 import sys.FileSystem;
 import sys.io.File;
 
-using StringTools;
-
 @:final
-class Installer {
+class InstallTask extends Task {
 
-	public static function run(library:String, ?alias:String):Bool {
+	public function new() {
+		name = "_";
+		description = "Rebuild and install `hxmake` binary";
+	}
 
+	override public function run() {
+		if (!install(project.logger, "hxmake")) {
+			project.logger.error("hxmake installation FAILED");
+			throw "stop execution";
+		}
+	}
+
+	static function install(logger:Logger, library:String, ?alias:String):Bool {
 		if (alias == null) {
 			alias = library;
 		}
 
 		var libPath = Haxelib.libPath(library);
 		if (libPath == null) {
-			MakeLog.error('"$library" is not installed');
+			logger.error('"$library" is not installed');
 			return false;
 		}
 
 		if (!FileSystem.exists(libPath)) {
-			MakeLog.error('"$library" not found at $libPath');
+			logger.error('"$library" not found at $libPath');
 			return false;
 		}
 
-		MakeLog.trace('Use "$library" from "$libPath"');
+		logger.trace('Use "$library" from "$libPath"');
 
 		return CL.workingDir.with(libPath, function() {
 
 			// COMPILATION
 			if (!Haxe.exec(["build.hxml"])) {
-				MakeLog.error("HxMake library build failed");
+				logger.error("HxMake library build failed");
 				return false;
 			}
 
 			if (CL.platform.isWindows && FileSystem.exists('$alias.exe')) {
-				MakeLog.info('Alias should be installed already');
-				MakeLog.info('If you need to reinstall alias script use:');
-				MakeLog.info('> haxelib run $library _');
+				logger.info('Alias should be installed already');
+				logger.info('If you need to reinstall alias script use:');
+				logger.info('> haxelib run $library _');
 				return true;
 			}
 
 			if (CL.command('nekotools', ['boot', '$library.n']) != 0) {
-				MakeLog.error('Failed to create alias-script executable');
+				logger.error('Failed to create alias-script executable');
 				return false;
 			}
 
 			// INSTALL
-			MakeLog.info('We`re going to install ${alias.toUpperCase()} command');
-			MakeLog.info('Please enter password if required...');
+			logger.info('We`re going to install ${alias.toUpperCase()} command');
+			logger.warning('Please enter password if required...');
 			try {
 				if (CL.platform.isWindows) {
 					var haxePath = Haxe.path();
 					var pn = '$alias.exe';
 					var src = Path.join([libPath, pn]);
 					var dst = Path.join([haxePath, pn]);
-					MakeLog.trace('Copy hxmake.exe to $haxePath');
+					logger.trace('Copy hxmake.exe to $haxePath');
 					File.copy(src, dst);
 
-					// TODO:
+					// TODO: windows replace .exe issue
 					// we need delete hxmake.exe to prevent running from the current folder:
 					// - if hxmake.exe will be runned from current folder, OS will not able to overwrite the file
 					// FileSystem.deleteFile(src);
@@ -77,8 +86,8 @@ class Installer {
 				}
 			}
 			catch (e:Dynamic) {
-				MakeLog.error(e);
-				MakeLog.error("Error while installing system command-line");
+				logger.error(e);
+				logger.error("Error while installing system command-line");
 				return false;
 			}
 

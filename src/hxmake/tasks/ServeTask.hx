@@ -35,7 +35,7 @@ class ServeTask extends Task {
 	override public function run() {
 		serve();
 		if (_process != null) {
-			navigateUrl('http://$host:$port/$index');
+			CL.navigateUrl('http://$host:$port/$index');
 			var ec = _process.exitCode();
 		}
 	}
@@ -49,17 +49,6 @@ class ServeTask extends Task {
 		}
 		catch (e:Dynamic) {
 			fail(Std.string(e));
-		}
-	}
-
-	// TODO: move to utilities?
-	public static function navigateUrl(url:String) {
-		var args = [url];
-		if (CL.platform.isWindows) {
-			Sys.command("start", args);
-		}
-		else {
-			Sys.command("open", args);
 		}
 	}
 }

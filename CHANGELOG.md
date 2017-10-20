@@ -1,3 +1,10 @@
+# v0.1.8
+
+- Resolve tasks according to module dependencies
+- Drop Haxe 3.2.X support, switch CI to Haxe 3.4.X
+- Installer code moved to built-in task and will be run in make context
+- Built-in Module allows to run default tasks without modules context
+
 # v0.1.7
 
 - `task.project` alias
