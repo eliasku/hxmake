@@ -16,7 +16,7 @@ class CompileTime {
 	}
 
 	public static function log(message:String) {
-		#if hxmake_macrolog
+		#if hxmake_compiler_log
 		Sys.println('[MACRO] $message');
 		#end
 	}

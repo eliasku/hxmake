@@ -12,7 +12,7 @@ class InitMacro {
 	public static function generateMainClass(initialMakeDir:String, isCompiler:Bool, args:Array<String>) {
 		PluginInclude.scan(initialMakeDir);
 		CompileTime.addMakePath(initialMakeDir);
-
+		Context.getType("hxmake.core.BuiltInModule");
 		var pos = Context.currentPos();
 		var fields:Array<Field> = Context.getBuildFields();
 		var mainFun:Function = {

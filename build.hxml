@@ -1,6 +1,6 @@
 -cp tool
 -cp src
-#-debug
+-dce full
 --each
 
 -main hxmake.tool.RunScript

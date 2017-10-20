@@ -33,10 +33,5 @@ class ModuleGraph {
 		if (module.name != "hxmake" && module.config.devDependencies.get("hxmake") == null) {
 			module.config.devDependencies.set("hxmake", "haxelib;global");
 		}
-
-		if (module.isMain) {
-			module.task("tasks", new hxmake.tasks.ListTask());
-			module.task("modules", new hxmake.tasks.ListModules());
-		}
 	}
 }
