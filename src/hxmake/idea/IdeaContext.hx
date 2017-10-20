@@ -1,12 +1,12 @@
 package hxmake.idea;
 
-import hxmake.cli.MakeLog;
-import haxe.Template;
 import haxe.io.Path;
+import haxe.Template;
 import haxe.xml.Fast;
 import hxmake.cli.CL;
 import hxmake.cli.FileUtil;
-import hxmake.macr.CompileTime;
+import hxmake.cli.MakeLog;
+import hxmake.utils.Haxelib;
 import sys.FileSystem;
 import sys.io.File;
 
@@ -30,11 +30,12 @@ class IdeaContext {
 		configPath = resolveConfigPath();
 		resolveSdk();
 
-		iml = new Template(CompileTime.readFile("../resources/idea/module.iml.xml"));
-		xmlModules = new Template(CompileTime.readFile("../resources/idea/modules.xml"));
-		xmlHaxe = new Template(CompileTime.readFile("../resources/idea/haxe.xml"));
-		xmlRunConfig = new Template(CompileTime.readFile("../resources/idea/runConfiguration.xml"));
-		xmlMisc = new Template(CompileTime.readFile("../resources/idea/misc.xml"));
+		var hxmakePath = Haxelib.libPath("hxmake");
+		iml = createTemplate(hxmakePath, "idea/module.iml.xml");
+		xmlModules = createTemplate(hxmakePath, "idea/modules.xml");
+		xmlHaxe = createTemplate(hxmakePath, "idea/haxe.xml");
+		xmlRunConfig = createTemplate(hxmakePath, "idea/runConfiguration.xml");
+		xmlMisc = createTemplate(hxmakePath, "idea/misc.xml");
 	}
 
 	public function getFlexSdkName() {
@@ -189,5 +190,9 @@ class IdeaContext {
 		}
 
 		return null;
+	}
+
+	static function createTemplate(hxmakePath:String, resource:String) {
+		return new Template(File.getContent(Path.join([hxmakePath, "resources", resource])));
 	}
 }
