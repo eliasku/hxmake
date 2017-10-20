@@ -57,15 +57,30 @@ Specified make program:
 
 `neko make.n  --override-test-target=flash` - and run your `test` task, but for `js` and `flash` target
 
+### Built-in Tasks
+
+`hxmake _` - Rebuild and install `hxmake` binary
+
+`hxmake modules` - Prints modules in structure of project
+
+`hxmake tasks` - Prints list of available tasks
+
+### Built-in Options
+
+`--verbose`: Enables `debug` and `trace` log levels
+
+`--silent`: Mute logger output
+
+`--make-compiler-log`: Enables compile-time logging from `CompileTime.log`
+
+`--make-compiler-mode`: Run make in haxe compiler-mode `--interp` (EXPEREMENTAL)
+
+`--make-compiler-time`: Show Haxe compiler time statistics, adds `--times -D macro-times`
+
 ### Logging
 
-Use `MakeLog.*` methods for logging in your tasks.
-
-`--verbose`: include all TRACE and DEBUG messages
-
-`--silent`: disable all messages from `hxmake` code
-
-`--macrolog`: enables output from hxmake compile-time code
+Use `MakeLog` or `project.logger` methods for logging in your tasks.
+Use `CompileTime.log` for compilation logging.
 
 ### Development
 

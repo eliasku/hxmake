@@ -36,8 +36,8 @@ class ProjectRunner {
 			var arguments = new Arguments(isCompiler ? args : args.concat(sysArgs));
 
 			logger.setupFilter(
-				arguments.hasProperty("--silent"),
-				arguments.hasProperty("--verbose")
+				arguments.hasProperty(MakeArgument.SILENT),
+				arguments.hasProperty(MakeArgument.VERBOSE)
 			);
 
 			// print input information
