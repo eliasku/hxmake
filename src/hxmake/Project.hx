@@ -7,16 +7,6 @@ import hxmake.core.Arguments;
 @:final
 class Project {
 
-	// TODO: drop deprecated
-	@:deprecated("use property() and hasProperty() methods")
-	public var args(get, never):Array<String>;
-	@:deprecated("use property() and hasProperty() methods")
-	public var properties(get, never):Map<String, Array<String>>;
-
-	inline function get_args() return arguments.args;
-
-	inline function get_properties() return arguments.propertyMap;
-
 	public var modules(default, null):Array<Module>;
 	public var workingDir(default, null):String;
 	public var logger(default, null):Logger;

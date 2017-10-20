@@ -1,3 +1,7 @@
+# v0.2.0
+
+- Removed deprecated methods
+
 # v0.1.8
 
 - Resolve tasks according to module dependencies

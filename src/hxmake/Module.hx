@@ -4,16 +4,6 @@ import hxmake.cli.FileUtil;
 
 @:autoBuild(hxmake.macr.ModuleMacro.build())
 class Module {
-	@:deprecated("Use Module::getSubModules(false, false);")
-	public var subModules(get, never):Array<Module>;
-
-	inline function get_subModules():Array<Module> return getSubModules(false, false);
-
-	@:deprecated("Use Module::getSubModules(true, false);")
-	public var allModules(get, never):Array<Module>;
-
-	inline function get_allModules():Array<Module> return getSubModules(true, false);
-
 	/**
 		Shared "project" context between modules.
 	**/
