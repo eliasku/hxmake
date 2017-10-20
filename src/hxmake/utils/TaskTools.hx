@@ -21,7 +21,7 @@ class TaskTools {
 		}
 		var moduleName = task.module != null ? task.module.name : null;
 		moduleName = moduleName != null ? moduleName : ":";
-		hxmake.cli.MakeLog.info('$indent~ $moduleName [$path] $message');
+		task.project.logger.info('$indent~ $moduleName [$path] $message');
 	}
 #else
 

@@ -1,6 +1,5 @@
 package hxmake.tasks;
 
-import hxmake.cli.MakeLog;
 import hxmake.utils.MapTools;
 
 using Lambda;
@@ -31,18 +30,18 @@ class ListTask extends Task {
 		);
 
 		if (list.length > 0) {
-			MakeLog.info("Project tasks:");
+			project.logger.info("Project tasks:");
 			for (taskName in list) {
 				var task:Task = map.get(taskName)[0];
 				var desc = task.description;
 				if (desc == null || desc.length == 0) desc = "No description";
 				var availableTasks:Array<Task> = map.get(taskName);
 				var registeredInModules = [for (task in availableTasks) task.module.name];
-				MakeLog.info('\t> $taskName - $desc (${registeredInModules.join(", ")})');
+				project.logger.info('\t> $taskName - $desc (${registeredInModules.join(", ")})');
 			}
 		}
 		else {
-			MakeLog.warning("Project tasks not found");
+			project.logger.warning("Project tasks not found");
 		}
 	}
 }

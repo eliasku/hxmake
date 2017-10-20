@@ -22,22 +22,6 @@ class CompiledProjectData {
 		return _modules;
 	}
 
-	static function resolveHierarchy(modules:Array<Module>, connections:Iterable<ModuleConnectionData>) {
-		for (connection in connections) {
-			for (parent in modules) {
-				if (FileUtil.pathEquals(parent.path, connection.parentPath)) {
-					for (childPath in connection.childPath) {
-						for (child in modules) {
-							if (FileUtil.pathEquals(child.path, childPath)) {
-								parent.addSubModule(child);
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-
 	public function connect(parentModulePath:String, childModulePath:String) {
 		if (parentModulePath == null || parentModulePath.length == 0) {
 			return;
@@ -49,6 +33,28 @@ class CompiledProjectData {
 			_connectionsMap.set(parentModulePath, data);
 		}
 		data.childPath.push(childModulePath);
+	}
+
+	static function resolveHierarchy(modules:Array<Module>, connections:Iterable<ModuleConnectionData>) {
+		for (connection in connections) {
+			for (parent in modules) {
+				if (FileUtil.pathEquals(parent.path, connection.parentPath)) {
+					for (childPath in connection.childPath) {
+						for (child in modules) {
+							if (FileUtil.pathEquals(child.path, childPath)) {
+								appendChildModule(parent, child);
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	@:access(hxmake.Module)
+	static function appendChildModule(parent:Module, child:Module) {
+		parent._children.push(child);
+		child.parent = parent;
 	}
 
 	/**

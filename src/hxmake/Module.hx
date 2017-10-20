@@ -24,7 +24,7 @@ class Module {
 	**/
 	public var root(get, never):Module;
 	public var parent(default, null):Module;
-	public var children(default, null):Array<Module> = [];
+	public var children(get, never):Array<Module>;
 
 	public var name(default, null):String;
 	public var path(default, null):String;
@@ -41,6 +41,7 @@ class Module {
 	**/
 	public var isActive(get, never):Bool;
 
+	var _children:Array<Module> = [];
 	var _tasks:Map<String, Task> = new Map();
 	var _plugins:Array<Plugin> = [];
 	var _data:Map<String, Dynamic> = ["config" => new ModuleConfig()];
@@ -51,11 +52,6 @@ class Module {
 
 	function finish() {
 		// Finalization phase
-	}
-
-	public function addSubModule(module:Module) {
-		children.push(module);
-		module.parent = this;
 	}
 
 	public function task(name:String, ?task:Task, ?type:Class<Task>):Task {
@@ -136,6 +132,10 @@ class Module {
 		}
 		closure(data);
 		return this;
+	}
+
+	function get_children():Array<Module> {
+		return _children.copy();
 	}
 
 	function get_isActive():Bool {
