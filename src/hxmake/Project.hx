@@ -17,7 +17,6 @@ class Project {
 		this.arguments = arguments;
 		this.logger = logger;
 		this.workingDir = Path.directory(workingDir);
-		logger.error(this.workingDir);
 		this.modules = modules;
 		for (module in modules) {
 			module.project = this;
