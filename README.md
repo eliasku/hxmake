@@ -5,7 +5,7 @@ Build tools for Haxe
 [![Build Status](https://ci.appveyor.com/api/projects/status/lxmpp7d9pfoyd7dq/branch/develop?svg=true)](https://ci.appveyor.com/project/eliasku/hxmake)
 
 [![Lang](https://img.shields.io/badge/language-haxe-orange.svg)](http://haxe.org)
-[![Version](https://img.shields.io/badge/version-v0.1.8-green.svg)](https://github.com/eliasku/hxmake)
+[![Version](https://img.shields.io/badge/version-v0.2.0-green.svg)](https://github.com/eliasku/hxmake)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ### Installation

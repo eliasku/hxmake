@@ -1,7 +1,6 @@
 package hxmake.tool;
 
 import haxe.io.Path;
-import haxe.Timer;
 import hxmake.cli.CL;
 import hxmake.cli.MakeLog;
 import hxmake.core.Arguments;
@@ -28,17 +27,6 @@ class RunScript {
 			logger.error("Make compilation FAILED");
 			Sys.exit(-1);
 		}
-	}
-
-	static function measure<T>(func:Void -> T, callback:Float -> Void):T {
-		if (callback == null) {
-			return func();
-		}
-
-		var startTime = Timer.stamp();
-		var result = func();
-		callback(Std.int(100 * (Timer.stamp() - startTime)) / 100);
-		return result;
 	}
 
 	static function popRunCwd(args:Array<String>):Array<String> {
@@ -69,11 +57,10 @@ class RunScript {
 		}
 
 		if (isCompiler) {
-			// TODO: EVAL instead of --interp
 			hxml.target = HaxeTarget.Interp;
 		}
 		else {
-			// TODO: try Node.js instead of Neko?
+			// TODO: try replace Neko by Node.js environment?
 			hxml.target = HaxeTarget.Neko;
 			hxml.output = "make.n";
 		}

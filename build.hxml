@@ -1,13 +1,17 @@
+# hxmake tool build options
+
+# Common options
 -cp tool
 -cp src
 -dce full
 --each
 
+# Main Run script
 -main hxmake.tool.RunScript
 -neko run.n
 
 --next
 
+# Alias executable script for command-line
 -main hxmake.tool.AliasScript
--D library=hxmake
 -neko hxmake.n
