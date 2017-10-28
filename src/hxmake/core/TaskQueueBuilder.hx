@@ -1,7 +1,5 @@
 package hxmake.core;
 
-import hxmake.cli.MakeLog;
-
 @:final
 class TaskQueueBuilder {
 
@@ -46,7 +44,6 @@ class TaskQueueBuilder {
 
 		addRangeUnique(outNodes, nodes);
 		for (node in nodes) {
-			MakeLog.warning(node.name + " " + node.module.name);
 			findTaskDependencies(node, outNodes);
 		}
 		return outNodes;
