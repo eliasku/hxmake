@@ -35,7 +35,7 @@ class DoxTask extends Task {
 		haxe.hxml.noOutput = true;
 		haxe.hxml.dce = DceMode.DceNo;
 
-		prepend(haxe);
+		then(haxe);
 
 		var generate = new RunTask();
 		generate.command = "haxelib";
@@ -45,13 +45,6 @@ class DoxTask extends Task {
 			generate.arguments.push(topLevelPackage);
 		}
 
-		prepend(generate);
-
-	}
-
-	override public function run() {
-		if(!module.isActive) {
-			return;
-		}
+		then(generate);
 	}
 }

@@ -1,7 +1,5 @@
 package hxmake.core;
 
-import hxmake.cli.FileUtil;
-
 /**
 	Storage for data, which collected during compilation, or manually provided for Project
 **/
@@ -38,10 +36,10 @@ class CompiledProjectData {
 	static function resolveHierarchy(modules:Array<Module>, connections:Iterable<ModuleConnectionData>) {
 		for (connection in connections) {
 			for (parent in modules) {
-				if (FileUtil.pathEquals(parent.path, connection.parentPath)) {
+				if (parent.path == connection.parentPath) {
 					for (childPath in connection.childPath) {
 						for (child in modules) {
-							if (FileUtil.pathEquals(child.path, childPath)) {
+							if (child.path == childPath) {
 								appendChildModule(parent, child);
 							}
 						}

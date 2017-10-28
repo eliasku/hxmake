@@ -1,17 +1,15 @@
 package hxmake;
 
-using hxmake.utils.TaskTools;
-
 class Task {
-	
+
 	public var name:String;
 	public var description:String = "";
 	public var enabled:Bool = true;
 
 	/**
-	* `Module` associated with this Task
+	* `Module` associated with this task node
 	**/
-	public var module(default, null):Module;
+	public var module(get, never):Module;
 
 	/**
 	 * `Project` of associated module
@@ -19,55 +17,24 @@ class Task {
 	**/
 	public var project(get, never):Project;
 
-	public var chainBefore(default, null):Array<Task> = [];
-	public var chainAfter(default, null):Array<Task> = [];
-
 	public var parent(default, null):Task;
+
+	/** Task attached directly to this task **/
+	var _module:Module;
+
+	/** Children before run BEFORE parent **/
+	var _childrenBefore:Array<Task> = [];
+
+	/** Children before run AFTER parent **/
+	var _childrenAfter:Array<Task> = [];
 
 	var __after:Map<String, String> = new Map();
 	var __before:Map<String, String> = new Map();
 	var __finalized:Map<String, String> = new Map();
 	var __depends:Map<String, String> = new Map();
 
-	var _doFirst:Array<Task -> Void> = [];
-	var _doLast:Array<Task -> Void> = [];
-
-	function _configure() {
-		this.logStep("Configuration BEGIN");
-		configure();
-		this.logStep("Sub-tasks configuration (BEFORE)");
-		for (chained in chainBefore) {
-			chained._configure();
-		}
-		this.logStep("Sub-tasks configuration (AFTER)");
-		for (chained in chainAfter) {
-			chained._configure();
-		}
-		this.logStep("Configuration END");
-	}
-
-	function _run() {
-		this.logStep("Run BEGIN");
-		this.logStep("Run BEFORE tasks");
-
-		for (chained in chainBefore) {
-			chained._run();
-		}
-		for (cb in _doFirst) {
-			cb(this);
-		}
-		this.logStep("Running");
-		run();
-
-		this.logStep("Run AFTER tasks");
-		for (cb in _doLast) {
-			cb(this);
-		}
-		for (chained in chainAfter) {
-			chained._run();
-		}
-		this.logStep("Run END");
-	}
+	var _doFirst = new Array<Task -> Void>();
+	var _doLast = new Array<Task -> Void>();
 
 	public function runAfter(task:String):Task {
 		__after.set(task, task);
@@ -90,22 +57,30 @@ class Task {
 		return this;
 	}
 
+	public function toString() {
+		return 'Task $name ($description)';
+	}
+
 	public function configure() {}
 
 	public function run() {}
 
-	public function then<T:Task>(task:T):T {
-		chainAfter.push(task);
-		task.parent = this;
-		task.module = module;
-		return task;
+	public function prepend(task:Task):Task {
+		return attachChild(task, _childrenBefore, true);
 	}
 
-	public function prepend<T:Task>(task:T):T {
-		chainBefore.push(task);
-		task.parent = this;
-		task.module = module;
-		return task;
+	public function then(task:Task):Task {
+		return attachChild(task, _childrenAfter, false);
+	}
+
+	public function doFirst(func:Task -> Void):Task {
+		_doFirst.insert(0, func);
+		return this;
+	}
+
+	public function doLast(func:Task -> Void):Task {
+		_doLast.push(func);
+		return this;
 	}
 
 	function fail(description:String = "") {
@@ -117,18 +92,24 @@ class Task {
 		}
 	}
 
-	public function doFirst(func:Task -> Void):Task {
-		_doFirst.push(func);
-		return this;
-	}
+	function attachChild(task:Task, array:Array<Task>, prepend:Bool):Task {
+		if (task.parent != null) project.logger.error("Task is a child already (TODO: info)");
+		task.parent = this;
 
-	public function doLast(func:Task -> Void):Task {
-		_doLast.push(func);
+		if (_childrenBefore.indexOf(task) >= 0 || _childrenAfter.indexOf(task) >= 0) project.logger.error("Task is registered as child already (TODO: info)");
+		if (prepend) array.unshift(task);
+		else array.push(task);
+
 		return this;
 	}
 
 	function get_project():Project {
-		return module != null ? module.project : null;
+		var m = this.module;
+		return m != null ? m.project : null;
+	}
+
+	function get_module():Module {
+		return _module != null ? _module : (parent != null ? parent.module : null);
 	}
 
 	public static function empty(name:String = null, description = ""):Task {
@@ -136,6 +117,12 @@ class Task {
 		task.name = name;
 		task.description = description;
 		return task;
+	}
+
+	public static function func(fn:Void -> Void, name:String = null, description = ""):Task {
+		return empty(name, description).doLast(function(_) {
+			fn();
+		});
 	}
 }
 

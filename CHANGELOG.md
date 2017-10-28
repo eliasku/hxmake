@@ -1,6 +1,9 @@
 # v0.2.0
 
 - Removed deprecated methods
+- Order for Task `then`/`prepend`/`doFirst`/`doLast` methods
+- Fix task queue builder recursive dependency search
+- `Task.func` utility for creation of simple task with closure
 
 # v0.1.8
 

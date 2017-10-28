@@ -12,6 +12,7 @@ class ListModules extends Task {
 			return module.parent == null;
 		});
 
+		project.logger.info('Project start path: ${project.workingDir}');
 		project.logger.info("Module structure:");
 		for (root in roots) {
 			printModuleStructure(root);

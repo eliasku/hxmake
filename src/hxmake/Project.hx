@@ -13,14 +13,15 @@ class Project {
 	public var arguments(default, null):Arguments;
 
 	@:access(hxmake.Module)
-	function new(modules:Array<Module>, arguments:Arguments, workingDir:String, logger:Logger) {
+	function new(modules:Array<Module>, arguments:Arguments, runPath:String, logger:Logger) {
 		this.arguments = arguments;
 		this.logger = logger;
-		this.workingDir = Path.directory(workingDir);
 		this.modules = modules;
 		for (module in modules) {
 			module.project = this;
 		}
+
+		workingDir = Path.directory(runPath);
 	}
 
 	/**
@@ -48,5 +49,9 @@ class Project {
 			}
 		}
 		return null;
+	}
+
+	public function toString() {
+		return "Project";
 	}
 }

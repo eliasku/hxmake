@@ -11,11 +11,11 @@ class FileUtil {
 	* 	returns path to created directory `path/dir`
 	**/
 	public static function ensureDirectory(path:String, dir:String):String {
-		if(!FileSystem.exists(path)) throw '$path not found';
-		if(!FileSystem.isDirectory(path)) throw '$path is not directory';
+		if (!FileSystem.exists(path)) throw '$path not found';
+		if (!FileSystem.isDirectory(path)) throw '$path is not directory';
 
 		path = Path.join([path, dir]);
-		if(!FileSystem.exists(path)) FileSystem.createDirectory(path);
+		if (!FileSystem.exists(path)) FileSystem.createDirectory(path);
 
 		return path;
 	}
@@ -81,6 +81,10 @@ class FileUtil {
 	// TODO: better implementation
 	public static function pathEquals(path1:String, path2:String):Bool {
 		return StringTools.replace(path1, "\\", "/") == StringTools.replace(path2, "\\", "/");
+	}
+
+	public static function normalizeAbsolute(path:String):String {
+		return Path.normalize(FileSystem.absolutePath(path));
 	}
 
 	public static function fileExists(path:String):Bool {
