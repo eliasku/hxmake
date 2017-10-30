@@ -1,3 +1,12 @@
+# v0.2.0
+
+- Removed deprecated methods
+- Order for Task `then`/`prepend`/`doFirst`/`doLast` methods
+- Fix task queue builder recursive dependency search
+- `Task.func` utility for creation of simple task with closure
+- Fix `runBefore`/`runAfter` order with dependency modules
+- `finalizedBy` implementation 
+
 # v0.1.8
 
 - Resolve tasks according to module dependencies

@@ -4,8 +4,10 @@ import haxe.macro.Compiler;
 import haxe.macro.Expr;
 import hxmake.macr.MacroHelper;
 
+@:final
 class CompileTime {
 
+	@:deprecated("kill code-bloating")
 	macro public static function readFile(path:String):ExprOf<String> {
 		return MacroHelper.toExpr(MacroHelper.loadFileAsString(path));
 	}
@@ -15,7 +17,7 @@ class CompileTime {
 		Compiler.include("", true, null, [makePath]);
 	}
 
-	public static function log(message:String) {
+	inline public static function log(message:String) {
 		#if hxmake_compiler_log
 		Sys.println('[MACRO] $message');
 		#end

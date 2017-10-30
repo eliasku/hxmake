@@ -1,7 +1,6 @@
 package hxmake.tool;
 
 import haxe.io.Path;
-import haxe.macro.Compiler;
 import hxmake.cli.CL;
 import hxmake.cli.MakeLog;
 import hxmake.core.Arguments;
@@ -15,8 +14,7 @@ class AliasScript {
 			args.hasProperty(MakeArgument.SILENT),
 			args.hasProperty(MakeArgument.VERBOSE)
 		);
-		var library = Compiler.getDefine("library");
-		var toolPath = Haxelib.libPath(library, true);
+		var toolPath = Haxelib.libPath("hxmake", true);
 		Sys.exit(CL.command("neko", [Path.join([toolPath, "run.n"])].concat(Sys.args())));
 	}
 }

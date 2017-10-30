@@ -4,16 +4,6 @@ import hxmake.cli.FileUtil;
 
 @:autoBuild(hxmake.macr.ModuleMacro.build())
 class Module {
-	@:deprecated("Use Module::getSubModules(false, false);")
-	public var subModules(get, never):Array<Module>;
-
-	inline function get_subModules():Array<Module> return getSubModules(false, false);
-
-	@:deprecated("Use Module::getSubModules(true, false);")
-	public var allModules(get, never):Array<Module>;
-
-	inline function get_allModules():Array<Module> return getSubModules(true, false);
-
 	/**
 		Shared "project" context between modules.
 	**/
@@ -27,6 +17,10 @@ class Module {
 	public var children(get, never):Array<Module>;
 
 	public var name(default, null):String;
+
+	/**
+		Absolute path to Module folder
+	**/
 	public var path(default, null):String;
 	public var config(get, never):ModuleConfig;
 
@@ -54,9 +48,10 @@ class Module {
 		// Finalization phase
 	}
 
+	@:access(hxmake.Task)
 	public function task(name:String, ?task:Task, ?type:Class<Task>):Task {
 		if (task != null) {
-			@:privateAccess task.module = this;
+			task._module = this;
 			_tasks.set(name, task);
 			return task;
 		}

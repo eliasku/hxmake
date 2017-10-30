@@ -25,28 +25,28 @@ class TaskQueueBuilder {
 	function findDependedTasks(initialTasks:Array<TaskNode>):Array<TaskNode> {
 		var tasks = initialTasks.copy();
 		for (task in initialTasks) {
-			addRangeUnique(tasks, findTaskDependencies(task));
+			findTaskDependencies(task, tasks);
 		}
 		return tasks;
 	}
 
 	@:access(hxmake.Task)
-	function findTaskDependencies(taskNode:TaskNode):Array<TaskNode> {
+	function findTaskDependencies(taskNode:TaskNode, outNodes:Array<TaskNode>):Array<TaskNode> {
 		// find same task in module dependencies
 		var dependedModules = taskNode.module.getSubModules(false, true);
-		var nodes = _graph.getNodesForModules(dependedModules, taskNode.name);
+		var nodes = addRangeUnique([], _graph.getNodesForModules(dependedModules, taskNode.name), outNodes);
 
 		// find dependencies
 		dependedModules.push(taskNode.module);
 		for (depended in taskNode.task.__depends) {
-			nodes = nodes.concat(requireDependedNodes(taskNode, depended, dependedModules));
+			addRangeUnique(nodes, requireDependedNodes(taskNode, depended, dependedModules), outNodes);
 		}
 
-		var dependedNodes = [];
+		addRangeUnique(outNodes, nodes);
 		for (node in nodes) {
-			dependedNodes = dependedNodes.concat(findTaskDependencies(node));
+			findTaskDependencies(node, outNodes);
 		}
-		return nodes.concat(dependedNodes);
+		return outNodes;
 	}
 
 	function requireDependedNodes(target:TaskNode, depended:String, dependedModules:Array<Module>):Array<TaskNode> {
@@ -80,10 +80,8 @@ class TaskQueueBuilder {
 			for (depended in task.task.__depends) {
 				var dependedTasks:Array<TaskNode> = [];
 				for (it in tasks) {
-					if (it.name == depended) {
-						if (task.module == it.module || task.module.getSubModules(false, true).indexOf(it.module) >= 0) {
-							dependedTasks.push(it);
-						}
+					if (checkTaskWithDeps(it, task, depended)) {
+						dependedTasks.push(it);
 					}
 				}
 				if (dependedTasks.length == 0) {
@@ -100,18 +98,12 @@ class TaskQueueBuilder {
 		for (task in tasks) {
 			var taskIndex:Int = allTasksIndexes.get(task);
 			for (runAfter in task.task.__after) {
-				var runAfterTask:TaskNode = null;
 				for (it in tasks) {
-					if (it.name == runAfter && task.module == it.module) {
-						runAfterTask = it;
-						break;
+					if (checkTaskWithDeps(it, task, runAfter)) {
+						var relationIndex:Int = allTasksIndexes.get(it);
+						executionOrderRelations[taskIndex][relationIndex] = 1;
 					}
 				}
-				if (runAfterTask == null) {
-					continue;
-				}
-				var relationIndex:Int = allTasksIndexes.get(runAfterTask);
-				executionOrderRelations[taskIndex][relationIndex] = 1;
 			}
 		}
 
@@ -119,18 +111,12 @@ class TaskQueueBuilder {
 		for (task in tasks) {
 			var taskIndex:Int = allTasksIndexes.get(task);
 			for (runBefore in task.task.__before) {
-				var runBeforeTask:TaskNode = null;
 				for (it in tasks) {
-					if (it.name == runBefore && task.module == it.module) {
-						runBeforeTask = it;
-						break;
+					if (checkTaskWithDeps(it, task, runBefore)) {
+						var relationIndex:Int = allTasksIndexes.get(it);
+						executionOrderRelations[relationIndex][taskIndex] = 1;
 					}
 				}
-				if (runBeforeTask == null) {
-					continue;
-				}
-				var relationIndex:Int = allTasksIndexes.get(runBeforeTask);
-				executionOrderRelations[relationIndex][taskIndex] = 1;
 			}
 		}
 
@@ -172,11 +158,22 @@ class TaskQueueBuilder {
 		return executionOrder;
 	}
 
-	static function addRangeUnique(array:Array<TaskNode>, range:Array<TaskNode>) {
+	static function addRangeUnique(array:Array<TaskNode>, range:Array<TaskNode>, ?checkArray:Array<TaskNode>):Array<TaskNode> {
+		if (checkArray == null) checkArray = array;
 		for (it in range) {
-			if (array.indexOf(it) < 0) {
+			if (checkArray.indexOf(it) < 0) {
 				array.push(it);
 			}
 		}
+		return array;
+	}
+
+	static function checkTaskWithDeps(node:TaskNode, withTask:TaskNode, dependencyName:String) {
+		if (node.name == dependencyName) {
+			if (withTask.module == node.module || withTask.module.getSubModules(false, true).indexOf(node.module) >= 0) {
+				return true;
+			}
+		}
+		return false;
 	}
 }

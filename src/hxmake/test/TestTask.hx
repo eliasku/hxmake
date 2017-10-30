@@ -45,14 +45,14 @@ class TestTask extends Task {
 		_compileTasks = compileTasks();
 		_runTasks = runTasks();
 
-		prepend(setupTestLibrary());
+		then(setupTestLibrary());
 
 		for (ct in _compileTasks) {
-			prepend(ct);
+			then(ct);
 		}
 
 		for (rt in _runTasks) {
-			prepend(rt);
+			then(rt);
 		}
 	}
 

@@ -1,5 +1,6 @@
 package hxmake.core;
 
+import hxmake.tasks.InitTask;
 import hxmake.tasks.InstallTask;
 import hxmake.tasks.ListModules;
 import hxmake.tasks.ListTask;
@@ -14,8 +15,9 @@ class BuiltInModule extends Module {
 	function new() {
 		// TODO: better naming
 		name = "__internal";
+		task("_", new InstallTask());
 		task("tasks", new ListTask());
 		task("modules", new ListModules());
-		task("_", new InstallTask());
+		task("init", new InitTask());
 	}
 }

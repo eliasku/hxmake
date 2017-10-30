@@ -5,6 +5,7 @@ import haxe.macro.Context;
 import haxe.macro.Expr.Access;
 import haxe.macro.Expr;
 import haxe.macro.Type;
+import hxmake.cli.FileUtil;
 import sys.FileSystem;
 
 using StringTools;
@@ -19,17 +20,19 @@ class ModuleMacro {
 		var modulePath = getModulePath(Context.getLocalModule());
 		var childrenExprs:Array<Expr> = [];
 
-		CompileTime.log(modulePath);
+		CompileTime.log('New module for path $modulePath');
 
 		// TODO: readme @:module_path
 		var changedModulePath:Array<String> = MacroHelper.extractMetaStrings(cls.meta, ":module_path");
 		if (changedModulePath.length > 0) {
+			CompileTime.log('Change module path from $modulePath');
 			var parentPath = modulePath;
-			modulePath = FileSystem.absolutePath(Path.join([modulePath, changedModulePath[0]]));
-			CompileTime.log("CHANGED TO: " + modulePath);
+			modulePath = FileUtil.normalizeAbsolute(Path.join([modulePath, changedModulePath[0]]));
+			CompileTime.log('to $modulePath');
 		}
 
 		var guessModuleName = modulePath.split("/").pop();
+		CompileTime.log('Guess module name as $guessModuleName');
 
 		// TODO: readme @:include
 		var includesPositions:Array<Position> = [];
@@ -37,17 +40,13 @@ class ModuleMacro {
 		for (i in 0...includes.length) {
 			var include = includes[i];
 			var includePos = includesPositions[i];
-			var childModulePath = FileSystem.absolutePath(Path.join([modulePath, include]));
+			var childModulePath = FileUtil.normalizeAbsolute(Path.join([modulePath, include]));
 			if (!FileSystem.exists(childModulePath)) {
-				Context.warning('Path is not found for include "$include"', includePos);
+				Context.warning('Path `$childModulePath` is not found for @:include "$include"', includePos);
 				continue;
 			}
 
-			var cp = Path.join([childModulePath, "make"]);
-			if (FileSystem.exists(cp)) {
-				PluginInclude.scan(cp);
-				CompileTime.addMakePath(cp);
-			}
+			addMakeDir(childModulePath);
 			// TODO: post check?
 			//else {
 			//Context.warning('Make directory is not found for module "$include"', includePos);
@@ -60,11 +59,7 @@ class ModuleMacro {
 		processMakeLibraries(":lib", cls.meta);
 
 		if (!cls.meta.has(":root")) {
-			var parentMakeDir = FileSystem.absolutePath(Path.join([modulePath, "..", "make"]));
-			if (FileSystem.exists(parentMakeDir) && FileSystem.isDirectory(parentMakeDir)) {
-				PluginInclude.scan(parentMakeDir);
-				CompileTime.addMakePath(parentMakeDir);
-			}
+			addMakeDir(Path.join([modulePath, ".."]));
 		}
 
 		var tp = {
@@ -85,6 +80,17 @@ class ModuleMacro {
 		transformConstructor(fields);
 
 		return fields;
+	}
+
+	static function addMakeDir(path:String) {
+		var cp = FileSystem.absolutePath(Path.join([path, "make"]));
+		if (FileSystem.exists(cp) && FileSystem.isDirectory(cp)) {
+			PluginInclude.scan(cp);
+			CompileTime.addMakePath(cp);
+			// TODO: not true, check any .hx file recursively
+			return true;
+		}
+		return false;
 	}
 
 	static function processMakeLibraries(libraryMeta:String, metaAccess:MetaAccess) {

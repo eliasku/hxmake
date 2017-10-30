@@ -5,7 +5,7 @@ Build tools for Haxe
 [![Build Status](https://ci.appveyor.com/api/projects/status/lxmpp7d9pfoyd7dq/branch/develop?svg=true)](https://ci.appveyor.com/project/eliasku/hxmake)
 
 [![Lang](https://img.shields.io/badge/language-haxe-orange.svg)](http://haxe.org)
-[![Version](https://img.shields.io/badge/version-v0.1.8-green.svg)](https://github.com/eliasku/hxmake)
+[![Version](https://img.shields.io/badge/version-v0.2.0-green.svg)](https://github.com/eliasku/hxmake)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ### Installation
@@ -96,3 +96,13 @@ haxelib dev hxmake path/to/hxmake
 ```
 haxelib run hxmake _
 ```
+
+### Task running details
+Task will be ran in current working directory of associated module.
+
+Default Task / Sub-Tasks / Functions running order:
+1. Sub-Tasks added with `prepend` method.
+2. Functions registered with `doFirst` method.
+3. Task's `run` logic.
+4. Functions registered with `doLast` method.
+5. Sub-Tasks added with `then` method.
