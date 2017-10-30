@@ -1,6 +1,6 @@
 # v0.2.1
 
-
+- Module `configure` phase
 
 # v0.2.0
 

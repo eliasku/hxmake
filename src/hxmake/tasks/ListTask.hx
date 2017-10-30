@@ -1,7 +1,6 @@
 package hxmake.tasks;
 
-import hxmake.utils.MapTools;
-
+using hxmake.utils.MapTools;
 using Lambda;
 
 @:access(hxmake.Module)
@@ -18,7 +17,7 @@ class ListTask extends Task {
 		for (module in modules) {
 			var moduleTasks = module._tasks;
 			for (name in moduleTasks.keys()) {
-				MapTools.pushToValueArray(map, name, moduleTasks.get(name));
+				map.pushToValueArray(name, moduleTasks.get(name));
 			}
 		}
 
