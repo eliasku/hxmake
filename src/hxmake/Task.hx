@@ -47,14 +47,13 @@ class Task {
 	}
 
 	public function finalizedBy(task:String):Task {
-		__finalized.set(task, task);
-		return this;
+		__depends.set(task, task);
+		return runBefore(task);
 	}
 
 	public function dependsOn(task:String):Task {
 		__depends.set(task, task);
-		runAfter(task);
-		return this;
+		return runAfter(task);
 	}
 
 	public function toString() {
