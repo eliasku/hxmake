@@ -142,6 +142,10 @@ class Haxelib {
         return CL.command(ALIAS, args) == 0;
     }
 
+    public static function remove(library:String, forceGlobal:Bool = false):Bool {
+        return exec(["remove", library], forceGlobal ? ["--global"] : null);
+    }
+
     static function withVersion(library:String, ?version:String):String {
         if (version != null && version.length > 0) {
             return library + ":" + version;
