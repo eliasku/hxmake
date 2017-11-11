@@ -1,6 +1,6 @@
 # v0.2.1
 
-
+- Added hxmake.utils.Haxelib#remove for removing haxe libraries
 
 # v0.2.0
 
