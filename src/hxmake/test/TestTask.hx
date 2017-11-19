@@ -82,7 +82,7 @@ class TestTask extends Task {
 			var compileTask = new HaxeTask();
 			compileTask.name = "compile-test-" + target;
 			compileTask.targetName = target;
-			if (testLibrary != null && testLibrary != "") libraries.concat([testLibrary]);
+			if (testLibrary != null && testLibrary != "") compileTask.hxml.libraries = libraries.concat([testLibrary]);
 			if (isNodeJs) {
 				compileTask.hxml.libraries.push("hxnodejs");
 				targetFilePostfix = ".node";
