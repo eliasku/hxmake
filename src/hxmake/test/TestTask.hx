@@ -69,7 +69,7 @@ class TestTask extends Task {
 	function setupTestLibrary():SetupTask {
 		var task = new SetupTask();
 		task.name = "setup-test-library";
-		task.libraries = [testLibrary];
+		if (testLibrary != null && testLibrary != "") task.libraries = [testLibrary];
 		return task;
 	}
 
@@ -82,7 +82,7 @@ class TestTask extends Task {
 			var compileTask = new HaxeTask();
 			compileTask.name = "compile-test-" + target;
 			compileTask.targetName = target;
-			compileTask.hxml.libraries = libraries.concat([testLibrary]);
+			if (testLibrary != null && testLibrary != "") libraries.concat([testLibrary]);
 			if (isNodeJs) {
 				compileTask.hxml.libraries.push("hxnodejs");
 				targetFilePostfix = ".node";
