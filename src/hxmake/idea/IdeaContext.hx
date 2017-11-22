@@ -16,8 +16,8 @@ class IdeaContext {
 	public var appPath(default, null):String;
 	public var configPath(default, null):String;
 
-	public var flexSdkList:Array<String> = [];
-	public var haxeSdkList:Array<String> = [];
+	public var flexSdkList:Array<IdeaSdkData> = [];
+	public var haxeSdkList:Array<IdeaSdkData> = [];
 
 	public var iml(default, null):Template;
 	public var xmlModules(default, null):Template;
@@ -71,25 +71,33 @@ class IdeaContext {
 			var fast = new Fast(jdkTableXml.firstElement());
 			for (c in fast.nodes.component) {
 				for (j in c.nodes.jdk) {
-					var type = j.node.type.att.value;
-					var name = j.node.name.att.value;
-					if (type.indexOf("Flex") == 0) {
-						flexSdkList.push(name);
-					}
-					else if (type.indexOf("Haxe") == 0) {
-						haxeSdkList.push(name);
+					var sdk:IdeaSdkData = parseSdk(j);
+					if(sdk != null) {
+						if (sdk.is("Flex")) {
+							flexSdkList.push(sdk);
+						}
+						else if (sdk.is("Haxe")) {
+							haxeSdkList.push(sdk);
+						}
 					}
 				}
 			}
-
-			if (flexSdkList.length == 0) {
-				flexSdkList.push("AIR_SDK");
-			}
-
-			if (haxeSdkList.length == 0) {
-				haxeSdkList.push("Haxe 3.4.0");
-			}
 		}
+	}
+
+	static function parseSdk(data:Fast):IdeaSdkData {
+		var ret:IdeaSdkData = null;
+
+		if(data != null) {
+			ret = new IdeaSdkData(
+				data.node.resolve("type") != null ? data.node.type.att.value : "",
+				data.node.resolve("name") != null ? data.node.name.att.value : "",
+				data.node.resolve("version") != null ? data.node.version.att.value : "",
+				data.node.resolve("homePath") != null ? data.node.homePath.att.value : ""
+			);
+		}
+
+		return ret;
 	}
 
 	static function resolveConfigPath() {
