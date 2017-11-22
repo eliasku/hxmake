@@ -1,6 +1,8 @@
 # v0.2.1
 
 - Module `configure` phase
+- Added hxmake.utils.Haxelib#remove for removing haxe libraries
+- Added null-check for TestTask#testLibrary
 
 # v0.2.0
 
