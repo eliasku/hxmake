@@ -164,12 +164,18 @@ class IdeaContext {
 			}
 		}
 		else if (CL.platform.isWindows) {
-			var applicationsDirs = [
-				Sys.getEnv("HOMEDRIVE") + "\\Program Files (x86)\\JetBrains",
-				Sys.getEnv("HOMEDRIVE") + "\\Program Files\\JetBrains",
-				Sys.getEnv("HOMEDRIVE") + "\\Program Files (x86)",
-				Sys.getEnv("HOMEDRIVE") + "\\Program Files"
+			var variances = [
+				"\\Program Files (x86)\\JetBrains",
+				"\\Program Files\\JetBrains",
+				"\\Program Files (x86)",
+				"\\Program Files"
 			];
+			var applicationsDirs = variances.map(function(v:String) {
+				return Sys.getEnv("SYSTEMDRIVE") + v;
+			});
+			applicationsDirs = applicationsDirs.concat(variances.map(function(v:String) {
+				return Sys.getEnv("HOMEDRIVE") + v;
+			}));
 			for (applicationsDir in applicationsDirs) {
 				if (FileUtil.dirExists(applicationsDir)) {
 					var list = FileSystem.readDirectory(applicationsDir);
