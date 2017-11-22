@@ -23,11 +23,11 @@ class ModuleConfig {
 
 	public function getAllDependencies():Map<String, String> {
 		var deps = new Map<String, String>();
-		for(dev in devDependencies.keys()) {
-			deps[dev] = devDependencies[dev];
+		for (name in devDependencies.keys()) {
+			deps[name] = devDependencies[name];
 		}
-		for(dev in dependencies.keys()) {
-			deps[dev] = dependencies[dev];
+		for (name in dependencies.keys()) {
+			deps[name] = dependencies[name];
 		}
 		return deps;
 	}

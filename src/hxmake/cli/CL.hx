@@ -43,11 +43,15 @@ class CL {
 	}
 
 	public static function getUserHome():String {
-		var homeDir:String = switch(platform) {
+		var homeDir:String = null;
+		switch(platform) {
 			case Platform.WINDOWS:
-				Sys.getEnv("HOMEDRIVE") + Sys.getEnv("HOMEPATH");
+				homeDir = Sys.getEnv("USERPROFILE");
+				if (homeDir == null) {
+					homeDir = Sys.getEnv("HOMEDRIVE") + Sys.getEnv("HOMEPATH");
+				}
 			case _:
-				Sys.getEnv("HOME");
+				homeDir = Sys.getEnv("HOME");
 		}
 		if (homeDir != null && homeDir.length > 0 && FileSystem.exists(homeDir) && FileSystem.isDirectory(homeDir)) {
 			return homeDir;
