@@ -6,9 +6,12 @@ import haxe.xml.Fast;
 import hxmake.cli.CL;
 import hxmake.cli.FileUtil;
 import hxmake.cli.MakeLog;
+import hxmake.idea.IdeaSdkData;
 import hxmake.utils.Haxelib;
 import sys.FileSystem;
 import sys.io.File;
+
+using hxmake.utils.ArrayTools;
 
 @:final
 class IdeaContext {
@@ -38,12 +41,14 @@ class IdeaContext {
 		xmlMisc = createTemplate(hxmakePath, "idea/misc.xml");
 	}
 
-	public function getFlexSdkName() {
-		return flexSdkList[flexSdkList.length - 1];
+	public function getFlexSdkName(defaultName:String = "AIR_SDK"):String {
+		var sdk:IdeaSdkData = flexSdkList.back();
+		return sdk != null ? sdk.name : defaultName;
 	}
 
-	public function getHaxeSdkName() {
-		return haxeSdkList[haxeSdkList.length - 1];
+	public function getHaxeSdkName(defaultName:String = "Haxe 3.4.4"):String {
+		var sdk:IdeaSdkData = haxeSdkList.back();
+		return sdk != null ? sdk.name : defaultName;
 	}
 
 	public function openProject(path:String) {
@@ -62,8 +67,6 @@ class IdeaContext {
 		}
 	}
 
-	/////
-
 	function resolveSdk() {
 		if (configPath != null) {
 			var jdkTableContent = File.getContent(getJdkTablePath(configPath));
@@ -71,8 +74,8 @@ class IdeaContext {
 			var fast = new Fast(jdkTableXml.firstElement());
 			for (c in fast.nodes.component) {
 				for (j in c.nodes.jdk) {
-					var sdk:IdeaSdkData = parseSdk(j);
-					if(sdk != null) {
+					var sdk:IdeaSdkData = IdeaSdkData.parseFromXml(j);
+					if (sdk != null) {
 						if (sdk.is("Flex")) {
 							flexSdkList.push(sdk);
 						}
@@ -83,21 +86,6 @@ class IdeaContext {
 				}
 			}
 		}
-	}
-
-	static function parseSdk(data:Fast):IdeaSdkData {
-		var ret:IdeaSdkData = null;
-
-		if(data != null) {
-			ret = new IdeaSdkData(
-				data.node.resolve("type") != null ? data.node.type.att.value : "",
-				data.node.resolve("name") != null ? data.node.name.att.value : "",
-				data.node.resolve("version") != null ? data.node.version.att.value : "",
-				data.node.resolve("homePath") != null ? data.node.homePath.att.value : ""
-			);
-		}
-
-		return ret;
 	}
 
 	static function resolveConfigPath() {
