@@ -61,7 +61,7 @@ class ProjectRunner {
 		var tasks = TaskQueueBuilder.createNodeList(modules, project.arguments.tasks);
 		new Printer(project.logger).printTaskOrder(tasks);
 
-		var taskQueue = new TaskQueue(tasks);
+		var taskQueue = new TaskQueue(tasks, project.logger);
 		taskQueue.configure();
 		taskQueue.run();
 

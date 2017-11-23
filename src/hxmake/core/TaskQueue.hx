@@ -1,7 +1,7 @@
 package hxmake.core;
 
 import hxmake.cli.CL;
-import hxmake.cli.MakeLog;
+import hxmake.cli.logging.Logger;
 import hxmake.Task;
 
 @:final
@@ -11,10 +11,9 @@ class TaskQueue {
 	var _queue:Array<TaskNode>;
 	var _runner:TaskRunner;
 
-	public function new(queue:Array<TaskNode>) {
+	public function new(queue:Array<TaskNode>, logger:Logger) {
 		_queue = queue;
-		// TODO: as dependency
-		_runner = new TaskRunner(MakeLog.logger);
+		_runner = new TaskRunner(logger);
 	}
 
 	public function configure():Void {
