@@ -51,8 +51,8 @@ class IdeaProjectTask extends Task {
 			moduleLibraries: libraries,
 			sourceDirs: module.config.classPath,
 			testDirs: testPath,
-			flexSdkName: _idea.getFlexSdkName(),
-			haxeSdkName: _idea.getHaxeSdkName(),
+			flexSdkName: getFlexSDKName(),
+			haxeSdkName: getHaxeSDKName(),
 			buildConfig: 1,
 			projectPath: "",
 			projectTarget: "",
@@ -83,12 +83,20 @@ class IdeaProjectTask extends Task {
 		File.saveContent(Path.join([module.path, '${module.name}.iml']), iml);
 	}
 
+	function getHaxeSDKName():String {
+		return _idea.getSdkName("Haxe", "Haxe 3.4.4");
+	}
+
+	function getFlexSDKName():String {
+		return _idea.getSdkName("Flex", "AIR_SDK");
+	}
+
 	function createProject(path:String) {
 		project.logger.info("SETUP IDEA PROJECT...");
 
 		var context = {
 			modules: [],
-			haxeSdkName: _idea.getHaxeSdkName()
+			haxeSdkName: getHaxeSDKName()
 		};
 
 		for (module in _modules) {

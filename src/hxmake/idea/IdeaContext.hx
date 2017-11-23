@@ -19,8 +19,7 @@ class IdeaContext {
 	public var appPath(default, null):String;
 	public var configPath(default, null):String;
 
-	public var flexSdkList:Array<IdeaSdkData> = [];
-	public var haxeSdkList:Array<IdeaSdkData> = [];
+	public var sdkList:Array<IdeaSdkData> = [];
 
 	public var iml(default, null):Template;
 	public var xmlModules(default, null):Template;
@@ -41,14 +40,15 @@ class IdeaContext {
 		xmlMisc = createTemplate(hxmakePath, "idea/misc.xml");
 	}
 
-	public function getFlexSdkName(defaultName:String = "AIR_SDK"):String {
-		var sdk:IdeaSdkData = flexSdkList.back();
+	public function getSdkName(type:String, defaultName:String = "AIR_SDK"):String {
+		var sdk:IdeaSdkData = getSdkListByType(type).back();
 		return sdk != null ? sdk.name : defaultName;
 	}
 
-	public function getHaxeSdkName(defaultName:String = "Haxe 3.4.4"):String {
-		var sdk:IdeaSdkData = haxeSdkList.back();
-		return sdk != null ? sdk.name : defaultName;
+	public function getSdkListByType(type:String):Array<IdeaSdkData> {
+		return sdkList.filter(function(s:IdeaSdkData) {
+			return s.type == type;
+		});
 	}
 
 	public function openProject(path:String) {
@@ -76,12 +76,7 @@ class IdeaContext {
 				for (j in c.nodes.jdk) {
 					var sdk:IdeaSdkData = IdeaSdkData.parseFromXml(j);
 					if (sdk != null) {
-						if (sdk.is("Flex")) {
-							flexSdkList.push(sdk);
-						}
-						else if (sdk.is("Haxe")) {
-							haxeSdkList.push(sdk);
-						}
+						sdkList.push(sdk);
 					}
 				}
 			}
