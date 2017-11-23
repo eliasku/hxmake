@@ -40,12 +40,12 @@ class IdeaContext {
 		xmlMisc = createTemplate(hxmakePath, "idea/misc.xml");
 	}
 
-	public function getSdkName(type:String, defaultName:String = "AIR_SDK"):String {
+	public function getSdkName(type:IdeaSdkType, defaultName:String = "AIR_SDK"):String {
 		var sdk:IdeaSdkData = getSdkListByType(type).back();
 		return sdk != null ? sdk.name : defaultName;
 	}
 
-	public function getSdkListByType(type:String):Array<IdeaSdkData> {
+	public function getSdkListByType(type:IdeaSdkType):Array<IdeaSdkData> {
 		return sdkList.filter(function(s:IdeaSdkData) {
 			return s.type == type;
 		});

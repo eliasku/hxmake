@@ -84,11 +84,11 @@ class IdeaProjectTask extends Task {
 	}
 
 	function getHaxeSDKName():String {
-		return _idea.getSdkName("Haxe", "Haxe 3.4.4");
+		return _idea.getSdkName(IdeaSdkType.HAXE, "Haxe 3.4.4");
 	}
 
 	function getFlexSDKName():String {
-		return _idea.getSdkName("Flex", "AIR_SDK");
+		return _idea.getSdkName(IdeaSdkType.FLEX, "AIR_SDK");
 	}
 
 	function createProject(path:String) {
