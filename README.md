@@ -107,8 +107,13 @@ haxelib run hxmake _
 Task will be ran in current working directory of associated module.
 
 Default Task / Sub-Tasks / Functions running order:
+
 1. Sub-Tasks added with `prepend` method.
+
 2. Functions registered with `doFirst` method.
+
 3. Task's `run` logic.
+
 4. Functions registered with `doLast` method.
+
 5. Sub-Tasks added with `then` method.
