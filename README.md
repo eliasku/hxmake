@@ -5,7 +5,7 @@ Build tools for Haxe
 [![Build Status](https://ci.appveyor.com/api/projects/status/lxmpp7d9pfoyd7dq/branch/develop?svg=true)](https://ci.appveyor.com/project/eliasku/hxmake)
 
 [![Lang](https://img.shields.io/badge/language-haxe-orange.svg)](http://haxe.org)
-[![Version](https://img.shields.io/badge/version-v0.2.0-green.svg)](https://github.com/eliasku/hxmake)
+[![Version](https://img.shields.io/badge/version-v0.2.1-green.svg)](https://github.com/eliasku/hxmake)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](http://opensource.org/licenses/MIT)
 
 ### Installation
@@ -17,6 +17,7 @@ haxelib run hxmake _
 _Enter system password if required to install alias_
 
 ### Usage
+
 `hxmake` - run hxmake
 
 `hxmake _` - rebuild hxmake tool and reinstall command-line alias
@@ -24,6 +25,11 @@ _Enter system password if required to install alias_
 `hxmake all arguments you need` - usage
 
 `hxmake idea haxe` - run `idea` and `haxe` tasks for project
+
+### Examples
+
+- General multi-module project: https://github.com/eliasku/hxmake-example
+- `hxmake` library module: https://github.com/eliasku/hxmake/blob/develop/make/HxMake.hx
 
 ### Running steps and environment
 1. Linked modules are scanned from current-working-directory (Haxe compiler)

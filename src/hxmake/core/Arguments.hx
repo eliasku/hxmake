@@ -1,6 +1,6 @@
 package hxmake.core;
 
-import hxmake.utils.MapTools;
+using hxmake.utils.MapTools;
 
 /**
 	Parse arguments and provides access to properties and tasks
@@ -61,7 +61,7 @@ class Arguments {
 		var re = ~/^(-[^=]+)[=]?(.*)?/;
 		for (arg in args) {
 			if (re.match(arg)) {
-				MapTools.pushToValueArray(props, re.matched(1), re.matched(2));
+				props.pushToValueArray(re.matched(1), re.matched(2));
 			}
 		}
 		return props;

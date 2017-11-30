@@ -17,6 +17,12 @@ class ModuleGraph {
 		}
 	}
 
+	public function configure() {
+		for (module in _modules) {
+			module.configure();
+		}
+	}
+
 	public function finish() {
 		for (module in _modules) {
 			module.finish();

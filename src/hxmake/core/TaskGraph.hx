@@ -1,7 +1,6 @@
 package hxmake.core;
 
-import hxmake.utils.ArrayTools;
-import hxmake.utils.MapTools;
+using hxmake.utils.ArrayTools;
 using hxmake.utils.MapTools;
 
 /**
@@ -15,14 +14,17 @@ class TaskGraph {
 	var _byName:Map<String, Array<TaskNode>> = new Map();
 	var _byModule:Map<String, Array<TaskNode>> = new Map();
 
+	// TODO:
+//	var _submodulesAndDependencies:Map<Module, Array<Module>> = new Map();
+
 	@:access(hxmake.Module)
 	public function new(modules:Array<Module>) {
 		for (module in modules) {
 			var tasks = module._tasks;
 			for (name in tasks.keys()) {
 				var node = new TaskNode(name, tasks.get(name));
-				MapTools.pushToValueArray(_byName, name, node);
-				MapTools.pushToValueArray(_byModule, module.name, node);
+				_byName.pushToValueArray(name, node);
+				_byModule.pushToValueArray(module.name, node);
 			}
 		}
 	}
@@ -61,7 +63,7 @@ class TaskGraph {
 	public function requireTasks(names:Array<String>):Array<TaskNode> {
 		var result:Array<TaskNode> = [];
 		for (name in names) {
-			ArrayTools.pushRange(result, requireNodes(name));
+			result.pushRange(requireNodes(name));
 		}
 		return result;
 	}

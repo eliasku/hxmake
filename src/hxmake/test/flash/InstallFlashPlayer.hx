@@ -117,16 +117,8 @@ class InstallFlashPlayer extends SetupTask {
 
 	static function getMmCfg():String {
 		// https://helpx.adobe.com/flash-player/kb/configure-debugger-version-flash-player.html
-		return switch(CL.platform) {
-			case Platform.LINUX, Platform.MAC:
-				Path.join([Sys.getEnv("HOME"), "mm.cfg"]);
-			case Platform.WINDOWS:
-				Path.join([Sys.getEnv("HOMEDRIVE") + Sys.getEnv("HOMEPATH"), "mm.cfg"]);
-			case _:
-				throw "unsupported system";
-		}
+		return Path.join([CL.getUserHome(), "mm.cfg"]);
 	}
-
 
 	static function getFpTrust():String {
 		// http://help.adobe.com/en_US/ActionScript/3.0_ProgrammingAS3/WS5b3ccc516d4fbf351e63e3d118a9b90204-7c91.html#WSD2DCB535-92C6-49ff-8954-D8D5130404F1

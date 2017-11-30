@@ -44,6 +44,10 @@ class Module {
 		// Constuctor will be moved here
 	}
 
+	function configure() {
+		// Configuration phase
+	}
+
 	function finish() {
 		// Finalization phase
 	}

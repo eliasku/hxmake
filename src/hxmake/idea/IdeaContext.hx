@@ -6,9 +6,12 @@ import haxe.xml.Fast;
 import hxmake.cli.CL;
 import hxmake.cli.FileUtil;
 import hxmake.cli.MakeLog;
+import hxmake.idea.IdeaSdkData;
 import hxmake.utils.Haxelib;
 import sys.FileSystem;
 import sys.io.File;
+
+using hxmake.utils.ArrayTools;
 
 @:final
 class IdeaContext {
@@ -16,8 +19,7 @@ class IdeaContext {
 	public var appPath(default, null):String;
 	public var configPath(default, null):String;
 
-	public var flexSdkList:Array<String> = [];
-	public var haxeSdkList:Array<String> = [];
+	public var sdkList:Array<IdeaSdkData> = [];
 
 	public var iml(default, null):Template;
 	public var xmlModules(default, null):Template;
@@ -38,12 +40,15 @@ class IdeaContext {
 		xmlMisc = createTemplate(hxmakePath, "idea/misc.xml");
 	}
 
-	public function getFlexSdkName() {
-		return flexSdkList[flexSdkList.length - 1];
+	public function getSdkName(type:IdeaSdkType, defaultName:String = "AIR_SDK"):String {
+		var sdk:IdeaSdkData = getSdkListByType(type).back();
+		return sdk != null ? sdk.name : defaultName;
 	}
 
-	public function getHaxeSdkName() {
-		return haxeSdkList[haxeSdkList.length - 1];
+	public function getSdkListByType(type:IdeaSdkType):Array<IdeaSdkData> {
+		return sdkList.filter(function(s:IdeaSdkData) {
+			return s.type == type;
+		});
 	}
 
 	public function openProject(path:String) {
@@ -62,8 +67,6 @@ class IdeaContext {
 		}
 	}
 
-	/////
-
 	function resolveSdk() {
 		if (configPath != null) {
 			var jdkTableContent = File.getContent(getJdkTablePath(configPath));
@@ -71,23 +74,11 @@ class IdeaContext {
 			var fast = new Fast(jdkTableXml.firstElement());
 			for (c in fast.nodes.component) {
 				for (j in c.nodes.jdk) {
-					var type = j.node.type.att.value;
-					var name = j.node.name.att.value;
-					if (type.indexOf("Flex") == 0) {
-						flexSdkList.push(name);
-					}
-					else if (type.indexOf("Haxe") == 0) {
-						haxeSdkList.push(name);
+					var sdk:IdeaSdkData = IdeaSdkData.parseFromXml(j);
+					if (sdk != null) {
+						sdkList.push(sdk);
 					}
 				}
-			}
-
-			if (flexSdkList.length == 0) {
-				flexSdkList.push("AIR_SDK");
-			}
-
-			if (haxeSdkList.length == 0) {
-				haxeSdkList.push("Haxe 3.4.0");
 			}
 		}
 	}
@@ -164,12 +155,18 @@ class IdeaContext {
 			}
 		}
 		else if (CL.platform.isWindows) {
-			var applicationsDirs = [
-				Sys.getEnv("HOMEDRIVE") + "\\Program Files (x86)\\JetBrains",
-				Sys.getEnv("HOMEDRIVE") + "\\Program Files\\JetBrains",
-				Sys.getEnv("HOMEDRIVE") + "\\Program Files (x86)",
-				Sys.getEnv("HOMEDRIVE") + "\\Program Files"
+			var variances = [
+				"\\Program Files (x86)\\JetBrains",
+				"\\Program Files\\JetBrains",
+				"\\Program Files (x86)",
+				"\\Program Files"
 			];
+			var applicationsDirs = variances.map(function(v:String) {
+				return Sys.getEnv("SYSTEMDRIVE") + v;
+			});
+			applicationsDirs = applicationsDirs.concat(variances.map(function(v:String) {
+				return Sys.getEnv("HOMEDRIVE") + v;
+			}));
 			for (applicationsDir in applicationsDirs) {
 				if (FileUtil.dirExists(applicationsDir)) {
 					var list = FileSystem.readDirectory(applicationsDir);

@@ -1,3 +1,10 @@
+# v0.2.1
+
+- Module `configure` phase
+- Added hxmake.utils.Haxelib#remove for removing haxe libraries
+- Added null-check for TestTask#testLibrary
+- Fix #30. USERPROFILE for Windows 10
+
 # v0.2.0
 
 - Removed deprecated methods

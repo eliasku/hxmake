@@ -1,5 +1,7 @@
 package hxmake.core;
 
+using hxmake.utils.ArrayTools;
+
 @:final
 class TaskQueueBuilder {
 
@@ -34,15 +36,16 @@ class TaskQueueBuilder {
 	function findTaskDependencies(taskNode:TaskNode, outNodes:Array<TaskNode>):Array<TaskNode> {
 		// find same task in module dependencies
 		var dependedModules = taskNode.module.getSubModules(false, true);
-		var nodes = addRangeUnique([], _graph.getNodesForModules(dependedModules, taskNode.name), outNodes);
+		var nodes:Array<TaskNode> = [];
+		nodes.pushRangeUnique(_graph.getNodesForModules(dependedModules, taskNode.name), outNodes);
 
 		// find dependencies
 		dependedModules.push(taskNode.module);
 		for (depended in taskNode.task.__depends) {
-			addRangeUnique(nodes, requireDependedNodes(taskNode, depended, dependedModules), outNodes);
+			nodes.pushRangeUnique(requireDependedNodes(taskNode, depended, dependedModules), outNodes);
 		}
 
-		addRangeUnique(outNodes, nodes);
+		outNodes.pushRangeUnique(nodes);
 		for (node in nodes) {
 			findTaskDependencies(node, outNodes);
 		}

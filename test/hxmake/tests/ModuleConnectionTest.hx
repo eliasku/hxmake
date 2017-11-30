@@ -3,6 +3,7 @@ package hxmake.tests;
 import hxmake.core.CompiledProjectData;
 import hxmake.tests.utils.StubModule;
 import utest.Assert;
+
 class ModuleConnectionTest {
 
 	public function new() {}
