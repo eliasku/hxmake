@@ -1,6 +1,6 @@
 # v0.2.2
 
-
+- Fix #33. Launching of Intellij IDEA project.
 
 # v0.2.1
 
