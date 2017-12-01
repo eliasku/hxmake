@@ -9,10 +9,12 @@ import sys.io.Process;
 class RunPhantomJs extends RunTask {
 
 	public var jsPath:String;
+	public var hostPort:Int;
 
-	public function new(jsPath:String) {
+	public function new(jsPath:String, hostPort:Int = 2001) {
 		super();
 		this.jsPath = jsPath;
+		this.hostPort = hostPort;
 	}
 
 	override public function run() {

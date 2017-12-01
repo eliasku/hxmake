@@ -28,6 +28,7 @@ class TestTask extends Task {
 	public var main:String = "TestAll";
 	public var outputDir:String = "bin";
 	public var outputName:String = "test";
+	public var servePort:Int = 2001;
 	public var runTests:Bool = true;
 
 	var _compileTasks:Array<HaxeTask>;
@@ -189,7 +190,7 @@ class TestTask extends Task {
 					runTask.set("node", [bin]);
 				}
 				else {
-					runTask = new RunPhantomJs(bin);
+					runTask = new RunPhantomJs(bin, servePort);
 				}
 			case Cpp:
 				runTask.set(bin);
