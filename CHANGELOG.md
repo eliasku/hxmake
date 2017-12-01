@@ -1,6 +1,7 @@
 # v0.2.2
 
 - Fix #33. Launching of Intellij IDEA project.
+- Fix #35. PhantomJS runner for TestTask (neko-tools is still running)
 
 # v0.2.1
 
