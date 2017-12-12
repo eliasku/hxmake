@@ -57,7 +57,7 @@ class IdeaContext {
 			return;
 		}
 		if (CL.platform.isMac) {
-			CL.execute("open", ["-a", Path.join([appPath, "Contents/MacOS/idea"]), "--args", path]);
+			CL.execute("open", [path, "-a", Path.join([appPath, "Contents/MacOS/idea"])]);
 		}
 		else if (CL.platform.isWindows) {
 			CL.execute("start", ["/b", Path.join([appPath, "bin/idea.exe"]), path]);

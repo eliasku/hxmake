@@ -1,3 +1,9 @@
+# v0.2.2
+
+- Fix #33. Launching of Intellij IDEA project.
+- Fix #35. PhantomJS runner for TestTask (neko-tools is still running)
+- Fix #36. TestTask servePort parameter (phantomJS runner)
+
 # v0.2.1
 
 - Module `configure` phase

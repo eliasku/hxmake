@@ -2,7 +2,6 @@ package hxmake.test.js;
 
 import haxe.io.Path;
 import haxe.Template;
-import hxmake.cli.CL;
 import hxmake.utils.Haxelib;
 import sys.io.File;
 import sys.io.Process;
@@ -10,10 +9,12 @@ import sys.io.Process;
 class RunPhantomJs extends RunTask {
 
 	public var jsPath:String;
+	public var hostPort:Int;
 
-	public function new(jsPath:String) {
+	public function new(jsPath:String, hostPort:Int = 2001) {
 		super();
 		this.jsPath = jsPath;
+		this.hostPort = hostPort;
 	}
 
 	override public function run() {
@@ -48,11 +49,11 @@ class RunPhantomJs extends RunTask {
 	}
 
 	static function closeServer(process:Process) {
-		if (CL.platform.isWindows) {
+		try {
 			process.kill();
 		}
-		else {
-			process.close();
+		catch (e:Dynamic) {
+
 		}
 	}
 
