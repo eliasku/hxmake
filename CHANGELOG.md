@@ -1,6 +1,6 @@
 # v0.2.3
 
-
+- Added hxmake.utils.GitTools#getCurrentTagVersion for retrieving current version from git tag
 
 # v0.2.2
 
