@@ -13,6 +13,7 @@ branches:
     - develop
 
 install:
+  - ps: Set-Service wuauserv -StartupType Manual
   - cinst neko --version 2.2.0 -y
   - cinst haxe --version %HAXE_VERSION% --ignore-dependencies -y
   - RefreshEnv
