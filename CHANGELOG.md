@@ -1,6 +1,7 @@
 # v0.2.3
 
 - Added hxmake.utils.GitTools#getCurrentTagVersion for retrieving current version from git tag
+- Fix `--override-test-target` property for TestTask
 
 # v0.2.2
 
