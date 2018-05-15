@@ -2,6 +2,8 @@
 
 - Added hxmake.utils.GitTools#getCurrentTagVersion for retrieving current version from git tag
 - Fix `--override-test-target` property for TestTask
+- Update CI scripts
+- Fix Haxe 4.0 compatibility
 
 # v0.2.2
 
