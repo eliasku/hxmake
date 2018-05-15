@@ -13,7 +13,7 @@ using hxmake.utils.HaxeTargetTools;
 
 class TestTask extends Task {
 
-	inline static var OPTION_OVERRIDE_TEST_TARGET:String = "--override-test-target=";
+	inline static var OPTION_OVERRIDE_TEST_TARGET:String = "--override-test-target";
 
 	public var debug:Bool = false;
 	public var targets:Array<String> = [];

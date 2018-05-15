@@ -4,7 +4,7 @@ environment:
   global:
     HAXELIB_ROOT: C:\projects\haxelib
   matrix:
-    - HAXE_VERSION: "3.4.4"
+    - HAXE_VERSION: "3.4.7"
 
 build: off
 
@@ -13,7 +13,9 @@ branches:
     - develop
 
 install:
-  - cinst haxe -version %HAXE_VERSION% -y
+  - ps: Set-Service wuauserv -StartupType Manual
+  - cinst neko --version 2.2.0 -y
+  - cinst haxe --version %HAXE_VERSION% --ignore-dependencies -y
   - RefreshEnv
   - mkdir "%HAXELIB_ROOT%"
   - haxelib setup "%HAXELIB_ROOT%"

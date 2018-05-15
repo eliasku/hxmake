@@ -17,7 +17,7 @@ class HxMake extends hxmake.Module {
 		apply(HaxelibPlugin);
 
 		library(function(ext:HaxelibExt) {
-			ext.config.version = "0.2.2";
+			ext.config.version = "0.2.3";
 			ext.config.description = "Task automation for Haxe multi-module projects";
 			ext.config.url = "https://github.com/eliasku/hxmake";
 			ext.config.tags = ["haxe", "make", "build", "haxelib", "tools", "neko", "project", "module", "cross"];

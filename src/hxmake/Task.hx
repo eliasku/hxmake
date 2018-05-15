@@ -125,9 +125,9 @@ class Task {
 	}
 }
 
-
 private class EmptyTask extends Task {
-	function new() {}
+
+	public function new() {}
 
 	override public function run() {}
 }
