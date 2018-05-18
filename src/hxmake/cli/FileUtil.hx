@@ -94,4 +94,13 @@ class FileUtil {
 	public static function dirExists(path:String):Bool {
 		return FileSystem.exists(path) && FileSystem.isDirectory(path);
 	}
+
+//	public static function link(sourcePath:String, destinationPath:String) {
+//		if (CL.platform.isWindows) {
+//			CL.command("mklink", ["/J", destinationPath.replace("/", "\\"), sourcePath.replace("/", "\\")]);
+//		}
+//		else {
+//			CL.command("ln", ["-s", sourcePath, destinationPath]);
+//		}
+//	}
 }
