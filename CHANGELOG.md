@@ -1,3 +1,7 @@
+# v0.2.4
+
+- Added ability to substitute version in safe way if retrieving from git failed 
+
 # v0.2.3
 
 - Added hxmake.utils.GitTools#getCurrentTagVersion for retrieving current version from git tag
