@@ -1,6 +1,6 @@
 {
-  "$ref": "#/definitions/MakeConfigSchema",
   "$schema": "http://json-schema.org/draft-04/schema#",
+  "$ref": "#/definitions/MakeConfigSchema",
   "definitions": {
     "MakePluginInfo": {
       "type": "object",
@@ -67,12 +67,12 @@
           "propertyOrder": 3
         },
         "_parent": {
-          "propertyOrder": 9,
-          "$ref": "#/definitions/PackageData"
+          "$ref": "#/definitions/PackageData",
+          "propertyOrder": 9
         },
         "makeplugin": {
-          "propertyOrder": 6,
-          "$ref": "#/definitions/MakePluginInfo"
+          "$ref": "#/definitions/MakePluginInfo",
+          "propertyOrder": 6
         },
         "external": {
           "items": {
@@ -185,8 +185,8 @@
       "description": "*\n\n 1. COMPILE-TIME PHASE\n \t-  Pluigns and modules are collected and code generated\n\n 2. CONSTRUCTION PHASE\n  \t- Global make-project context is constructed\n\t- Set project context to each module\n \t- Build modules tree\n \t- Determine project's roots\n\n 3. CONFIGURATION PHASE:\n \t- Modules are initializing (plugins are applying as well)\n\n 4. RESOLVING PHASE:\n\t- Task order resolving\n\n 5. EXECUTION PHASE\n\t- Running\n\n 6. FINALIZATION PHASE\n\t- Modules finish()",
       "properties": {
         "idea": {
-          "propertyOrder": 11,
-          "$ref": "#/definitions/IdeaData"
+          "$ref": "#/definitions/IdeaData",
+          "propertyOrder": 11
         },
         "init": {
           "items": {
@@ -197,8 +197,8 @@
           "propertyOrder": 8
         },
         "config": {
-          "propertyOrder": 12,
-          "$ref": "#/definitions/ModuleConfig"
+          "$ref": "#/definitions/ModuleConfig",
+          "propertyOrder": 12
         },
         "name": {
           "type": "string",
@@ -220,12 +220,12 @@
           "propertyOrder": 3
         },
         "_parent": {
-          "propertyOrder": 9,
-          "$ref": "#/definitions/PackageData"
+          "$ref": "#/definitions/PackageData",
+          "propertyOrder": 9
         },
         "makeplugin": {
-          "propertyOrder": 6,
-          "$ref": "#/definitions/MakePluginInfo"
+          "$ref": "#/definitions/MakePluginInfo",
+          "propertyOrder": 6
         },
         "external": {
           "items": {
@@ -235,8 +235,8 @@
           "propertyOrder": 5
         },
         "haxelib": {
-          "propertyOrder": 13,
-          "$ref": "#/definitions/HaxelibConfig"
+          "$ref": "#/definitions/HaxelibConfig",
+          "propertyOrder": 13
         },
         "tasks": {
           "type": "object",
@@ -254,8 +254,8 @@
           }
         },
         "utest": {
-          "propertyOrder": 14,
-          "$ref": "#/definitions/UTestConfig"
+          "$ref": "#/definitions/UTestConfig",
+          "propertyOrder": 14
         },
         "_children": {
           "items": {

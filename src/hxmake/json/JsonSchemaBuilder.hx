@@ -22,7 +22,7 @@ class JsonSchemaBuilder {
 	public static macro function generate(type) {
 		var refs = new DynamicAccess();
 		var schema = genSchema(Context.getType(type.toString()), type.pos, null, refs);
-		Reflect.setField(schema, "$schema", "http://json-schema.org/draft-04/schema#");
+		Reflect.setField(schema, "__dollar__schema", "http://json-schema.org/draft-04/schema#");
 		schema.definitions = refs;
 		return macro $v{schema};
 	}
@@ -40,7 +40,7 @@ class JsonSchemaBuilder {
                             var schema = genSchema(dt.type.applyTypeParameters(dt.params, params), dt.pos, {name: dt.name, doc: dt.doc}, refs);
                             refs[dt.name] = schema;
                         }
-                        return {"$ref": '#/definitions/${dt.name}'};
+                        return {"__dollar__ref": '#/definitions/${dt.name}'};
                 }
 
             case TInst(_.get() => cl, params):

@@ -65,6 +65,7 @@ class ProjectRunner {
 			var schema = JsonSchemaBuilder.generate(MakeConfigSchema);
 			var libPath = Haxelib.libPath("hxmake");
 			var schemaString = haxe.Json.stringify(schema, "  ");
+			schemaString = StringTools.replace(schemaString, "__dollar__", "$");
 			sys.io.File.saveContent(Path.join([libPath, "hxmake.schema.json"]), schemaString);
 			sys.io.File.saveContent(Path.join([modules[0].path, "hxmake.schema.json"]), schemaString);
 
