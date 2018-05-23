@@ -9,19 +9,18 @@ class HaxelibSubmitTask extends Task {
 	}
 
 	override public function run() {
-		var ext:HaxelibExt = module.get("haxelib", HaxelibExt);
+		var ext:HaxelibConfig = module.getExtConfig("haxelib");
 
 		if (ext == null || !module.isActive) {
 			return;
 		}
 
-		var config = ext.config;
-		if (config.license == null || config.license.length == 0) {
+		if (ext.license == null || ext.license.length == 0) {
 			project.logger.info('Haxelib: missing license value');
 			return;
 		}
 
-		if (config.releasenote == null || config.releasenote.length == 0) {
+		if (ext.releasenote == null || ext.releasenote.length == 0) {
 			project.logger.info('Haxelib: missing releasenote value');
 			return;
 		}

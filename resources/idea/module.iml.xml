@@ -9,17 +9,24 @@
     </component>
     <component name="NewModuleRootManager" inherit-compiler-output="true">
         <exclude-output/>
-        <content url="file://$MODULE_DIR$/">
+        <content url="file://::moduleDir::/">
 ::foreach sourceDirs::
-            <sourceFolder url="file://$MODULE_DIR$/::__current__::" isTestSource="false"/>
+            <sourceFolder url="file://::moduleDir::/::__current__::" isTestSource="false"/>
 ::end::
 ::foreach testDirs::
-            <sourceFolder url="file://$MODULE_DIR$/::__current__::" isTestSource="true"/>
+            <sourceFolder url="file://::moduleDir::/::__current__::" isTestSource="true"/>
 ::end::
-            <excludeFolder url="file://$MODULE_DIR$/build"/>
-            <excludeFolder url="file://$MODULE_DIR$/.gradle"/>
-            <excludeFolder url="file://$MODULE_DIR$/bin"/>
-            <excludeFolder url="file://$MODULE_DIR$/export"/>
+::foreach testResDirs::
+            <sourceFolder url="file://::moduleDir::/::__current__::" type="java-test-resource"/>
+::end::
+::foreach resDirs::
+            <sourceFolder url="file://::moduleDir::/::__current__::" type="java-resource"/>
+::end::
+
+            <excludeFolder url="file://::moduleDir::/build"/>
+            <excludeFolder url="file://::moduleDir::/.gradle"/>
+            <excludeFolder url="file://::moduleDir::/bin"/>
+            <excludeFolder url="file://::moduleDir::/export"/>
         </content>
         <orderEntry type="sourceFolder" forTests="false"/>
         <orderEntry type="jdk" jdkName="::haxeSdkName::" jdkType="Haxe toolkit" />

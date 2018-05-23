@@ -22,6 +22,7 @@ class IdeaContext {
 	public var sdkList:Array<IdeaSdkData> = [];
 
 	public var iml(default, null):Template;
+	public var xmlJsonSchemas(default, null):Template;
 	public var xmlModules(default, null):Template;
 	public var xmlMisc(default, null):Template;
 	public var xmlHaxe(default, null):Template;
@@ -34,6 +35,7 @@ class IdeaContext {
 
 		var hxmakePath = Haxelib.libPath("hxmake");
 		iml = createTemplate(hxmakePath, "idea/module.iml.xml");
+		xmlJsonSchemas = createTemplate(hxmakePath, "idea/jsonSchemas.xml");
 		xmlModules = createTemplate(hxmakePath, "idea/modules.xml");
 		xmlHaxe = createTemplate(hxmakePath, "idea/haxe.xml");
 		xmlRunConfig = createTemplate(hxmakePath, "idea/runConfiguration.xml");

@@ -15,10 +15,6 @@ class Printer {
 		_logger = logger;
 	}
 
-	public function printCompilerMode(isCompiler:Bool, level:LogLevel = LogLevel.TRACE) {
-		if (isCompiler) _logger.print("Running in Compiler mode", level);
-	}
-
 	public function printArguments(arguments:Arguments, level:LogLevel = LogLevel.TRACE) {
 		var map = arguments.propertyMap;
 		var keys = [for (key in map.keys()) key];

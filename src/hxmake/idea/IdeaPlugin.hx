@@ -1,14 +1,19 @@
 package hxmake.idea;
 
+import haxe.DynamicAccess;
+
 class IdeaPlugin extends Plugin {
 
 	function new() {}
 
 	override function apply(module:Module) {
-		module.set("idea", new IdeaData());
 		// if module is root
-		if(module.parent == null) {
+		if (module.parent == null) {
 			module.task("idea", new IdeaProjectTask()).dependsOn("haxelib");
 		}
+	}
+
+	public static function applyIdea(module:Module) {
+		@:privateAccess module.apply(IdeaPlugin);
 	}
 }

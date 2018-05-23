@@ -1,0 +1,68 @@
+{
+  "makeplugin": {
+    "src": [
+      "src"
+    ]
+  },
+  "root": false,
+  "config": {
+    "classPath": [
+      "src",
+      "tool"
+    ],
+    "testPath": [
+      "test"
+    ],
+    "devDependencies": {
+      "utest": "haxelib"
+    }
+  },
+  "utest": {
+    "targets": [
+      "neko"
+    ],
+    "libraries": [
+      "hxmake"
+    ]
+  },
+  "idea": {
+    "testResources": [
+      "testData"
+    ],
+    "resources": [
+      "resources"
+    ]
+  },
+  "haxelib": {
+    "library": true,
+    "version": "0.2.4",
+    "description": "Task automation for Haxe multi-module projects",
+    "url": "https://github.com/eliasku/hxmake",
+    "tags": [
+      "haxe",
+      "make",
+      "build",
+      "haxelib",
+      "tools",
+      "neko",
+      "project",
+      "module",
+      "cross"
+    ],
+    "contributors": [
+      "eliasku"
+    ],
+    "license": "MIT",
+    "releasenote": "see changelog",
+    "packageInclude": [
+      "src",
+      "resources",
+      "tool",
+      "build.hxml",
+      "haxelib.json",
+      "run.n",
+      "README.md",
+      "CHANGELOG.md"
+    ]
+  }
+}

@@ -1,6 +1,7 @@
 package hxmake.haxelib;
 
 import haxe.Json;
+
 class HaxelibInfo {
     public var name:String;
     public var vcsInfo:VcsInfo;

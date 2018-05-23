@@ -2,6 +2,7 @@ package hxmake.haxelib;
 
 import haxe.io.Path;
 import haxe.Json;
+import hxmake.haxelib.HaxelibPlugin;
 import hxmake.utils.Haxelib;
 import sys.io.File;
 
@@ -14,30 +15,73 @@ class HaxelibTask extends Task {
 	}
 
 	override public function run() {
-		var ext:HaxelibExt = module.get("haxelib", HaxelibExt);
+		var ext:HaxelibConfig = module.getExtConfig("haxelib");
 
 		if (ext.updateJson) {
-			saveHaxelibJson(ext.config);
+			saveHaxelibJson(ext);
 		}
 
 		if (ext.installDev) {
-			if (ext.config.name == null) {
-				ext.config.name = module.name;
-			}
-			Haxelib.dev(ext.config.name, module.path);
+			Haxelib.dev(getName(ext), module.path);
 		}
 	}
 
-	function saveHaxelibJson(config:LibraryConfig) {
-		validateDependencies(config);
-		var json:Dynamic = Json.stringify(config.toDynamic(), null, '\t');
+	function saveHaxelibJson(config:HaxelibConfig) {
+		validateDependencies();
+		var jsonData = genHaxelibJson(config);
+		var json:String = Json.stringify(jsonData, null, '\t');
 		var path:String = Path.join([module.path, "haxelib.json"]);
 		project.logger.info('Writing $path ...');
 		File.saveContent(path, json);
 	}
 
-	function validateDependencies(config:LibraryConfig):Void {
-		var dependencies:Map<String, String> = config.dependencies;
+	function getName(config:HaxelibConfig) {
+		return config.name != null ? config.name : module.name;
+	}
+
+	function genHaxelibJson(config:HaxelibConfig):Dynamic {
+		var data:Dynamic = {
+			name: getName(config),
+			description: config.description,
+			version: config.version
+		};
+
+		if (config.contributors != null && config.contributors.length > 0) {
+			data.contributors = config.contributors;
+		}
+
+		if (config.license != null) {
+			data.license = config.license;
+		}
+
+		if (config.url != null) {
+			data.url = config.url;
+		}
+
+		if (config.tags != null && config.tags.length > 0) {
+			data.tags = config.tags;
+		}
+
+		if (config.releasenote != null) {
+			data.releasenote = config.releasenote;
+		}
+
+		var cp = module.config.classPath;
+		if (cp != null && cp.length > 0) {
+			data.classPath = cp[0];
+		}
+
+		var deps = module.config.dependencies;
+		for (k in deps.keys()) {
+			data.dependencies = deps;
+			break;
+		}
+
+		return data;
+	}
+
+	function validateDependencies():Void {
+		var dependencies:Map<String, String> = HaxelibPlugin.readDependencies(module);
 
 		if (dependencies == null) {
 			return;

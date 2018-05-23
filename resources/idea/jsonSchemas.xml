@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="JsonSchemaMappingsProjectConfiguration">
+    <state>
+      <map>
+        <entry key="hxmake.json">
+          <value>
+            <SchemaInfo>
+              <option name="name" value="hxmake.json" />
+              <option name="relativePathToSchema" value="hxmake.schema.json" />
+              <option name="patterns">
+                <list>
+                  <Item>
+                    <option name="path" value="hxmake.json" />
+                    <option name="pattern" value="true" />
+                  </Item>
+                </list>
+              </option>
+            </SchemaInfo>
+          </value>
+        </entry>
+      </map>
+    </state>
+  </component>
+</project>

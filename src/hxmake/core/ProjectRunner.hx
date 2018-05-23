@@ -1,7 +1,15 @@
 package hxmake.core;
 
+import haxe.io.Path;
 import haxe.Timer;
 import hxmake.cli.logging.Logger;
+import hxmake.haxelib.HaxelibConfig;
+import hxmake.idea.IdeaData;
+import hxmake.json.JsonSchemaBuilder;
+import hxmake.structure.PackageData;
+import hxmake.structure.StructureBuilder;
+import hxmake.test.UTestConfig;
+import hxmake.utils.Haxelib;
 
 /***
 
@@ -28,12 +36,21 @@ import hxmake.cli.logging.Logger;
 
 **/
 
+typedef MakeConfigSchema = {
+> PackageData,
+	@:optional var idea:IdeaData;
+	@:optional var config:ModuleConfig;
+	@:optional var haxelib:HaxelibConfig;
+	@:optional var utest:UTestConfig;
+};
+
 @:final
 class ProjectRunner {
 	@:access(hxmake)
-	static function runFromInitMacro(args:Array<String>, isCompiler:Bool, modules:Array<Module>, workingDir:String, sysArgs:Array<String>, logger:Logger) {
+	static function runFromInitMacro(args:Array<String>, workingDir:String, sysArgs:Array<String>, logger:Logger) {
 		var totalTime = measure(function() {
-			var arguments = new Arguments(isCompiler ? args : args.concat(sysArgs));
+			var arguments = new Arguments(args.concat(sysArgs));
+			var modules = scan(workingDir);
 
 			logger.setupFilter(
 				arguments.hasProperty(MakeArgument.SILENT),
@@ -42,14 +59,61 @@ class ProjectRunner {
 
 			// print input information
 			var printer = new Printer(logger);
-			printer.printCompilerMode(isCompiler);
 			printer.printArguments(arguments);
 			printer.printModules(modules);
+
+			var schema = JsonSchemaBuilder.generate(MakeConfigSchema);
+			var libPath = Haxelib.libPath("hxmake");
+			var schemaString = haxe.Json.stringify(schema, "  ");
+			sys.io.File.saveContent(Path.join([libPath, "hxmake.schema.json"]), schemaString);
+			sys.io.File.saveContent(Path.join([modules[0].path, "hxmake.schema.json"]), schemaString);
 
 			runProject(new Project(modules, arguments, workingDir, logger));
 		});
 		logger.info('Make time: $totalTime sec.');
 		Sys.exit(0);
+	}
+
+	@:access(hxmake.core.BuiltInModule)
+	static public function scan(path:String) {
+		var sb = new StructureBuilder(path);
+		var modules = [];
+		visitStructure(sb.root, modules);
+		var bim = new BuiltInModule();
+		bim.path = path;
+		bim.packageData = StructureBuilder.initPackage(path, {});
+		modules.push(bim);
+		return modules;
+	}
+
+	@:access(hxmake.Module)
+	static function visitStructure(pack:PackageData, modules:Array<Module>):Module {
+		var module = createModule(pack);
+		if (module != null) {
+			modules.push(module);
+		}
+		if (pack._children != null) {
+			for (childNode in pack._children) {
+				var child = visitStructure(childNode, modules);
+				if (child != null && module != null) {
+					module._children.push(child);
+					child.parent = module;
+				}
+			}
+		}
+		return module;
+	}
+
+	@:access(hxmake.Module)
+	static function createModule(pack:PackageData):Module {
+		if (pack.name != null) {
+			var module = new Module();
+			module.path = pack.path;
+			module.name = pack.name;
+			module.packageData = pack;
+			return module;
+		}
+		return null;
 	}
 
 	static function runProject(project:Project) {

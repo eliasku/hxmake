@@ -10,9 +10,6 @@ package hxmake.core;
 	// Enables compile-time logging from `CompileTime.log`
 	var MAKE_COMPILER_LOG = "--make-compiler-log";
 
-	// Run make in haxe compiler-mode `--interp` (EXPEREMENTAL)
-	var MAKE_COMPILER_MODE = "--make-compiler-mode";
-
 	// Show Haxe compiler time statistics, adds `--times -D macro-times`
 	var MAKE_COMPILER_TIME = "--make-compiler-time";
 

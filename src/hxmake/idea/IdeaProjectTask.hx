@@ -15,13 +15,21 @@ class IdeaProjectTask extends Task {
 	var _modules:Array<Module>;
 	var _rootModule:Module;
 	var _depCache:Map<String, IdeaLibraryInfo> = new Map();
+	var _hideIml:Bool;
 
 	public function new() {}
 
 	override public function run() {
+		var rootIdeaData:IdeaData = module.getExtConfig("idea");
+		_hideIml = rootIdeaData != null && rootIdeaData.hideIml;
+
 		_idea = new IdeaContext();
 		_modules = module.getSubModules(true, false);
 		_rootModule = module;
+
+		FileUtil.ensureDirectory(_rootModule.path, ".idea");
+		FileUtil.ensureDirectory(_rootModule.path, ".idea/modules");
+
 		for (mod in _modules) {
 			createModule(mod);
 		}
@@ -32,7 +40,7 @@ class IdeaProjectTask extends Task {
 
 	function createModule(module:Module) {
 
-		var ideaData:IdeaData = module.get("idea", IdeaData);
+		var ideaData:IdeaData = module.getExtConfig("idea");
 		if (ideaData == null) {
 			return;
 		}
@@ -40,28 +48,54 @@ class IdeaProjectTask extends Task {
 		var modules = getModules(module);
 		var libraries = getExternalLibraries(module);
 
-		var testPath = module.config.testPath.concat(module.config.makePath);
-		if (FileUtil.dirExists(Path.join([module.path, "makeplugin"]))) {
-			testPath.push("makeplugin");
+		var classPath = module.config.classPath;
+		if (classPath == null) {
+			classPath = [];
 		}
 
-		var context = {
+		var testPath = [];
+		if (module.config.testPath != null) testPath = testPath.concat(module.config.testPath);
+		if (module.config.makePath != null) testPath = testPath.concat(module.config.makePath);
+		if (module.packageData.makeplugin != null && module.packageData.makeplugin.src != null) {
+			for (mpsrc in module.packageData.makeplugin.src) {
+				if (classPath.indexOf(mpsrc) < 0 && FileUtil.dirExists(Path.join([module.path, mpsrc]))) {
+					testPath.push(mpsrc);
+				}
+			}
+		}
+
+		var context:IdeaTemplateContext = {
 			moduleName: module.name,
 			moduleDependencies: modules,
 			moduleLibraries: libraries,
-			sourceDirs: module.config.classPath,
+			sourceDirs: classPath,
 			testDirs: testPath,
+			testResDirs: [],
+			resDirs: [],
 			flexSdkName: getFlexSDKName(),
 			haxeSdkName: getHaxeSDKName(),
 			buildConfig: 1,
 			projectPath: "",
 			projectTarget: "",
+			moduleDir: "$MODULE_DIR$",
 			skipCompilation: true
 		};
 
+		if(_hideIml) {
+			context.moduleDir = module.path;
+		}
+
+		if (ideaData.resources != null) {
+			context.resDirs = ideaData.resources;
+		}
+
+		if (ideaData.testResources != null) {
+			context.testResDirs = ideaData.testResources;
+		}
+
 		if (ideaData.hxml != null) {
 			var buildHxml = ideaData.hxml;
-			var p = Path.join(["$MODULE_DIR$", buildHxml]);
+			var p = Path.join([context.moduleDir, buildHxml]);
 			var t = "Flash";
 			context.buildConfig = 1;
 			context.skipCompilation = false;
@@ -70,7 +104,7 @@ class IdeaProjectTask extends Task {
 		}
 		else if (ideaData.lime != null) {
 			var limeProjectPath = ideaData.lime;
-			var p = Path.join(["$MODULE_DIR$", limeProjectPath]);
+			var p = Path.join([context.moduleDir, limeProjectPath]);
 			var t = "Flash";
 			context.buildConfig = 3;
 			context.projectPath = '<option name="openFLPath" value="$p" />';
@@ -80,7 +114,12 @@ class IdeaProjectTask extends Task {
 		var iml = _idea.iml.execute(context);
 		project.logger.info("Writing " + module.name + ".iml");
 		FileUtil.deleteFiles(module.path, "*.iml");
-		File.saveContent(Path.join([module.path, '${module.name}.iml']), iml);
+		if(_hideIml) {
+			File.saveContent(Path.join([this.module.path, '.idea/modules/${module.name}.iml']), iml);
+		}
+		else {
+			File.saveContent(Path.join([module.path, '${module.name}.iml']), iml);
+		}
 	}
 
 	function getHaxeSDKName():String {
@@ -94,13 +133,16 @@ class IdeaProjectTask extends Task {
 	function createProject(path:String) {
 		project.logger.info("SETUP IDEA PROJECT...");
 
+		var rootIdeaData:IdeaData = module.getExtConfig("idea");
+		var hideIml = rootIdeaData != null && rootIdeaData.hideIml;
+
 		var context = {
 			modules: [],
 			haxeSdkName: getHaxeSDKName()
 		};
 
 		for (module in _modules) {
-			var ideaData:IdeaData = module.get("idea", IdeaData);
+			var ideaData:IdeaData = module.getExtConfig("idea");
 			if (ideaData == null) {
 				continue;
 			}
@@ -110,6 +152,9 @@ class IdeaProjectTask extends Task {
 				path: '$modulePath/${module.name}.iml',
 				groupAddon: ""
 			};
+			if(hideIml) {
+				moduleData.path = '.idea/modules/${module.name}.iml';
+			}
 			context.modules.push(moduleData);
 			if (ideaData.group != null) {
 				moduleData.groupAddon = ' group="${ideaData.group}" ';
@@ -129,6 +174,9 @@ class IdeaProjectTask extends Task {
 			File.saveContent(workspaceXmlPath, '<?xml version="1.0" encoding="UTF-8"?>\n<project version="4">\n</project>');
 		}
 
+		var jsonSchema = Path.join([dotIdeaPath, "jsonSchemas.xml"]);
+		File.saveContent(jsonSchema, _idea.xmlJsonSchemas.execute(context));
+
 		var modulesXmlPath = Path.join([dotIdeaPath, "modules.xml"]);
 		File.saveContent(modulesXmlPath, _idea.xmlModules.execute(context));
 
@@ -145,8 +193,8 @@ class IdeaProjectTask extends Task {
 		}
 
 		for (module in _modules) {
-			var ideaData:IdeaData = module.get("idea", IdeaData);
-			if (ideaData != null) {
+			var ideaData:IdeaData = module.getExtConfig("idea");
+			if (ideaData != null && ideaData.run != null) {
 				for (run in ideaData.run) {
 					var name = module.name;
 					var context = {
@@ -164,13 +212,13 @@ class IdeaProjectTask extends Task {
 
 	function isModule(libraryName:String):Bool {
 		return Lambda.exists(_modules, function(m:Module) {
-			return m.name == libraryName && m.get("idea", IdeaData) != null;
+			return m.name == libraryName && m.getExtConfig("idea") != null;
 		});
 	}
 
 	function getModules(module:Module):Array<String> {
 		var modules:Array<String> = [];
-		var deps = module.config.getAllDependencies();
+		var deps = Module.getAllDependenciesFromConfig(module.config);
 		for (dependencyId in deps.keys()) {
 			if (isModule(dependencyId)) {
 				modules.push(dependencyId);
@@ -181,7 +229,7 @@ class IdeaProjectTask extends Task {
 
 	function getExternalLibraries(module:Module):Array<IdeaLibraryInfo> {
 		var libraries:Array<IdeaLibraryInfo> = [];
-		var deps = module.config.getAllDependencies();
+		var deps = Module.getAllDependenciesFromConfig(module.config);
 		for (dependencyId in deps.keys()) {
 			var libraryInfo:IdeaLibraryInfo = _depCache.get(dependencyId);
 			if (libraryInfo == null) {

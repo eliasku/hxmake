@@ -7,20 +7,9 @@ import haxe.macro.Context;
 @:final
 class MacroHelper {
 #if macro
-	public static function loadFileAsString(path:String) {
-		try {
-			var p = Context.resolvePath(path);
-			Context.registerModuleDependency(Context.getLocalModule(), p);
-			return sys.io.File.getContent(p);
-		}
-		catch(e:Dynamic) {
-			return haxe.macro.Context.error('Failed to load file $path: $e', Context.currentPos());
-		}
-	}
-
-	public static function toExpr(v:Dynamic) {
-		return Context.makeExpr(v, Context.currentPos());
-	}
+//	public static function toExpr(v:Dynamic) {
+//		return Context.makeExpr(v, Context.currentPos());
+//	}
 
 	public static function makeInitField(expr:Expr, pos:Position):Field {
 		return {

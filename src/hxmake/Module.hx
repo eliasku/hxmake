@@ -1,13 +1,16 @@
 package hxmake;
 
+import haxe.DynamicAccess;
 import hxmake.cli.FileUtil;
+import hxmake.structure.PackageData;
 
-@:autoBuild(hxmake.macr.ModuleMacro.build())
 class Module {
 	/**
 		Shared "project" context between modules.
 	**/
 	public var project(default, null):Project;
+
+	public var packageData(default, null):PackageData;
 
 	/**
 		Root module
@@ -38,10 +41,11 @@ class Module {
 	var _children:Array<Module> = [];
 	var _tasks:Map<String, Task> = new Map();
 	var _plugins:Array<Plugin> = [];
-	var _data:Map<String, Dynamic> = ["config" => new ModuleConfig()];
 
-	function __initialize() {
-		// Constuctor will be moved here
+	function new() {}
+
+	function initialize() {
+		// initialize phase
 	}
 
 	function configure() {
@@ -69,13 +73,17 @@ class Module {
 		return _tasks.get(name);
 	}
 
-	public function set<T>(name:String, data:T):T {
-		_data.set(name, data);
-		return data;
+	public function getExtConfig<T>(name:String):T {
+		return (cast packageData:DynamicAccess<T>).get(name);
 	}
 
-	public function get<T>(name:String, cls:Class<T>):Null<T> {
-		return Std.instance(_data.get(name), cls);
+	public function requireOptionalExtConfig<T>(name:String):T {
+		var ext = getExtConfig(name);
+		if (ext == null) {
+			ext = {};
+			(cast packageData:DynamicAccess<Dynamic>).set(name, ext);
+		}
+		return cast ext;
 	}
 
 	function get_root():Module {
@@ -87,7 +95,7 @@ class Module {
 	}
 
 	inline function get_config():ModuleConfig {
-		return cast _data.get("config");
+		return getExtConfig("config");
 	}
 
 	// TODO: bool arguments to int-flags?
@@ -106,7 +114,7 @@ class Module {
 		}
 
 		if (includeDependecies) {
-			var dependencyMap = config.getAllDependencies();
+			var dependencyMap = getAllDependenciesFromConfig(config);
 			for (dependency in dependencyMap.keys()) {
 				var module = project.findModuleByName(dependency);
 				if (module != null && result.indexOf(module) < 0) {
@@ -118,19 +126,25 @@ class Module {
 		return result;
 	}
 
+	public static function getAllDependenciesFromConfig(config:ModuleConfig):Map<String, String> {
+		var deps = new Map<String, String>();
+		if (config.devDependencies != null) {
+			for (name in config.devDependencies.keys()) {
+				deps[name] = config.devDependencies[name];
+			}
+		}
+		if (config.dependencies != null) {
+			for (name in config.dependencies.keys()) {
+				deps[name] = config.dependencies[name];
+			}
+		}
+		return deps;
+	}
+
 	function apply<T:Plugin>(plugin:Class<T>):T {
 		var pluginInstance:T = cast Type.createInstance(plugin, []);
 		@:privateAccess pluginInstance.apply(this);
 		return pluginInstance;
-	}
-
-	public function update<T>(id:String, closure:T -> Void):Module {
-		var data:T = cast _data.get(id);
-		if (data == null) {
-			throw 'Data slot "$id" is not found';
-		}
-		closure(data);
-		return this;
 	}
 
 	function get_children():Array<Module> {

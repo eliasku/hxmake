@@ -2,7 +2,9 @@ package hxmake.tests.utils;
 
 class StubModule extends Module {
 
-	public function new() {}
+	public function new() {
+		super();
+	}
 
 	@:access(hxmake.Module)
 	public static function create(path:String, name:String):Module {

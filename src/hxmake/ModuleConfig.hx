@@ -1,10 +1,12 @@
 package hxmake;
 
-class ModuleConfig {
+import haxe.DynamicAccess;
 
-	public var classPath:Array<String> = [];
-	public var testPath:Array<String> = [];
-	public var makePath:Array<String> = [];
+typedef ModuleConfig = {
+
+	@:optional var classPath:Array<String>;
+	@:optional var testPath:Array<String>;
+	@:optional var makePath:Array<String>;
 
 	/**
 	 * Depedencies map.
@@ -16,19 +18,6 @@ class ModuleConfig {
 	 * // TODO: Please remove warning once this haxelib start support this.
 	 * @warning Please be care as generated haxelib.json doesn't support Mercurial repositories and Sub directories and Versions for git repo
 	 **/
-	public var dependencies:Map<String, String> = new Map();
-	public var devDependencies:Map<String, String> = new Map();
-
-	public function new() {}
-
-	public function getAllDependencies():Map<String, String> {
-		var deps = new Map<String, String>();
-		for (name in devDependencies.keys()) {
-			deps[name] = devDependencies[name];
-		}
-		for (name in dependencies.keys()) {
-			deps[name] = dependencies[name];
-		}
-		return deps;
-	}
+	@:optional var dependencies:DynamicAccess<String>;
+	@:optional var devDependencies:DynamicAccess<String>;
 }

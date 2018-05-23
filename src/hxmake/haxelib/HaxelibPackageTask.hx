@@ -15,15 +15,25 @@ class HaxelibPackageTask extends Task {
 	}
 
 	override public function run() {
-		var ext:Null<HaxelibExt> = module.get("haxelib", HaxelibExt);
+		var ext:HaxelibConfig = module.getExtConfig("haxelib");
 
 		if (ext != null && module.isActive) {
 			packageFiles(ext);
 		}
 	}
 
-	function packageFiles(ext:HaxelibExt) {
-		var files = FileUtil.getFilesRecursiveFromArray(ext.pack.includes, ext.pack.filters);
+	public static var HIDDEN_FILES(default, null):EReg = ~/\.(svn)|(git)|(DS_Store)|(tmbuild)/;
+
+	function packageFiles(ext:HaxelibConfig) {
+
+		var ignoreFilters = [HIDDEN_FILES];
+		if (ext.packageFilter != null) {
+			for (filterString in ext.packageFilter) {
+				ignoreFilters.push(new EReg(filterString, ""));
+			}
+		}
+
+		var files = FileUtil.getFilesRecursiveFromArray(ext.packageInclude, ignoreFilters);
 		var zipEntries = getZipEntries(files);
 		var zipName = module.name + ".zip";
 		var zip = File.write(zipName, true);

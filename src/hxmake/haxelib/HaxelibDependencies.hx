@@ -25,7 +25,7 @@ class HaxelibDependencies extends Task {
 	function collectHaxelibDependencies(modules:Array<Module>):Map<String, HaxelibInfo> {
 		var dependencies:Map<String, HaxelibInfo> = new Map();
 		for (module in modules) {
-			var moduleDependencies:Map<String, String> = module.config.getAllDependencies();
+			var moduleDependencies:Map<String, String> = Module.getAllDependenciesFromConfig(module.config);
 			for (library in moduleDependencies.keys()) {
 				var sections:Array<String> = moduleDependencies[library].split(";");
 				var libraryInfo:HaxelibInfo = extractHaxelibInformation(library, sections, module.name);

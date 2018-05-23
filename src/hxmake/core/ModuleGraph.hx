@@ -1,5 +1,9 @@
 package hxmake.core;
 
+import hxmake.haxelib.HaxelibPlugin;
+import hxmake.idea.IdeaPlugin;
+import hxmake.test.UTestPlugin;
+
 @:final
 @:access(hxmake.Module)
 class ModuleGraph {
@@ -12,7 +16,21 @@ class ModuleGraph {
 
 	public function initialize() {
 		for (module in _modules) {
-			module.__initialize();
+			module.initialize();
+			if (module.packageData.init != null) {
+				var initList = module.packageData.init;
+				for (initClass in initList) {
+					Type.createInstance(Type.resolveClass(initClass), [module]);
+				}
+			}
+			var taskMap = module.packageData.tasks;
+			if (taskMap != null) {
+				for (taskName in taskMap.keys()) {
+					var taskClass = taskMap.get(taskName);
+					var task = Type.createInstance(Type.resolveClass(taskClass), []);
+					module.task(taskName, task);
+				}
+			}
 			initializeBuiltIn(module);
 		}
 	}
@@ -32,12 +50,34 @@ class ModuleGraph {
 	static function initializeBuiltIn(module:Module) {
 		// apply default initialization
 		// TODO: move to internal plugin
-		if (module.config.makePath.indexOf("make") < 0) {
-			module.config.makePath.push("make");
+		var config:ModuleConfig = module.requireOptionalExtConfig("config");
+
+		// TODO: ddefault script path with check
+//		if (config.makePath == null) {
+//			config.makePath = [];
+//		} && config.makePath.indexOf("make") < 0) {
+//			module.config.makePath.push("make");
+//		}
+
+		if (module.name != "hxmake") {
+			if (config.devDependencies == null) {
+				config.devDependencies = {};
+			}
+			if (!config.devDependencies.exists("hxmake")) {
+				config.devDependencies.set("hxmake", "haxelib;global");
+			}
 		}
 
-		if (module.name != "hxmake" && module.config.devDependencies.get("hxmake") == null) {
-			module.config.devDependencies.set("hxmake", "haxelib;global");
+		if (module.getExtConfig("haxelib") != null) {
+			HaxelibPlugin.applyHaxelib(module);
+		}
+
+		if (module.getExtConfig("idea") != null) {
+			IdeaPlugin.applyIdea(module);
+		}
+
+		if (module.getExtConfig("utest") != null) {
+			UTestPlugin.apply(module);
 		}
 	}
 }

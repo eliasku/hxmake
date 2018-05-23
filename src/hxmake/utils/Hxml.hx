@@ -15,6 +15,7 @@ class Hxml {
     public var defines:Array<String> = [];
     public var macros:Array<String> = [];
     public var commands:Array<String> = [];
+    public var resources:Map<String, String> = new Map();
 
     public var flags:Array<String> = [];
     public var flagArguments:Array<String> = [];

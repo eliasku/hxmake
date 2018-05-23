@@ -10,9 +10,9 @@ import hxmake.tasks.ListTask;
 	it's required to run default tasks in any folder,
 	even where make modules are not defined
 **/
-@:root
 class BuiltInModule extends Module {
 	function new() {
+		super();
 		// TODO: better naming
 		name = "__internal";
 		task("_", new InstallTask());

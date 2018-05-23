@@ -1,10 +1,6 @@
 package hxmake.idea;
 
-class IdeaRunData {
-
-	public var type:String;
-	public var file:String;
-
-	public function new() {}
-
+typedef IdeaRunData = {
+	@:optional var type:String;
+	@:optional var file:String;
 }

@@ -1,0 +1,385 @@
+{
+  "$ref": "#/definitions/MakeConfigSchema",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "definitions": {
+    "MakePluginInfo": {
+      "type": "object",
+      "properties": {
+        "lib": {
+          "type": "object",
+          "propertyOrder": 1,
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "src": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "propertyOrder": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "IdeaRunData": {
+      "type": "object",
+      "properties": {
+        "file": {
+          "type": "string",
+          "propertyOrder": 1
+        },
+        "type": {
+          "type": "string",
+          "propertyOrder": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "PackageData": {
+      "type": "object",
+      "properties": {
+        "init": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "List of initialize classes",
+          "propertyOrder": 8
+        },
+        "name": {
+          "type": "string",
+          "propertyOrder": 0
+        },
+        "path": {
+          "type": "string",
+          "propertyOrder": 1
+        },
+        "root": {
+          "type": "boolean",
+          "propertyOrder": 2
+        },
+        "include": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "propertyOrder": 3
+        },
+        "_parent": {
+          "propertyOrder": 9,
+          "$ref": "#/definitions/PackageData"
+        },
+        "makeplugin": {
+          "propertyOrder": 6,
+          "$ref": "#/definitions/MakePluginInfo"
+        },
+        "external": {
+          "items": {
+            "$ref": "#/definitions/PackageData"
+          },
+          "type": "array",
+          "propertyOrder": 5
+        },
+        "tasks": {
+          "type": "object",
+          "description": "Add tasks to module",
+          "propertyOrder": 7,
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "libraries": {
+          "type": "object",
+          "propertyOrder": 4,
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "_children": {
+          "items": {
+            "$ref": "#/definitions/PackageData"
+          },
+          "type": "array",
+          "propertyOrder": 10
+        }
+      },
+      "additionalProperties": false
+    },
+    "IdeaData": {
+      "type": "object",
+      "properties": {
+        "hxml": {
+          "type": "string",
+          "propertyOrder": 3
+        },
+        "lime": {
+          "type": "string",
+          "propertyOrder": 2
+        },
+        "testResources": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "propertyOrder": 5
+        },
+        "run": {
+          "items": {
+            "$ref": "#/definitions/IdeaRunData"
+          },
+          "type": "array",
+          "propertyOrder": 4
+        },
+        "group": {
+          "type": "string",
+          "propertyOrder": 1
+        },
+        "hideIml": {
+          "type": "boolean",
+          "propertyOrder": 0
+        },
+        "resources": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "propertyOrder": 6
+        }
+      },
+      "additionalProperties": false
+    },
+    "UTestConfig": {
+      "type": "object",
+      "properties": {
+        "debug": {
+          "type": "boolean",
+          "propertyOrder": 0
+        },
+        "targets": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "propertyOrder": 1
+        },
+        "libraries": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "propertyOrder": 2
+        },
+        "defines": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "propertyOrder": 3
+        }
+      },
+      "additionalProperties": false
+    },
+    "MakeConfigSchema": {
+      "type": "object",
+      "description": "*\n\n 1. COMPILE-TIME PHASE\n \t-  Pluigns and modules are collected and code generated\n\n 2. CONSTRUCTION PHASE\n  \t- Global make-project context is constructed\n\t- Set project context to each module\n \t- Build modules tree\n \t- Determine project's roots\n\n 3. CONFIGURATION PHASE:\n \t- Modules are initializing (plugins are applying as well)\n\n 4. RESOLVING PHASE:\n\t- Task order resolving\n\n 5. EXECUTION PHASE\n\t- Running\n\n 6. FINALIZATION PHASE\n\t- Modules finish()",
+      "properties": {
+        "idea": {
+          "propertyOrder": 11,
+          "$ref": "#/definitions/IdeaData"
+        },
+        "init": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "List of initialize classes",
+          "propertyOrder": 8
+        },
+        "config": {
+          "propertyOrder": 12,
+          "$ref": "#/definitions/ModuleConfig"
+        },
+        "name": {
+          "type": "string",
+          "propertyOrder": 0
+        },
+        "path": {
+          "type": "string",
+          "propertyOrder": 1
+        },
+        "root": {
+          "type": "boolean",
+          "propertyOrder": 2
+        },
+        "include": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "propertyOrder": 3
+        },
+        "_parent": {
+          "propertyOrder": 9,
+          "$ref": "#/definitions/PackageData"
+        },
+        "makeplugin": {
+          "propertyOrder": 6,
+          "$ref": "#/definitions/MakePluginInfo"
+        },
+        "external": {
+          "items": {
+            "$ref": "#/definitions/PackageData"
+          },
+          "type": "array",
+          "propertyOrder": 5
+        },
+        "haxelib": {
+          "propertyOrder": 13,
+          "$ref": "#/definitions/HaxelibConfig"
+        },
+        "tasks": {
+          "type": "object",
+          "description": "Add tasks to module",
+          "propertyOrder": 7,
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "libraries": {
+          "type": "object",
+          "propertyOrder": 4,
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "utest": {
+          "propertyOrder": 14,
+          "$ref": "#/definitions/UTestConfig"
+        },
+        "_children": {
+          "items": {
+            "$ref": "#/definitions/PackageData"
+          },
+          "type": "array",
+          "propertyOrder": 10
+        }
+      },
+      "additionalProperties": false
+    },
+    "HaxelibConfig": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "propertyOrder": 0
+        },
+        "license": {
+          "type": "string",
+          "propertyOrder": 5
+        },
+        "installDev": {
+          "type": "boolean",
+          "propertyOrder": 10
+        },
+        "tags": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "propertyOrder": 7
+        },
+        "packageInclude": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "propertyOrder": 12
+        },
+        "description": {
+          "type": "string",
+          "propertyOrder": 1
+        },
+        "contributors": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "propertyOrder": 4
+        },
+        "releasenote": {
+          "type": "string",
+          "propertyOrder": 3
+        },
+        "version": {
+          "type": "string",
+          "propertyOrder": 2
+        },
+        "updateJson": {
+          "type": "boolean",
+          "propertyOrder": 9
+        },
+        "url": {
+          "type": "string",
+          "propertyOrder": 6
+        },
+        "packageFilter": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "description": "packaging config",
+          "propertyOrder": 11
+        },
+        "library": {
+          "type": "boolean",
+          "description": "plugin options",
+          "propertyOrder": 8
+        }
+      },
+      "additionalProperties": false
+    },
+    "ModuleConfig": {
+      "type": "object",
+      "properties": {
+        "makePath": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "propertyOrder": 2
+        },
+        "testPath": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "propertyOrder": 1
+        },
+        "classPath": {
+          "items": {
+            "type": "string"
+          },
+          "type": "array",
+          "propertyOrder": 0
+        },
+        "devDependencies": {
+          "type": "object",
+          "propertyOrder": 4,
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "dependencies": {
+          "type": "object",
+          "description": "* Depedencies map.\n\t * Examples:\n\t * \"{DEPENDENCY_NAME}\" => \"haxelib\" - means install latest version of {DEPENDENCY_NAME} from haxelib\n\t * \"{DEPENDENCY_NAME}\" => \"haxelib:1.0.0\" - means version 1.0.0 of {DEPENDENCY_NAME} from haxelib\n\t * \"{DEPENDENCY_NAME}\" => \"haxelib:git:{URL}#[{BRANCH}]#[{SUB_DIR}]#[{VERSION}]\" means install git version of {DEPENDENCY_NAME}\n\t * \"{DEPENDENCY_NAME}\" => \"haxelib:hg:{URL}#[{BRANCH}]#[{SUB_DIR}]#[{VERSION}]\" means install mercurial version of {DEPENDENCY_NAME}\n\t * // TODO: Please remove warning once this haxelib start support this.\n\t * @warning Please be care as generated haxelib.json doesn't support Mercurial repositories and Sub directories and Versions for git repo",
+          "propertyOrder": 3,
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

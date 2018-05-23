@@ -1,29 +1,25 @@
 package hxmake.idea;
 
-class IdeaData {
+typedef IdeaData = {
+
+	@:optional var hideIml:Bool;
 
 	// group for idea module 'grouping'
-	public var group:String;
+	@:optional var group:String;
 
 	// iml path
-	public var imlPath:String;
+	//public var imlPath:String;
 
 	// lime project file,
 	// TODO: "" - search project.lime/xml,
 	// TODO: "path to dir or project.lime"
-	public var lime:String;
+	@:optional var lime:String;
 
 	// path to hxml
-	public var hxml:String;
+	@:optional var hxml:String;
 
-	public var run(default, null):Array<IdeaRunData> = [];
+	@:optional var run:Array<IdeaRunData>;
 
-	public function new() {}
-
-	public function addHaxeRun(file:String) {
-		var r = new IdeaRunData();
-		r.file = file;
-		r.type = "haxe";
-		run.push(r);
-	}
+	@:optional var testResources:Array<String>;
+	@:optional var resources:Array<String>;
 }

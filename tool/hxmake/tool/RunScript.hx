@@ -5,6 +5,9 @@ import hxmake.cli.CL;
 import hxmake.cli.MakeLog;
 import hxmake.core.Arguments;
 import hxmake.core.MakeArgument;
+import hxmake.json.JsonSchemaBuilder;
+import hxmake.structure.PackageData;
+import hxmake.structure.StructureBuilder;
 import hxmake.utils.Haxe;
 import hxmake.utils.Haxelib;
 import hxmake.utils.HaxeTarget;
@@ -43,35 +46,45 @@ class RunScript {
 
 		Sys.setCwd(path);
 
-		var makePath = Path.join([path, "make"]);
+//		var makePath = Path.join([path, "make"]);
 		var libPath = Haxelib.classPath("hxmake", true);
-		var isCompiler = arguments.hasProperty(MakeArgument.MAKE_COMPILER_MODE);
+
+		var n = new StructureBuilder(path);
 
 		var hxml = new Hxml();
+		n.addToHxml(hxml);
+		var map = new Map<String, String>();
+		n.include(n.root, map);
+		var incs = [];
+		for (cp in map.keys()) {
+			incs.push(cp);
+		}
+
 		hxml.main = "HxMakeMain";
-		hxml.libraries = [];
+
+//		hxml.dce = DceNo;
+//		hxml.defines.push("doc-gen");
+		// just for schema generation
+		hxml.defines.push("use-rtti-doc");
+
 		hxml.classPath.push(libPath);
 		hxml.defines.push("hxmake");
 		if (arguments.hasProperty(MakeArgument.MAKE_COMPILER_LOG)) {
 			hxml.defines.push("hxmake_compiler_log");
 		}
 
-		if (isCompiler) {
-			hxml.target = HaxeTarget.Interp;
-		}
-		else {
-			// TODO: try replace Neko by Node.js environment?
-			hxml.target = HaxeTarget.Neko;
-			hxml.output = "make.n";
-		}
+		// TODO: try replace Neko by Node.js environment?
+		hxml.target = HaxeTarget.Neko;
+		hxml.output = "make.n";
 
-		hxml.macros.push('$INIT_MACRO_METHOD("$makePath",$isCompiler,[${toLiteralsArrayString(arguments.args)}])');
+		hxml.macros.push('$INIT_MACRO_METHOD([${toLiteralsArrayString(arguments.args)}])');
+		hxml.macros.push('include("",true,null,[${toLiteralsArrayString(incs)}])');
 
 		hxml.showMacroTimes =
 		hxml.showTimes = arguments.hasProperty(MakeArgument.MAKE_COMPILER_TIME);
 
 		var result = Haxe.compile(hxml);
-		if (!result || isCompiler) {
+		if (!result) {
 			return result;
 		}
 

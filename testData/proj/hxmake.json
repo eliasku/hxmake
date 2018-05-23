@@ -1,0 +1,15 @@
+{
+  "include": [
+    "module1",
+    "module2",
+    "group/group_module1",
+    "external/module1"
+  ],
+  "external": [
+    {
+      "path": "external/module1",
+      "name": "external_module1"
+    }
+  ],
+  "root": false
+}
