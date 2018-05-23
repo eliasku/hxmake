@@ -35,7 +35,7 @@
   },
   "haxelib": {
     "library": true,
-    "version": "0.2.4",
+    "version": "0.3.0",
     "description": "Task automation for Haxe multi-module projects",
     "url": "https://github.com/eliasku/hxmake",
     "tags": [

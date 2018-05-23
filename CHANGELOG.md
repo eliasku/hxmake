@@ -1,3 +1,14 @@
+# v0.3.0
+
+# BREAKING CHANGES
+- Project declaration introduction
+- Macro Modules project configuration is deprecated
+
+# Changes
+- Idea plugin: with `hideIml: true` idea project writes `*.iml` files to `.idea/modules/` folder
+
+-------------
+
 # v0.2.4
 
 - Added ability to substitute version in safe way if retrieving from git failed 

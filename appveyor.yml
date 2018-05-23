@@ -11,6 +11,7 @@ build: off
 branches:
   only:
     - develop
+    - declarative
 
 install:
   - ps: Set-Service wuauserv -StartupType Manual
