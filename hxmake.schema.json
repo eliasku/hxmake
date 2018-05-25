@@ -182,11 +182,10 @@
     },
     "MakeConfigSchema": {
       "type": "object",
-      "description": "*\n\n 1. COMPILE-TIME PHASE\n \t-  Pluigns and modules are collected and code generated\n\n 2. CONSTRUCTION PHASE\n  \t- Global make-project context is constructed\n\t- Set project context to each module\n \t- Build modules tree\n \t- Determine project's roots\n\n 3. CONFIGURATION PHASE:\n \t- Modules are initializing (plugins are applying as well)\n\n 4. RESOLVING PHASE:\n\t- Task order resolving\n\n 5. EXECUTION PHASE\n\t- Running\n\n 6. FINALIZATION PHASE\n\t- Modules finish()",
       "properties": {
         "idea": {
           "$ref": "#/definitions/IdeaData",
-          "propertyOrder": 11
+          "propertyOrder": 9
         },
         "init": {
           "items": {
@@ -198,7 +197,7 @@
         },
         "config": {
           "$ref": "#/definitions/ModuleConfig",
-          "propertyOrder": 12
+          "propertyOrder": 11
         },
         "name": {
           "type": "string",
@@ -221,7 +220,7 @@
         },
         "_parent": {
           "$ref": "#/definitions/PackageData",
-          "propertyOrder": 9
+          "propertyOrder": 10
         },
         "makeplugin": {
           "$ref": "#/definitions/MakePluginInfo",
@@ -262,7 +261,7 @@
             "$ref": "#/definitions/PackageData"
           },
           "type": "array",
-          "propertyOrder": 10
+          "propertyOrder": 12
         }
       },
       "additionalProperties": false

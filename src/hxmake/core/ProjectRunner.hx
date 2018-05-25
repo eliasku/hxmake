@@ -1,5 +1,9 @@
 package hxmake.core;
 
+import hxmake.cli.CL;
+import hxmake.utils.Haxe;
+import hxmake.utils.Hxml;
+import hxmake.cli.FileUtil;
 import haxe.io.Path;
 import haxe.Timer;
 import hxmake.cli.logging.Logger;
@@ -10,6 +14,14 @@ import hxmake.structure.PackageData;
 import hxmake.structure.StructureBuilder;
 import hxmake.test.UTestConfig;
 import hxmake.utils.Haxelib;
+
+typedef MakeConfigSchema = {
+> PackageData,
+	@:optional var idea:IdeaData;
+	@:optional var config:ModuleConfig;
+	@:optional var haxelib:HaxelibConfig;
+	@:optional var utest:UTestConfig;
+};
 
 /***
 
@@ -36,14 +48,6 @@ import hxmake.utils.Haxelib;
 
 **/
 
-typedef MakeConfigSchema = {
-> PackageData,
-	@:optional var idea:IdeaData;
-	@:optional var config:ModuleConfig;
-	@:optional var haxelib:HaxelibConfig;
-	@:optional var utest:UTestConfig;
-};
-
 @:final
 class ProjectRunner {
 	@:access(hxmake)
@@ -69,10 +73,23 @@ class ProjectRunner {
 			sys.io.File.saveContent(Path.join([libPath, "hxmake.schema.json"]), schemaString);
 			sys.io.File.saveContent(Path.join([modules[0].path, "hxmake.schema.json"]), schemaString);
 
+			test(modules);
+
 			runProject(new Project(modules, arguments, workingDir, logger));
 		});
 		logger.info('Make time: $totalTime sec.');
 		Sys.exit(0);
+	}
+
+	static function test(modules:Array<Module>) {
+		for(module in modules) {
+			var p = Path.join([module.path, "import.hx"]);
+			if(FileUtil.fileExists(p)) {
+				CL.workingDir.with(module.path, function() {
+					Haxe.exec(["-cp", ".", "-main", "Main", "-js", "out.js"]);
+				});
+			}
+		}
 	}
 
 	@:access(hxmake.core.BuiltInModule)

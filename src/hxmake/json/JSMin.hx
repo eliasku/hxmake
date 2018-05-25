@@ -76,7 +76,7 @@ class JSMin {
 										d.add('*/');
 										return d.toString();
 									}
-								case _EOF:
+								case null:
 									throw 'Error: Unterminated comment.';
 								default:
 									d.add(c);
@@ -91,7 +91,7 @@ class JSMin {
 										get();
 										return ' ';
 									}
-								case _EOF:
+								case null:
 									throw 'Error: Unterminated comment.';
 							}
 						}
