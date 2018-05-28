@@ -1,3 +1,6 @@
+# v0.2.5
+
+
 # v0.2.4
 
 - Added ability to substitute version in safe way if retrieving from git failed 
