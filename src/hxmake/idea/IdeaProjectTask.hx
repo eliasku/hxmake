@@ -16,6 +16,8 @@ class IdeaProjectTask extends Task {
 	var _rootModule:Module;
 	var _depCache:Map<String, IdeaLibraryInfo> = new Map();
 
+	public var projectDefines:Array<String> = ["debug", "idea", "display"];
+
 	public function new() {}
 
 	override public function run() {
@@ -96,7 +98,8 @@ class IdeaProjectTask extends Task {
 
 		var context = {
 			modules: [],
-			haxeSdkName: getHaxeSDKName()
+			haxeSdkName: getHaxeSDKName(),
+			haxeProjectDefines: this.projectDefines
 		};
 
 		for (module in _modules) {

@@ -1,5 +1,6 @@
 # v0.2.5
 
+- Added possibility to add Idea haxe project defines
 
 # v0.2.4
 
