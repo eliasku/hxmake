@@ -123,9 +123,7 @@ class IdeaProjectTask extends Task {
 		var dotIdeaPath = FileUtil.ensureDirectory(path, ".idea");
 		var tempOutPath = FileUtil.ensureDirectory(path, "out");
 		var haxeXmlPath = Path.join([dotIdeaPath, "haxe.xml"]);
-		if (!FileSystem.exists(haxeXmlPath)) {
-			File.saveContent(haxeXmlPath, _idea.xmlHaxe.execute(context));
-		}
+		File.saveContent(haxeXmlPath, _idea.xmlHaxe.execute(context));
 
 		var workspaceXmlPath = Path.join([dotIdeaPath, "workspace.xml"]);
 		if (!FileSystem.exists(workspaceXmlPath)) {

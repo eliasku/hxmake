@@ -2,15 +2,15 @@ package hxmake.idea;
 
 class IdeaPlugin extends Plugin {
 
+	public var task(default, null):IdeaProjectTask;
+
 	function new() {}
 
-	// `configurator` will be called in root module
-	override function apply(module:Module, ?configurator:IdeaProjectTask -> Void) {
+	override function apply(module:Module) {
 		module.set("idea", new IdeaData());
 		// if module is root
 		if (module.parent == null) {
-			var task = new IdeaProjectTask();
-			if (configurator != null) configurator(task);
+			task = new IdeaProjectTask();
 			module.task("idea", task).dependsOn("haxelib");
 		}
 	}
