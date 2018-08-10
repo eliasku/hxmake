@@ -1,4 +1,8 @@
+# v0.2.7
+
 # v0.2.6
+
+- Fix Idea project haxe defines
 
 # v0.2.5
 
