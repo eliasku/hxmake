@@ -2,7 +2,7 @@ package hxmake.idea;
 
 import haxe.io.Path;
 import haxe.Template;
-import haxe.xml.Fast;
+import hxmake.utils.XmlAccess;
 import hxmake.cli.CL;
 import hxmake.cli.FileUtil;
 import hxmake.cli.MakeLog;
@@ -71,7 +71,7 @@ class IdeaContext {
 		if (configPath != null) {
 			var jdkTableContent = File.getContent(getJdkTablePath(configPath));
 			var jdkTableXml = Xml.parse(jdkTableContent);
-			var fast = new Fast(jdkTableXml.firstElement());
+			var fast = new XmlAccess(jdkTableXml.firstElement());
 			for (c in fast.nodes.component) {
 				for (j in c.nodes.jdk) {
 					var sdk:IdeaSdkData = IdeaSdkData.parseFromXml(j);

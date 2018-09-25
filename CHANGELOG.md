@@ -1,5 +1,7 @@
 # v0.2.7
 
+- Workaround for `xml.Fast` / `xml.Access`
+
 # v0.2.6
 
 - Fix Idea project haxe defines

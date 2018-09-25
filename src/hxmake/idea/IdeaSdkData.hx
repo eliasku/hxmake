@@ -1,6 +1,6 @@
 package hxmake.idea;
 
-import haxe.xml.Fast;
+import hxmake.utils.XmlAccess;
 
 class IdeaSdkData {
 
@@ -16,7 +16,7 @@ class IdeaSdkData {
 		this.path = path;
 	}
 
-	public static function parseFromXml(xml:Fast):IdeaSdkData {
+	public static function parseFromXml(xml:XmlAccess):IdeaSdkData {
 		if (xml != null) {
 			return new IdeaSdkData(
 			IdeaSdkType.parse(getNodeAttrValue(xml, "type", "value", "")),
@@ -28,9 +28,9 @@ class IdeaSdkData {
 		return null;
 	}
 
-	static function getNodeAttrValue(xml:Fast, nodeName:String, attName:String, defaultValue:String):String {
+	static function getNodeAttrValue(xml:XmlAccess, nodeName:String, attName:String, defaultValue:String):String {
 		if (xml.hasNode.resolve(nodeName)) {
-			var typeNode:Fast = xml.node.resolve(nodeName);
+			var typeNode:XmlAccess = xml.node.resolve(nodeName);
 			if (typeNode.has.resolve(attName)) {
 				return typeNode.att.resolve(attName);
 			}
