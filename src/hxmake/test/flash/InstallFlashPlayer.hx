@@ -105,11 +105,11 @@ class InstallFlashPlayer extends SetupTask {
 		// https://www.adobe.com/support/flashplayer/downloads.html
 		return switch(CL.platform) {
 			case Platform.LINUX:
-				"http://fpdownload.macromedia.com/pub/flashplayer/updaters/11/flashplayer_11_sa_debug.i386.tar.gz";
+				"https://fpdownload.macromedia.com/pub/flashplayer/updaters/31/flash_player_sa_linux_debug.x86_64.tar.gz";
 			case Platform.MAC:
-				"http://fpdownload.macromedia.com/pub/flashplayer/updaters/21/flashplayer_21_sa_debug.dmg";
+				"https://fpdownload.macromedia.com/pub/flashplayer/updaters/31/flashplayer_31_sa_debug.dmg";
 			case Platform.WINDOWS:
-				"http://fpdownload.macromedia.com/pub/flashplayer/updaters/21/flashplayer_21_sa_debug.exe";
+				"https://fpdownload.macromedia.com/pub/flashplayer/updaters/31/flashplayer_31_sa_debug.exe";
 			case _:
 				throw "unsupported system";
 		}

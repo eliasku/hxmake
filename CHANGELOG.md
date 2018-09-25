@@ -1,6 +1,7 @@
 # v0.2.7
 
 - Workaround for `xml.Fast` / `xml.Access`
+- Update links to Flash Player Content Debugger binary
 
 # v0.2.6
 
