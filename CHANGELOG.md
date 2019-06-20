@@ -1,3 +1,7 @@
+# v0.2.8
+
+- Hotfix for haxelib version install `"library":"haxelib:1.0.6"`
+
 # v0.2.7
 
 - Workaround for `xml.Fast` / `xml.Access`

@@ -70,20 +70,23 @@ class Haxelib {
             return true;
         }
 
-        var additionalArguments:Array<String> = [];
+        var args = ["install", library];
+        if(version != null && version.length > 0) {
+            args.push(version);
+        }
+
         if(options != null) {
             if(options.always == true) {
-                additionalArguments.push("--always");
+                args.push("--always");
             }
             if(options.global == true) {
-                additionalArguments.push("--global");
+                args.push("--global");
             }
 //            if(options.silent == true) {
 //                args.push("--quiet");
 //            }
         }
-
-        return exec(["install", withVersion(library, version)], additionalArguments);
+        return exec(args);
     }
 
     public static function checkInstalled(library:String, forceGlobal:Bool = false):Bool {
@@ -144,13 +147,6 @@ class Haxelib {
 
     public static function remove(library:String, forceGlobal:Bool = false):Bool {
         return exec(["remove", library], forceGlobal ? ["--global"] : null);
-    }
-
-    static function withVersion(library:String, ?version:String):String {
-        if (version != null && version.length > 0) {
-            return library + ":" + version;
-        }
-        return library;
     }
 
     static function readLines(input:Input):Array<String> {
