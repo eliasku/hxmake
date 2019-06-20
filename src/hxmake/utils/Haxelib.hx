@@ -66,6 +66,9 @@ class Haxelib {
 
     public static function install(library:String, ?version:String, ?options:{?always:Bool, ?silent:Bool, ?global:Bool}):Bool {
         if(classPath(library) != null) {
+            if(version != null && version.length > 0) {
+                return exec(["set", library, version, "--always"]);
+            }
             // already installed
             return true;
         }

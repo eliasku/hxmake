@@ -1,3 +1,7 @@
+# v0.2.9
+
+- haxelib install, always set the correct version in case if library already installed
+
 # v0.2.8
 
 - Hotfix for haxelib version install `"library":"haxelib:1.0.6"`
