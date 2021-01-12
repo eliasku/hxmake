@@ -95,11 +95,28 @@ class IdeaContext {
 
 	static function findLatestPreferences():Array<String> {
 		var result = [];
-		var prefsPath = getUserPreferencesPath();
-		var ideaPathName = CL.platform.isMac ? "IntelliJIdea" : ".IntelliJIdea";
-		var versions = getVersions();
 
-		MakeLog.trace('Search IntelliJ IDEA Preferences in: $prefsPath');
+		// check versions 20.x and above
+		var prefsPath = Path.join([getUserAppDataPath(), "JetBrains"]);
+		var ideaPathName = "IntelliJIdea";
+		var versions = getVersions(20, 21);
+
+		MakeLog.trace('Search IntelliJ IDEA 20.x Preferences in: $prefsPath');
+
+		versions.reverse();
+		for (version in versions) {
+			var path = Path.join([prefsPath, ideaPathName + version]);
+			if (vefiryPreferencesPath(path)) {
+				result.push(path);
+			}
+		}
+
+		// check versions 19.x and below
+		prefsPath = getUserPreferencesPath();
+		ideaPathName = CL.platform.isMac ? "IntelliJIdea" : ".IntelliJIdea";
+		versions = getVersions(16, 19);
+
+		MakeLog.trace('Search IntelliJ IDEA 19.x Preferences in: $prefsPath');
 
 		versions.reverse();
 		for (version in versions) {
@@ -122,14 +139,19 @@ class IdeaContext {
 		return Path.join([path, "options", "jdk.table.xml"]);
 	}
 
+	static function getUserAppDataPath():String {
+		var userHome = CL.getUserHome();
+		return CL.platform.isMac ? Path.join([userHome, "Application Support"]) : Path.join([userHome, "AppData", "Roaming"]);
+	}
+
 	static function getUserPreferencesPath():String {
 		var userHome = CL.getUserHome();
 		return CL.platform.isMac ? Path.join([userHome, "Library", "Preferences"]) : userHome;
 	}
 
-	static function getVersions():Array<String> {
+	static function getVersions(from:Int, to:Int):Array<String> {
 		var result = [];
-		for (major in 16...20) {
+		for (major in from...to) {
 			result.push('20$major');
 			for (minor in 1...10) {
 				result.push('20$major.$minor');
