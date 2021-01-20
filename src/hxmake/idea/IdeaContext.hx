@@ -141,7 +141,7 @@ class IdeaContext {
 
 	static function getUserAppDataPath():String {
 		var userHome = CL.getUserHome();
-		return CL.platform.isMac ? Path.join([userHome, "Application Support"]) : Path.join([userHome, "AppData", "Roaming"]);
+		return CL.platform.isMac ? Path.join([userHome, "Library/Application Support"]) : Path.join([userHome, "AppData", "Roaming"]);
 	}
 
 	static function getUserPreferencesPath():String {

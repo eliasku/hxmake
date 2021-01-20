@@ -1,3 +1,7 @@
+# v0.2.10
+
+- Fix IntelliJ IDEA preferences path for the latest versions
+
 # v0.2.9
 
 - haxelib install, always set the correct version in case if library already installed
